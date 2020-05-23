@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 enum FontRole {
+  Title,
   Display1,
   Display2,
   Display3,
@@ -18,13 +19,14 @@ enum FontColor {
 
 class PlasticColors {
   static final Color background = black;
-  static final Color primary = Colors.purple;
+  static final Color primary = Colors.purple[400];
   static final Color white = Colors.white;
-  static final Color black = Colors.black87;
+  static final Color black = Color.fromARGB(230, 0, 0, 0);
   static final Color inputField = Colors.white54;
-  static final Color accent = Colors.orangeAccent[400];
+  static final Color accent = Colors.yellow[400];
 
   static final _fontRoleMap = <FontRole, double>{
+    FontRole.Title: 64,
     FontRole.Display1: 48,
     FontRole.Display2: 28,
     FontRole.Display3: 18,
@@ -42,6 +44,9 @@ class PlasticColors {
 
   static TextStyle getStyle(FontRole fontRole, FontColor fontColor) {
     return TextStyle(
-        fontSize: _fontRoleMap[fontRole], color: _fontColorMap[fontColor]);
+      fontSize: _fontRoleMap[fontRole],
+      color: _fontColorMap[fontColor],
+      letterSpacing: fontRole == FontRole.Title ? 10 : 0,
+    );
   }
 }

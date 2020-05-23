@@ -1,14 +1,3 @@
-name: plastic
-description: An empty Aqueduct application.
-version: 0.0.1
-author: stable|kernel <jobs@stablekernel.com>
-
-environment:
-  sdk: ">=2.0.0 <3.0.0"
-
+name: plastic_server
 dependencies:
-  aqueduct: 3.3.0+1
-
-dev_dependencies:
-  test: ^1.0.0
-  aqueduct_test: ^1.0.0
+  angel_framework: ^2.0.0

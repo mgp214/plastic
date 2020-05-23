@@ -43,8 +43,8 @@ class LogInState extends State<LogInWidget> {
               padding: EdgeInsets.all(15),
               child: Text(
                 "plastic",
-                style: PlasticColors.getStyle(
-                    FontRole.Display1, FontColor.Primary),
+                style:
+                    PlasticColors.getStyle(FontRole.Title, FontColor.Primary),
               ),
             ),
             TextField(
@@ -136,7 +136,7 @@ class LogInState extends State<LogInWidget> {
                         "register",
                         style: PlasticColors.getStyle(
                           FontRole.Display3,
-                          FontColor.White,
+                          FontColor.Black,
                         ),
                       ),
                       onPressed: logInPressed,
