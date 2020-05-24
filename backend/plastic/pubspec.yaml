@@ -1,3 +1,0 @@
-name: plastic_server
-dependencies:
-  angel_framework: ^2.0.0

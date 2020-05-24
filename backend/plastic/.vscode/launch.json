@@ -5,10 +5,13 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Run Server",
-			"program": "bin/main.dart",
-			"request": "launch",
-			"type": "dart"
+			"type": "node",
+			"request": "attach",
+			"name": "Attach",
+			"port": 8080,
+			"skipFiles": [
+				"<node_internals>/**"
+			]
 		}
 	]
 }

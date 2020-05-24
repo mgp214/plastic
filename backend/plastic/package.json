@@ -1,0 +1,27 @@
+{
+	"name": "plastic",
+	"version": "1.0.0",
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"body-parser": "^1.19.0",
+		"express": "^4.17.1",
+		"jsonwebtoken": "^8.5.1",
+		"mongodb": "^3.5.7",
+		"mongoose": "^5.9.15",
+		"morgan": "^1.10.0",
+		"validator": "^13.0.0"
+	},
+	"description": "Endlessly flexible organization -- server",
+	"main": "app.js",
+	"scripts": {
+		"start": "env-cmd -f ./.env nodemon src/app.js"
+	},
+	"repository": "github.com/mgp214/plastic",
+	"author": "Matthew Popp",
+	"license": "none",
+	"private": true,
+	"devDependencies": {
+		"env-cmd": "^10.1.0",
+		"nodemon": "^2.0.4"
+	}
+}
