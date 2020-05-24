@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/utility/plastic_colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LogInWidget extends StatefulWidget {
   @override
@@ -7,8 +11,9 @@ class LogInWidget extends StatefulWidget {
 }
 
 class LogInState extends State<LogInWidget> {
-  String _email;
-  String _password;
+  String _email = '';
+  String _password = '';
+  String error = '';
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -16,18 +21,28 @@ class LogInState extends State<LogInWidget> {
   void emailChanged(String value) {
     setState(() {
       _email = value;
-      emailController.text = _email;
     });
   }
 
   void passwordChanged(String value) {
     setState(() {
       _password = value;
-      passwordController.text = _password;
     });
   }
 
-  void logInPressed() {}
+  Future<void> logInPressed() async {
+    try {
+      var response = await BackendService.logIn(_email, _password);
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      preferences.setString("token", response.token);
+      preferences.setString("email", response.user.email);
+      preferences.setString("name", response.user.name);
+    } on HttpException catch (e) {
+      setState(() {
+        error = e.message;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,6 +160,16 @@ class LogInState extends State<LogInWidget> {
                   ),
                 ),
               ],
+            ),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                error,
+                style: PlasticColors.getStyle(
+                  FontRole.Display3,
+                  FontColor.Error,
+                ),
+              ),
             ),
           ],
         ),

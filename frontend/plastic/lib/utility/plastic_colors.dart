@@ -11,6 +11,7 @@ enum FontRole {
 
 enum FontColor {
   White,
+  Error,
   Black,
   Primary,
   Accent,
@@ -21,6 +22,7 @@ class PlasticColors {
   static final Color background = black;
   static final Color primary = Colors.purple[400];
   static final Color white = Colors.white;
+  static final Color error = Colors.red[300];
   static final Color black = Color.fromARGB(230, 0, 0, 0);
   static final Color inputField = Colors.white54;
   static final Color accent = Colors.yellow[400];
@@ -40,6 +42,7 @@ class PlasticColors {
     FontColor.Primary: primary,
     FontColor.Accent: Colors.yellow,
     FontColor.Disabled: Colors.white54,
+    FontColor.Error: error,
   };
 
   static TextStyle getStyle(FontRole fontRole, FontColor fontColor) {

@@ -14,7 +14,8 @@
 	"description": "Endlessly flexible organization -- server",
 	"main": "app.js",
 	"scripts": {
-		"start": "env-cmd -f ./.env nodemon src/app.js"
+		"start": "env-cmd -f ./.env nodemon src/app.js",
+		"start:debug": "env-cmd -f ./.env nodemon --inspect-brk=5858 ./src/app.js"
 	},
 	"repository": "github.com/mgp214/plastic",
 	"author": "Matthew Popp",

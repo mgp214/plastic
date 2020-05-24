@@ -6,12 +6,15 @@
 	"configurations": [
 		{
 			"type": "node",
-			"request": "attach",
-			"name": "Attach",
-			"port": 8080,
-			"skipFiles": [
-				"<node_internals>/**"
-			]
-		}
+			"request": "launch",
+			"name": "`yarn start`",
+			"cwd": "${workspaceRoot}",
+			"runtimeExecutable": "yarn",
+			"runtimeArgs": [
+				"start:debug"
+			],
+			"port": 5858,
+			"stopOnEntry": false
+		},
 	]
 }
