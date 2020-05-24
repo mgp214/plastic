@@ -1,7 +1,7 @@
 const express = require('express');
 const User = require('../models/User');
 const auth = require('../middleware/auth')
-
+const jwt = require('jsonwebtoken')
 const router = express.Router();
 
 router.post('/users', async (req, res) => {
@@ -12,7 +12,8 @@ router.post('/users', async (req, res) => {
 		const token = await user.generateAuthToken();
 		res.status(201).send({ user, token });
 	} catch (error) {
-		res.status(400).send(error);
+		res.status(400).send({ error: error.toString() });
+		console.log(error)
 	}
 });
 
@@ -48,7 +49,8 @@ router.post('/users/me/logout', auth, async (req, res) => {
 		await req.user.save();
 		res.send();
 	} catch (error) {
-		res.status(500).send(error);
+		res.status(500).send({ error: error.toString() });
+		console.log(error)
 	}
 });
 
@@ -59,8 +61,25 @@ router.post('/users/me/logoutall', auth, async (req, res) => {
 		await req.user.save();
 		res.send();
 	} catch (error) {
-		res.status(500).send(error);
+		res.status(500).send({ error: error.toString() });
+		console.log(error)
 	}
 })
+
+router.post('/users/checktoken', async (req, res) => {
+	try {
+		token = req.body.token;
+		const data = jwt.verify(token, process.env.JWT_KEY)
+		const user = await User.findOne({ _id: data._id, 'tokens.token': token });
+
+		if (user) {
+			res.send(true);
+		}
+	} catch (error) {
+		res.status(500).send({ error: error.toString() });
+		console.log(error)
+	}
+	res.send(false);
+});
 
 module.exports = router;

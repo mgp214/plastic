@@ -2,43 +2,50 @@ import 'dart:io';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/utility/style.dart';
-import 'package:plastic/widgets/register_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LogInWidget extends StatefulWidget {
+class RegisterWidget extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new LogInState();
+  State<StatefulWidget> createState() => new RegisterState();
 }
 
-class LogInState extends State<LogInWidget> {
+class RegisterState extends State<RegisterWidget> {
   String _email = '';
-  String _password = '';
+  String _password1 = '';
+  String _password2 = '';
+  String _name = '';
   String _error = '';
+
   bool _autoValidate = false;
 
   TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController password1Controller = TextEditingController();
+  TextEditingController password2Controller = TextEditingController();
+  TextEditingController nameController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
-  Future<void> logInPressed(context) async {
+  Future<void> registerPressed(context) async {
     FocusScope.of(context).unfocus();
     _autoValidate = true;
     if (!_formKey.currentState.validate()) return;
 
     try {
-      var response = await BackendService.logIn(_email, _password);
+      var response = await BackendService.register(_email, _password1, _name);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       preferences.setString("token", response.token);
       preferences.setString("email", response.user.email);
       preferences.setString("name", response.user.name);
-      Navigator.pop(context);
+      Navigator.popUntil(context, (route) => route.isFirst);
     } on HttpException catch (e) {
       setState(() {
         _error = e.message;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
       });
     }
   }
@@ -60,8 +67,35 @@ class LogInState extends State<LogInWidget> {
                 Padding(
                   padding: EdgeInsets.all(15),
                   child: Text(
-                    "plastic",
-                    style: Style.getStyle(FontRole.Title, Style.primary),
+                    "register",
+                    style: Style.getStyle(FontRole.Display1, Style.primary),
+                  ),
+                ),
+                Container(
+                  height: 100,
+                  child: TextFormField(
+                    controller: nameController,
+                    autocorrect: false,
+                    textInputAction: TextInputAction.next,
+                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
+                    enableSuggestions: true,
+                    decoration: InputDecoration(
+                      fillColor: Style.inputField,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                      filled: true,
+                      hintText: "name",
+                    ),
+                    onChanged: (value) => setState(() {
+                      _name = value.trim();
+                      _error = '';
+                    }),
+                    validator: (value) {
+                      return value != null && value.length != 0
+                          ? null
+                          : "Please enter a name (it doesn't even have to be yours)";
+                    },
                   ),
                 ),
                 Container(
@@ -71,9 +105,7 @@ class LogInState extends State<LogInWidget> {
                     autocorrect: false,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    onEditingComplete: () {
-                      FocusScope.of(context).nextFocus();
-                    },
+                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
                     enableSuggestions: true,
                     decoration: InputDecoration(
                       fillColor: Style.inputField,
@@ -97,10 +129,11 @@ class LogInState extends State<LogInWidget> {
                 Container(
                   height: 100,
                   child: TextFormField(
-                    controller: passwordController,
+                    controller: password1Controller,
                     obscureText: true,
                     autocorrect: false,
-                    onFieldSubmitted: (value) => logInPressed(context),
+                    textInputAction: TextInputAction.next,
+                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
                     enableSuggestions: true,
                     decoration: InputDecoration(
                       fillColor: Style.inputField,
@@ -112,12 +145,47 @@ class LogInState extends State<LogInWidget> {
                     ),
                     onChanged: (value) => setState(() {
                       _error = '';
-                      _password = value;
+                      _password1 = value;
                     }),
                     validator: (value) {
-                      return value != null
-                          ? null
-                          : "Please enter your password.";
+                      if (value == null) {
+                        return "Please enter a password.";
+                      }
+                      if (value.length < 7) {
+                        return "Must be at least 7 characters.";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Container(
+                  height: 100,
+                  child: TextFormField(
+                    controller: password2Controller,
+                    obscureText: true,
+                    autocorrect: false,
+                    onFieldSubmitted: (value) => registerPressed(context),
+                    enableSuggestions: true,
+                    decoration: InputDecoration(
+                      fillColor: Style.inputField,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                      filled: true,
+                      hintText: "password, again",
+                    ),
+                    onChanged: (value) => setState(() {
+                      _error = '';
+                      _password2 = value;
+                    }),
+                    validator: (value) {
+                      if (value == null || value.length == 0) {
+                        return "Please enter your password.";
+                      }
+                      if (value != _password1) {
+                        return "Passwords don't match.";
+                      }
+                      return null;
                     },
                   ),
                 ),
@@ -128,7 +196,7 @@ class LogInState extends State<LogInWidget> {
                     Expanded(
                       child: OutlineButton(
                         borderSide: BorderSide(
-                            color: Style.primary,
+                            color: Style.accent,
                             width: 2,
                             style: BorderStyle.solid),
                         shape: RoundedRectangleBorder(
@@ -136,65 +204,17 @@ class LogInState extends State<LogInWidget> {
                         ),
                         padding: EdgeInsets.all(15),
                         child: Text(
-                          "hello",
+                          "sign me up",
                           style: Style.getStyle(
                             FontRole.Display3,
-                            Style.primary,
+                            Style.accent,
                           ),
                         ),
-                        onPressed: () => logInPressed(context),
+                        onPressed: () => registerPressed(context),
                         color: Style.accent,
                       ),
                     ),
                   ],
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(top: 10, left: 10),
-                        child: Text(
-                          "new here? why not ",
-                          style: Style.getStyle(
-                            FontRole.Display3,
-                            Style.white,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 5, left: 10),
-                          child: OutlineButton(
-                            borderSide: BorderSide(
-                                color: Style.accent,
-                                width: 2,
-                                style: BorderStyle.solid),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8),
-                              ),
-                            ),
-                            padding: EdgeInsets.all(15),
-                            child: Text(
-                              "register",
-                              style: Style.getStyle(
-                                FontRole.Display3,
-                                Style.accent,
-                              ),
-                            ),
-                            onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RegisterWidget())),
-                            color: Style.accent,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.all(10),
