@@ -1,11 +1,11 @@
 const express = require('express');
 const User = require('../models/User');
-const auth = require('../middleware/auth')
-const jwt = require('jsonwebtoken')
+const auth = require('../middleware/auth');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 
+// Create a new user
 router.post('/users', async (req, res) => {
-	// Create a new user
 	try {
 		const user = new User(req.body);
 		await user.save();
@@ -13,12 +13,12 @@ router.post('/users', async (req, res) => {
 		res.status(201).send({ user, token });
 	} catch (error) {
 		res.status(400).send({ error: error.toString() });
-		console.log(error)
+		console.log(error);
 	}
 });
 
+// Login a registered user
 router.post('/users/login', async (req, res) => {
-	// Login a registered user
 	try {
 		const { email, password } = req.body;
 		const user = await User.findByCredentials(email, password);
@@ -34,14 +34,14 @@ router.post('/users/login', async (req, res) => {
 	}
 });
 
-
+// View logged in user profile
 router.get('/users/me', auth, async (req, res) => {
-	// View logged in user profile
-	res.send(req.user)
-})
 
+	res.send(req.user);
+});
+
+// Log user out of the application
 router.post('/users/me/logout', auth, async (req, res) => {
-	// Log user out of the application
 	try {
 		req.user.tokens = req.user.tokens.filter((token) => {
 			return token.token != req.token;
@@ -50,26 +50,27 @@ router.post('/users/me/logout', auth, async (req, res) => {
 		res.send();
 	} catch (error) {
 		res.status(500).send({ error: error.toString() });
-		console.log(error)
+		console.log(error);
 	}
 });
 
+// Log user out of all devices
 router.post('/users/me/logoutall', auth, async (req, res) => {
-	// Log user out of all devices
 	try {
 		req.user.tokens.splice(0, req.user.tokens.length);
 		await req.user.save();
 		res.send();
 	} catch (error) {
 		res.status(500).send({ error: error.toString() });
-		console.log(error)
+		console.log(error);
 	}
-})
+});
 
+// Verifies that a given token is still valid for authorization.
 router.post('/users/checktoken', async (req, res) => {
 	try {
-		token = req.body.token;
-		const data = jwt.verify(token, process.env.JWT_KEY)
+		var token = req.body.token;
+		const data = jwt.verify(token, process.env.JWT_KEY);
 		const user = await User.findOne({ _id: data._id, 'tokens.token': token });
 
 		if (user) {
@@ -77,7 +78,7 @@ router.post('/users/checktoken', async (req, res) => {
 		}
 	} catch (error) {
 		res.status(500).send({ error: error.toString() });
-		console.log(error)
+		console.log(error);
 	}
 	res.send(false);
 });
