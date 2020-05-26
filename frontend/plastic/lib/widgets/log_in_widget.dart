@@ -30,7 +30,7 @@ class LogInState extends State<LogInWidget> {
     if (!_formKey.currentState.validate()) return;
 
     try {
-      var response = await BackendService.logIn(_email, _password);
+      var response = await BackendService.login(_email, _password);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       preferences.setString("token", response.token);
       preferences.setString("email", response.user.email);

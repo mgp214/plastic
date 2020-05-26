@@ -13,8 +13,7 @@ class RegisterWidget extends StatefulWidget {
 
 class RegisterState extends State<RegisterWidget> {
   String _email = '';
-  String _password1 = '';
-  String _password2 = '';
+  String _password = '';
   String _name = '';
   String _error = '';
 
@@ -33,7 +32,7 @@ class RegisterState extends State<RegisterWidget> {
     if (!_formKey.currentState.validate()) return;
 
     try {
-      var response = await BackendService.register(_email, _password1, _name);
+      var response = await BackendService.register(_email, _password, _name);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       preferences.setString("token", response.token);
       preferences.setString("email", response.user.email);
@@ -145,7 +144,7 @@ class RegisterState extends State<RegisterWidget> {
                     ),
                     onChanged: (value) => setState(() {
                       _error = '';
-                      _password1 = value;
+                      _password = value;
                     }),
                     validator: (value) {
                       if (value == null) {
@@ -176,13 +175,12 @@ class RegisterState extends State<RegisterWidget> {
                     ),
                     onChanged: (value) => setState(() {
                       _error = '';
-                      _password2 = value;
                     }),
                     validator: (value) {
                       if (value == null || value.length == 0) {
                         return "Please enter your password.";
                       }
-                      if (value != _password1) {
+                      if (value != _password) {
                         return "Passwords don't match.";
                       }
                       return null;

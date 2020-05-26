@@ -31,10 +31,10 @@ class Style {
   static final _fontRoleMap = <FontRole, double>{
     FontRole.Title: 64,
     FontRole.Display1: 48,
-    FontRole.Display2: 28,
-    FontRole.Display3: 18,
-    FontRole.Content: 12,
-    FontRole.Tooltip: 10,
+    FontRole.Display2: 34,
+    FontRole.Display3: 24,
+    FontRole.Content: 16,
+    FontRole.Tooltip: 12,
   };
 
   static TextStyle getStyle(FontRole fontRole, Color color) {

@@ -3,7 +3,10 @@ import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/log_in_widget.dart';
+import 'package:plastic/widgets/settings_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'action_menu/action_menu_widget.dart';
+import 'action_menu/action_widget.dart';
 
 class HomeWidget extends StatefulWidget {
   @override
@@ -11,39 +14,44 @@ class HomeWidget extends StatefulWidget {
 }
 
 class HomeState extends State<HomeWidget> {
-  User _loggedInUser;
-  String _token;
+  User user;
+  String token;
   bool _isDoneCheckingPrefs = false;
 
-  void _goToLogin() {
-    Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LogInWidget()))
-        .then((value) => getPrefs());
+  void _goToThenReload(Widget widget) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => widget))
+        .then((value) {
+      setState(() {
+        _isDoneCheckingPrefs = false;
+      });
+
+      getPrefs();
+    });
   }
 
   Future<Null> getPrefs() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     if (!preferences.containsKey("token")) {
-      _goToLogin();
+      _goToThenReload(LogInWidget());
       return;
     }
-    var token = preferences.getString("token");
+    var tokenFromPrefs = preferences.getString("token");
     var name = preferences.getString("name");
     var email = preferences.getString("email");
-    var isTokenValid = await BackendService.checkToken(token);
+    var isTokenValid = await BackendService.checkToken(tokenFromPrefs);
 
     if (!isTokenValid) {
       preferences.remove("token");
       preferences.remove("name");
       preferences.remove("email");
-      _goToLogin();
+      _goToThenReload(LogInWidget());
       return;
     }
 
     setState(() {
       _isDoneCheckingPrefs = true;
-      _token = token;
-      _loggedInUser = User(name: name, email: email);
+      token = tokenFromPrefs;
+      user = User(name: name, email: email);
     });
   }
 
@@ -64,16 +72,34 @@ class HomeState extends State<HomeWidget> {
       child: Container(
         color: Style.background,
         alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          fit: StackFit.expand,
           children: <Widget>[
-            Text(
-              "Hello ${_loggedInUser.name},",
-              style: Style.getStyle(FontRole.Display3, Style.primary),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Hello ${user.name},",
+                  style: Style.getStyle(FontRole.Display3, Style.primary),
+                ),
+                Text(
+                  "This is where you'll find your stuff.",
+                  style: Style.getStyle(FontRole.Display3, Style.primary),
+                )
+              ],
             ),
-            Text(
-              "This is where you'll find your stuff.",
-              style: Style.getStyle(FontRole.Display3, Style.primary),
+            ActionMenuWidget(
+              children: <ActionWidget>[
+                ActionWidget(
+                  key: GlobalKey<ActionState>(),
+                  color: Style.accent,
+                  icon: Icons.settings,
+                  onPressed: () => _goToThenReload(SettingsWidget(
+                    token: token,
+                    user: user,
+                  )),
+                )
+              ],
             ),
           ],
         ),
