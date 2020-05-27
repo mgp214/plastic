@@ -75,6 +75,7 @@ router.post('/users/checktoken', async (req, res) => {
 
 		if (user) {
 			res.send(true);
+			return;
 		}
 	} catch (error) {
 		res.status(500).send({ error: error.toString() });

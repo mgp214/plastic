@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
 
+const FIELD_TYPES = [
+	'string',
+	'int',
+	'double',
+	'enum',
+	'bool'
+];
+
 const templateSchema = mongoose.Schema({
 	userId: {
 		type: mongoose.Types.ObjectId,
@@ -22,7 +30,7 @@ exmaple:
 	fields: [
 		{
 			"name": "field A",
-			"fieldType": "String"
+			"fieldType": "string"
 		},
 		{
 			"name": "field B",
@@ -33,11 +41,26 @@ exmaple:
 */
 
 templateSchema.pre('save', async function (next) {
-	//const template = this;
+	const template = this;
 
+	const existingWithName = await Template.findOne({ 'name': template.name, 'userId': template.userId });
 
-	//TODO: validate fields against accepted types.
-	//TODO: validate no duplicate template name for user
+	if (existingWithName && existingWithName._id != template._id) {
+		throw new Error('User already has different template with name [{' + template.name + '}]');
+	}
+	var errors = [];
+	// template.fields is a CoreMongooseArray that is a pain to work with, so we're simplifying it here
+	var simplifiedFields = template.toBSON().fields.map(o => o[0]);
+	for (var i = 1; i < simplifiedFields.length; i++) {
+		var field = simplifiedFields[i];
+		if (FIELD_TYPES.indexOf(field.fieldType) == -1) {
+			errors.push('\n- field [' + field.name + '] has an invalid type of [' + field.fieldType + ']');
+		}
+	}
+
+	if (errors.length > 0) {
+		throw new Error('Encountered one or more validation errors saving template [' + template.name + ']: '.concat(errors))
+	}
 
 	next();
 });

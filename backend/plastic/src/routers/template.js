@@ -8,6 +8,7 @@ router.post('/templates/create', auth, async (req, res) => {
 
 	try {
 		const template = new Template(req.body);
+		template.userId = req.user._id;
 		await template.save();
 		res.status(201).send({ template });
 	} catch (error) {

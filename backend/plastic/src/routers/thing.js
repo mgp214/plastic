@@ -10,6 +10,7 @@ router.post('/things/create', auth, async (req, res) => {
 
 	try {
 		const thing = new Thing(req.body);
+		thing.userId = req.user._id;
 		await thing.save();
 		res.status(201).send({ thing });
 	} catch (error) {
