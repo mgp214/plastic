@@ -12,14 +12,20 @@ class ActionMenuWidget extends StatefulWidget {
   State<StatefulWidget> createState() => ActionMenuState();
 }
 
-class ActionMenuState extends State<ActionMenuWidget> {
+class ActionMenuState extends State<ActionMenuWidget>
+    with SingleTickerProviderStateMixin {
   List<Key> actionKeys;
   bool _isExpanded = false;
+  AnimationController _controller;
 
   void onPressed() {}
 
   void onLongPressed(BuildContext context) {
     _isExpanded = !_isExpanded;
+    if (_isExpanded)
+      _controller.forward();
+    else
+      _controller.reverse();
 
     for (var key in actionKeys) {
       var typeCastKey = key as GlobalKey<ActionState>;
@@ -34,6 +40,15 @@ class ActionMenuState extends State<ActionMenuWidget> {
   }
 
   @override
+  void initState() {
+    _isExpanded = false;
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 200),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     Widget main = Positioned(
       bottom: 20,
@@ -45,12 +60,15 @@ class ActionMenuState extends State<ActionMenuWidget> {
           height: 50,
           child: GestureDetector(
             child: FlatButton(
-              color: Style.primary,
+              color: Colors.transparent,
               padding: EdgeInsets.all(5),
-              child: Icon(
-                Icons.add,
-                color: Style.black,
-                size: 40,
+              child: RotationTransition(
+                turns: Tween(begin: 0.0, end: 3 / 8).animate(_controller),
+                child: Icon(
+                  Icons.add,
+                  color: Style.primary,
+                  size: 40,
+                ),
               ),
               onPressed: onPressed,
               onLongPress: () => onLongPressed(context),

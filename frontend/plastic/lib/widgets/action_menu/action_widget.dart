@@ -25,11 +25,11 @@ class ActionState extends State<ActionWidget>
   Offset targetOffset;
 
   void onAnimationFinish(status) {
-    if (status == AnimationStatus.completed &&
+    if (status == AnimationStatus.dismissed &&
         _animation.value.dx == _origin.dx &&
         _animation.value.dy == _origin.dy) {
       setState(() {
-        _currentColor = Colors.red;
+        _currentColor = Colors.transparent;
       });
     }
   }
@@ -92,17 +92,21 @@ class ActionState extends State<ActionWidget>
             child: Container(
               width: 50,
               height: 50,
-              child: FlatButton(
-                color: Colors.transparent,
-                padding: EdgeInsets.all(5),
-                child: Icon(
-                  widget.icon,
-                  color: _currentColor,
-                  size: 40,
-                ),
-                onPressed: widget.onPressed,
-                shape: CircleBorder(
-                  side: BorderSide(color: _currentColor, width: 3),
+              child: FadeTransition(
+                opacity:
+                    Tween<double>(begin: 0.0, end: 1.0).animate(_controller),
+                child: FlatButton(
+                  color: Colors.transparent,
+                  padding: EdgeInsets.all(5),
+                  child: Icon(
+                    widget.icon,
+                    color: _currentColor,
+                    size: 40,
+                  ),
+                  onPressed: widget.onPressed,
+                  shape: CircleBorder(
+                    side: BorderSide(color: _currentColor, width: 3),
+                  ),
                 ),
               ),
             ),
