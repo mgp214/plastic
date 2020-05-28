@@ -10,11 +10,12 @@ const Events = {
 					name: 'task',
 					fieldType: 'string',
 					required: true,
+					main: true,
 				},
 				{
 					name: 'complete',
 					fieldType: 'bool',
-					required: true,
+					default: false,
 				},
 				{
 					name: 'due date',
@@ -32,6 +33,7 @@ const Events = {
 					name: 'title',
 					fieldType: 'string',
 					required: true,
+					main: true,
 				},
 				{
 					name: 'start',

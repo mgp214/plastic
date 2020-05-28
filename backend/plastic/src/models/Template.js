@@ -41,6 +41,25 @@ const FIELD_TYPES = [
 	'datetime'
 ];
 
+function validateFieldValue(field, value) {
+	switch (field.fieldType) {
+		case 'string':
+			return typeof (value) == 'string';
+		case 'int':
+			return typeof (value) == 'number' && value % 1 == 0;
+		case 'double':
+			return typeof (value) == 'number';
+		case 'enum':
+			return field.values.indexOf(value) != -1;
+		case 'bool':
+			return typeof (value) == 'boolean';
+		case 'date':
+			return isNaN(Date.parse(value)) && value.length == 10;
+		case 'datetime':
+			return isNaN(Date.parse(value)) && value.length >= 13;
+	}
+}
+
 templateSchema.pre('save', async function (next) {
 	const template = this;
 
@@ -58,6 +77,27 @@ templateSchema.pre('save', async function (next) {
 			errors.push('\n- field [' + field.name + '] has an invalid type of [' + field.fieldType + ']');
 		}
 	}
+
+	var numMains = 0;
+	simplifiedFields.forEach(field => {
+		if (!field.name) {
+			errors.push('field without a name!');
+			return;
+		}
+		if (!field.fieldType) {
+			errors.push('field [' + field.name + '] is missing the type attribute!');
+			return;
+		}
+		numMains += field.main ? 1 : 0;
+		if (field.main && field.fieldType != 'string')
+			errors.push('field [' + field.name + '] is marked as main, but is not of type string.');
+		if (field.default && !validateFieldValue(field, field.default))
+			errors.push('field [' + field.name + '] with type [' + field.fieldType + '] has an invalid default value of [' + field.default + ']');
+	});
+	if (numMains > 1)
+		errors.push('Template can only have one field with the "main" attribute');
+	if (numMains == 0)
+		errors.push('Template must have at least one field with the "main" attribute');
 
 	if (errors.length > 0) {
 		throw new Error('Encountered one or more validation errors saving template [' + template.name + ']: '.concat(errors));
