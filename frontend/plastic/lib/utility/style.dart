@@ -23,6 +23,7 @@ class Style {
   static final Color primary = Colors.yellow[600];
   static final Color white = Colors.white;
   static final Color error = Colors.red[300];
+  static final Color delete = Colors.red;
   static final Color black = Colors.black87;
   static final Color inputField = Colors.white54;
   static final Color accent = Colors.lightBlue[300];

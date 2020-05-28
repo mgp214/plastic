@@ -17,10 +17,9 @@ class ActionMenuState extends State<ActionMenuWidget>
   List<Key> actionKeys;
   bool _isExpanded = false;
   AnimationController _controller;
+  Animation<Color> _colorAnimation;
 
-  void onPressed() {}
-
-  void onLongPressed(BuildContext context) {
+  void toggleMenu(BuildContext context) {
     _isExpanded = !_isExpanded;
     if (_isExpanded)
       _controller.forward();
@@ -39,6 +38,14 @@ class ActionMenuState extends State<ActionMenuWidget>
     }
   }
 
+  void onPressed(BuildContext context) {
+    if (_isExpanded) toggleMenu(context);
+  }
+
+  void onLongPressed(BuildContext context) {
+    toggleMenu(context);
+  }
+
   @override
   void initState() {
     _isExpanded = false;
@@ -46,6 +53,8 @@ class ActionMenuState extends State<ActionMenuWidget>
       vsync: this,
       duration: Duration(milliseconds: 200),
     );
+    _colorAnimation = ColorTween(begin: Style.primary, end: Style.delete)
+        .animate(_controller);
   }
 
   @override
@@ -64,13 +73,16 @@ class ActionMenuState extends State<ActionMenuWidget>
               padding: EdgeInsets.all(5),
               child: RotationTransition(
                 turns: Tween(begin: 0.0, end: 3 / 8).animate(_controller),
-                child: Icon(
-                  Icons.add,
-                  color: Style.primary,
-                  size: 40,
+                child: AnimatedBuilder(
+                  animation: _colorAnimation,
+                  builder: (context, child) => Icon(
+                    Icons.add,
+                    color: _colorAnimation.value,
+                    size: 40,
+                  ),
                 ),
               ),
-              onPressed: onPressed,
+              onPressed: () => onPressed(context),
               onLongPress: () => onLongPressed(context),
               highlightColor: Style.accent,
               shape: CircleBorder(
