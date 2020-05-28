@@ -71,26 +71,26 @@ templateSchema.pre('save', async function (next) {
 	var errors = [];
 	// template.fields is a CoreMongooseArray that is a pain to work with, so we're simplifying it here
 	var simplifiedFields = template.toBSON().fields.map(o => o[0]);
-	for (var i = 1; i < simplifiedFields.length; i++) {
+	for (var i = 0; i < simplifiedFields.length; i++) {
 		var field = simplifiedFields[i];
 		if (FIELD_TYPES.indexOf(field.fieldType) == -1) {
-			errors.push('\n- field [' + field.name + '] has an invalid type of [' + field.fieldType + ']');
+			errors.push('field [' + field.name + '] has an invalid type of [' + field.fieldType + ']');
 		}
 	}
 
 	var numMains = 0;
 	simplifiedFields.forEach(field => {
 		if (!field.name) {
-			errors.push('field without a name!');
+			errors.push('field without a name');
 			return;
 		}
 		if (!field.fieldType) {
-			errors.push('field [' + field.name + '] is missing the type attribute!');
+			errors.push('field [' + field.name + '] is missing the type attribute');
 			return;
 		}
 		numMains += field.main ? 1 : 0;
 		if (field.main && field.fieldType != 'string')
-			errors.push('field [' + field.name + '] is marked as main, but is not of type string.');
+			errors.push('field [' + field.name + '] is marked as main, but is not of type string');
 		if (field.default && !validateFieldValue(field, field.default))
 			errors.push('field [' + field.name + '] with type [' + field.fieldType + '] has an invalid default value of [' + field.default + ']');
 	});
