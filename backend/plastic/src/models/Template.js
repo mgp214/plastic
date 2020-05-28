@@ -1,13 +1,5 @@
 const mongoose = require('mongoose');
 
-const FIELD_TYPES = [
-	'string',
-	'int',
-	'double',
-	'enum',
-	'bool'
-];
-
 const templateSchema = mongoose.Schema({
 	userId: {
 		type: mongoose.Types.ObjectId,
@@ -39,6 +31,15 @@ exmaple:
 	]
 }
 */
+const FIELD_TYPES = [
+	'string',
+	'int',
+	'double',
+	'enum',
+	'bool',
+	'date',
+	'datetime'
+];
 
 templateSchema.pre('save', async function (next) {
 	const template = this;
@@ -59,7 +60,7 @@ templateSchema.pre('save', async function (next) {
 	}
 
 	if (errors.length > 0) {
-		throw new Error('Encountered one or more validation errors saving template [' + template.name + ']: '.concat(errors))
+		throw new Error('Encountered one or more validation errors saving template [' + template.name + ']: '.concat(errors));
 	}
 
 	next();
