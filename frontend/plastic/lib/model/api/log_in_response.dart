@@ -7,7 +7,7 @@ class LogInResponse {
   LogInResponse({this.user, this.token});
 
   LogInResponse.fromJson(Map<String, dynamic> json) {
-    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    user = json.containsKey('user') ? User.fromJson(json['user']) : null;
     token = json['token'];
   }
 

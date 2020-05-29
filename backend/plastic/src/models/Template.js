@@ -111,8 +111,8 @@ templateSchema.statics.findAllByUser = async (userId) => {
 	return templates;
 };
 
-templateSchema.statics.findById = async (templateId) => {
-	const template = await Template.findById(templateId);
+templateSchema.statics.findByIdAndUser = async (userId, templateId) => {
+	const template = await Template.findOne({ 'userId': userId, '_id': templateId });
 	if (template) {
 		return template;
 	}

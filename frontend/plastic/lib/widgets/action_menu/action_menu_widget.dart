@@ -22,6 +22,7 @@ class ActionMenuState extends State<ActionMenuWidget>
   Animation<Color> _colorAnimation;
   Animation<double> _rotationAnimation;
   Animation<Offset> _quickAddAnimation;
+  FocusNode _quickAddFocus;
 
   void toggleMenu(BuildContext context) {
     _isExpanded = !_isExpanded;
@@ -55,6 +56,7 @@ class ActionMenuState extends State<ActionMenuWidget>
     if (_isQuickAddOpen) {
       _menuController.forward();
       _quickAddController.forward();
+      _quickAddFocus.requestFocus();
     } else {
       _menuController.reverse();
       _quickAddController.reverse();
@@ -97,6 +99,7 @@ class ActionMenuState extends State<ActionMenuWidget>
     );
     _colorAnimation = ColorTween(begin: Style.primary, end: Style.delete)
         .animate(_menuController);
+    _quickAddFocus = FocusNode();
   }
 
   @override
@@ -136,22 +139,20 @@ class ActionMenuState extends State<ActionMenuWidget>
       ),
     );
 
-    var quickAddFocus = new FocusNode();
-
     Widget quickAdd = Positioned(
       bottom: MediaQuery.of(context).viewInsets.bottom + 10,
       left: 5,
       child: SlideTransition(
         position: _quickAddAnimation,
         child: QuickAddWidget(
-          focusNode: quickAddFocus,
+          focusNode: _quickAddFocus,
         ),
       ),
     );
 
-    if (_isQuickAddOpen) {
-      quickAddFocus.requestFocus();
-    }
+    // if (_isQuickAddOpen) {
+    //   _quickAddFocus.requestFocus();
+    // }
 
     List<Widget> actions = List();
     actions.addAll(widget.children);

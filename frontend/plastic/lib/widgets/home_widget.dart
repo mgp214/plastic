@@ -38,12 +38,14 @@ class HomeState extends State<HomeWidget> {
     var tokenFromPrefs = preferences.getString("token");
     var name = preferences.getString("name");
     var email = preferences.getString("email");
+    var id = preferences.getString("id");
     var isTokenValid = await BackendService.checkToken(tokenFromPrefs);
 
     if (!isTokenValid) {
       preferences.remove("token");
       preferences.remove("name");
       preferences.remove("email");
+      preferences.remove("id");
       _goToThenReload(LogInWidget());
       return;
     }
@@ -51,7 +53,7 @@ class HomeState extends State<HomeWidget> {
     setState(() {
       _isDoneCheckingPrefs = true;
       token = tokenFromPrefs;
-      user = User(name: name, email: email);
+      user = User(name: name, email: email, id: id);
     });
   }
 

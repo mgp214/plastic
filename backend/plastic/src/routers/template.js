@@ -23,5 +23,11 @@ router.get('/templates/all', auth, async (req, res) => {
 	res.send(templates);
 });
 
+// Get a template by id
+router.get('/templates/:id', auth, async (req, res) => {
+	const templates = await Template.findByIdAndUser(req.user._id, req.params.id);
+	res.send(templates);
+});
+
 
 module.exports = router;

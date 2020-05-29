@@ -35,6 +35,7 @@ class LogInState extends State<LogInWidget> {
       preferences.setString("token", response.token);
       preferences.setString("email", response.user.email);
       preferences.setString("name", response.user.name);
+      preferences.setString("id", response.user.id);
       Navigator.pop(context);
     } on HttpException catch (e) {
       setState(() {

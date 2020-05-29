@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 enum FieldType {
   STRING,
   INT,
@@ -8,12 +10,17 @@ enum FieldType {
 
 class Template {
   List<TemplateField> fields;
-  String sId;
+  String id;
   String userId;
   String name;
-  int iV;
+  int v;
 
-  Template({this.fields, this.sId, this.userId, this.name, this.iV});
+  Template(
+      {@required this.fields,
+      @required this.id,
+      @required this.userId,
+      @required this.name,
+      @required this.v});
 
   Template.fromJson(Map<String, dynamic> json) {
     if (json['fields'] != null) {
@@ -22,10 +29,10 @@ class Template {
         fields.add(new TemplateField.fromJson(v));
       });
     }
-    sId = json['_id'];
+    id = json['_id'];
     userId = json['userId'];
     name = json['name'];
-    iV = json['__v'];
+    v = json['__v'];
   }
 
   Map<String, dynamic> toJson() {
@@ -33,10 +40,10 @@ class Template {
     if (this.fields != null) {
       data['fields'] = this.fields.map((v) => v.toJson()).toList();
     }
-    data['_id'] = this.sId;
+    data['_id'] = this.id;
     data['userId'] = this.userId;
     data['name'] = this.name;
-    data['__v'] = this.iV;
+    data['__v'] = this.v;
     return data;
   }
 }
@@ -44,11 +51,16 @@ class Template {
 class TemplateField {
   String name;
   FieldType type;
+  bool main;
+  dynamic defaultValue;
 
   TemplateField({this.name, this.type});
 
   TemplateField.fromJson(Map<String, dynamic> json) {
     name = json['name'];
+    main = json.containsKey('main') ? true : false;
+    defaultValue = json.containsKey('default') ? json['default'] : null;
+
     type = FieldType.values
         .singleWhere((ft) => ft.toString() == json['fieldType']);
   }
@@ -57,6 +69,9 @@ class TemplateField {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = name;
     data['fieldType'] = type.toString();
+    if (main) data['main'] = true;
+    if (defaultValue != null) data['default'] = defaultValue;
+
     return data;
   }
 }

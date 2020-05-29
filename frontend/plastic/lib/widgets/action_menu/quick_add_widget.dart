@@ -11,7 +11,17 @@ class QuickAddWidget extends StatefulWidget {
 }
 
 class QuickAddState extends State<QuickAddWidget> {
-  void onChanged(BuildContext context, String value) {}
+  Map<String, dynamic> workingThing;
+
+  String _value;
+
+  void onChanged(BuildContext context, String newValue) {
+    String templateMatch = RegExp("#\w+").firstMatch(newValue).group(0);
+
+    //TODO: check if templateMatch is a valid template, if not, show partial matches as dropdown options
+
+    //TODO: Pull up template as model, search for other field names, If partial, show partial matches as dropdown options
+  }
 
   @override
   Widget build(BuildContext context) => Align(
