@@ -71,19 +71,21 @@ class RegisterState extends State<RegisterWidget> {
                   ),
                 ),
                 Container(
-                  height: 100,
+                  height: 105,
                   child: TextFormField(
                     controller: nameController,
                     autocorrect: false,
+                    style: Style.getStyle(FontRole.Content, Style.accent),
                     textInputAction: TextInputAction.next,
                     onEditingComplete: () => FocusScope.of(context).nextFocus(),
                     enableSuggestions: true,
                     decoration: InputDecoration(
                       fillColor: Style.inputField,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderRadius: BorderRadius.all(Style.borderRadius),
                       ),
                       filled: true,
+                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
                       hintText: "name",
                     ),
                     onChanged: (value) => setState(() {
@@ -93,15 +95,16 @@ class RegisterState extends State<RegisterWidget> {
                     validator: (value) {
                       return value != null && value.length != 0
                           ? null
-                          : "Please enter a name (it doesn't even have to be yours)";
+                          : "Please enter a name (any name will do)";
                     },
                   ),
                 ),
                 Container(
-                  height: 100,
+                  height: 105,
                   child: TextFormField(
                     controller: emailController,
                     autocorrect: false,
+                    style: Style.getStyle(FontRole.Content, Style.accent),
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     onEditingComplete: () => FocusScope.of(context).nextFocus(),
@@ -109,9 +112,10 @@ class RegisterState extends State<RegisterWidget> {
                     decoration: InputDecoration(
                       fillColor: Style.inputField,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderRadius: BorderRadius.all(Style.borderRadius),
                       ),
                       filled: true,
+                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
                       hintText: "email",
                     ),
                     onChanged: (value) => setState(() {
@@ -126,20 +130,22 @@ class RegisterState extends State<RegisterWidget> {
                   ),
                 ),
                 Container(
-                  height: 100,
+                  height: 105,
                   child: TextFormField(
                     controller: password1Controller,
                     obscureText: true,
                     autocorrect: false,
+                    style: Style.getStyle(FontRole.Content, Style.accent),
                     textInputAction: TextInputAction.next,
                     onEditingComplete: () => FocusScope.of(context).nextFocus(),
                     enableSuggestions: true,
                     decoration: InputDecoration(
                       fillColor: Style.inputField,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderRadius: BorderRadius.all(Style.borderRadius),
                       ),
                       filled: true,
+                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
                       hintText: "password",
                     ),
                     onChanged: (value) => setState(() {
@@ -158,19 +164,21 @@ class RegisterState extends State<RegisterWidget> {
                   ),
                 ),
                 Container(
-                  height: 100,
+                  height: 105,
                   child: TextFormField(
                     controller: password2Controller,
                     obscureText: true,
                     autocorrect: false,
+                    style: Style.getStyle(FontRole.Content, Style.accent),
                     onFieldSubmitted: (value) => registerPressed(context),
                     enableSuggestions: true,
                     decoration: InputDecoration(
                       fillColor: Style.inputField,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderRadius: BorderRadius.all(Style.borderRadius),
                       ),
                       filled: true,
+                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
                       hintText: "password, again",
                     ),
                     onChanged: (value) => setState(() {
@@ -198,7 +206,7 @@ class RegisterState extends State<RegisterWidget> {
                             width: 2,
                             style: BorderStyle.solid),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Style.borderRadius),
                         ),
                         padding: EdgeInsets.all(15),
                         child: Text(

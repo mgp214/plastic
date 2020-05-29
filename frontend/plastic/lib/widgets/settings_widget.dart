@@ -71,7 +71,7 @@ class SettingsState extends State<SettingsWidget> {
                             width: 2,
                             style: BorderStyle.solid),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Style.borderRadius),
                         ),
                         padding: EdgeInsets.all(15),
                         child: Text(
@@ -101,7 +101,7 @@ class SettingsState extends State<SettingsWidget> {
                             width: 2,
                             style: BorderStyle.solid),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Style.borderRadius),
                         ),
                         padding: EdgeInsets.all(15),
                         child: Text(

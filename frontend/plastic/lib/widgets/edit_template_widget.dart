@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:plastic/model/template.dart';
 
 class EditTemplateWidget extends StatefulWidget {

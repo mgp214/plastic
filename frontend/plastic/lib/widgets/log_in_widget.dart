@@ -65,7 +65,7 @@ class LogInState extends State<LogInWidget> {
                   ),
                 ),
                 Container(
-                  height: 100,
+                  height: 105,
                   child: TextFormField(
                     controller: emailController,
                     autocorrect: false,
@@ -75,12 +75,14 @@ class LogInState extends State<LogInWidget> {
                       FocusScope.of(context).nextFocus();
                     },
                     enableSuggestions: true,
+                    style: Style.getStyle(FontRole.Content, Style.accent),
                     decoration: InputDecoration(
                       fillColor: Style.inputField,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderRadius: BorderRadius.all(Style.borderRadius),
                       ),
                       filled: true,
+                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
                       hintText: "email",
                     ),
                     onChanged: (value) => setState(() {
@@ -95,19 +97,21 @@ class LogInState extends State<LogInWidget> {
                   ),
                 ),
                 Container(
-                  height: 100,
+                  height: 105,
                   child: TextFormField(
                     controller: passwordController,
                     obscureText: true,
                     autocorrect: false,
                     onFieldSubmitted: (value) => logInPressed(context),
                     enableSuggestions: true,
+                    style: Style.getStyle(FontRole.Content, Style.accent),
                     decoration: InputDecoration(
                       fillColor: Style.inputField,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderRadius: BorderRadius.all(Style.borderRadius),
                       ),
                       filled: true,
+                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
                       hintText: "password",
                     ),
                     onChanged: (value) => setState(() {
@@ -115,7 +119,7 @@ class LogInState extends State<LogInWidget> {
                       _password = value;
                     }),
                     validator: (value) {
-                      return value != null
+                      return value != null && value.length != 0
                           ? null
                           : "Please enter your password.";
                     },
@@ -132,7 +136,7 @@ class LogInState extends State<LogInWidget> {
                             width: 2,
                             style: BorderStyle.solid),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Style.borderRadius),
                         ),
                         padding: EdgeInsets.all(15),
                         child: Text(
@@ -174,7 +178,7 @@ class LogInState extends State<LogInWidget> {
                                 style: BorderStyle.solid),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.all(
-                                Radius.circular(8),
+                                Style.borderRadius,
                               ),
                             ),
                             padding: EdgeInsets.all(15),

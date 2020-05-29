@@ -98,9 +98,12 @@ class HomeState extends State<HomeWidget> {
                     token: token,
                     user: user,
                   )),
-                )
+                ),
               ],
             ),
+            SizedBox(
+              height: MediaQuery.of(context).viewInsets.bottom,
+            )
           ],
         ),
       ),
