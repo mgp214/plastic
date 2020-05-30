@@ -17,58 +17,94 @@ class QuickAddWidget extends StatefulWidget {
 
 class QuickAddState extends State<QuickAddWidget> {
   Map<String, dynamic> workingThing;
+  Template template;
 
   TextStyle _textStyle;
   OverlayEntry _templateAutocompleteOverlay;
   TextEditingController _controller;
 
+  Map<String, VoidCallback> onTemplateAutocompleted(
+      List<Template> partialMatches, RegExpMatch r, String text) {
+    var options = Map<String, VoidCallback>();
+    partialMatches.forEach((match) {
+      options[match.name] = () {
+        _templateAutocompleteOverlay.remove();
+        _templateAutocompleteOverlay = null;
+
+        var addLeadingSpace = '';
+        var matchString = text.substring(r.start, r.end);
+        var checkForLeadingSpaceRegExp = RegExp("( (?=#))").firstMatch(text);
+        var replacementStartRegExp = RegExp("#").firstMatch(text);
+        if (checkForLeadingSpaceRegExp == null) addLeadingSpace = ' ';
+        var addTrailingSpace = r.end == text.length ||
+                (text[r.end] != ' ' &&
+                    (text[r.end] == '\'' || text[r.end] == '\"'))
+            ? ' '
+            : '';
+
+        var addQuotes = match.name.indexOf(' ') != -1 ? '\'' : '';
+
+        var subtituteString = addLeadingSpace +
+            '#' +
+            addQuotes +
+            match.name +
+            addQuotes +
+            addTrailingSpace;
+
+        var replacementString = text.replaceRange(
+          replacementStartRegExp.start,
+          r.end,
+          subtituteString,
+        );
+
+        var cursorPosition =
+            replacementStartRegExp.start + subtituteString.length;
+
+        setState(
+          () => {
+            _controller.text = replacementString,
+            _controller.selection = TextSelection(
+                baseOffset: cursorPosition, extentOffset: cursorPosition)
+          },
+        );
+      };
+    });
+
+    return options;
+  }
+
   void onChanged(BuildContext context, String newValue) {
-    var regExpMatch = RegExp(r"#(\w+)").firstMatch(newValue.toLowerCase());
+    // old regex:#['\"](\\w+)
+    var regExpMatch = RegExp(
+            "((?:(?<=#['\"])[a-zA-Z0-9\-_ ]+['\"]*?)|(?:(?<=#)[a-zA-Z0-9\-_]+))")
+        .firstMatch(newValue.toLowerCase());
     if (regExpMatch == null) return;
     String templateMatch = regExpMatch.group(1);
-    if (templateMatch.isEmpty) return;
+    if (templateMatch.isEmpty) {
+      removeOverlay(_templateAutocompleteOverlay);
+    }
 
-    Template template = TemplateManager().getTemplate(templateMatch);
+    template = TemplateManager().getTemplate(templateMatch);
     if (template == null) {
       var partialMatches = TemplateManager().getTemplateMatches(templateMatch);
 
-      var options = Map<String, VoidCallback>();
-      partialMatches.forEach(
-        (match) {
-          options[match.name] = () {
-            _templateAutocompleteOverlay.remove();
-            _templateAutocompleteOverlay = null;
-
-            var addLeadingSpace =
-                regExpMatch.start > 0 && newValue[regExpMatch.start - 1] != ' '
-                    ? ' '
-                    : '';
-            var addTrailingSpace = regExpMatch.end == newValue.length ||
-                    newValue[regExpMatch.end] != ' '
-                ? ' '
-                : '';
-
-            var replacementString = newValue.replaceRange(
-                regExpMatch.start,
-                regExpMatch.end,
-                addLeadingSpace + '#' + match.name + addTrailingSpace);
-            setState(
-              () => {
-                _controller.text = replacementString,
-              },
-            );
-          };
-        },
-      );
+      var options =
+          onTemplateAutocompleted(partialMatches, regExpMatch, newValue);
 
       showAutocomplete(
           context, newValue.substring(0, regExpMatch.start - 1), options);
-    } else {
-      _templateAutocompleteOverlay.remove();
-      _templateAutocompleteOverlay = null;
+      return;
     }
+    removeOverlay(_templateAutocompleteOverlay);
 
     //TODO: Pull up template as model, search for other field names, If partial, show partial matches as dropdown options
+  }
+
+  void removeOverlay(OverlayEntry overlay) {
+    if (overlay != null) {
+      overlay.remove();
+      overlay = null;
+    }
   }
 
   Future<void> showAutocomplete(BuildContext context, String text,
@@ -80,9 +116,10 @@ class QuickAddState extends State<QuickAddWidget> {
 
     quickAddContentPainter.layout();
 
-    if (_templateAutocompleteOverlay != null) {
-      _templateAutocompleteOverlay.remove();
-      _templateAutocompleteOverlay = null;
+    removeOverlay(_templateAutocompleteOverlay);
+
+    if (options.length == 0) {
+      options["<no matches>"] = null;
     }
 
     String longestOption = "";
@@ -97,7 +134,7 @@ class QuickAddState extends State<QuickAddWidget> {
     );
     optionsPainter.layout();
 
-    var height = Math.min(options.keys.length * 58.0, 174.0);
+    var height = Math.min(options.keys.length * 60.0, 174.0);
 
     var overlayState = Overlay.of(context);
     _templateAutocompleteOverlay = OverlayEntry(
@@ -105,14 +142,14 @@ class QuickAddState extends State<QuickAddWidget> {
         top: widget.focusNode.offset.dy - height,
         left: widget.focusNode.offset.dx + quickAddContentPainter.width,
         child: Align(
-          alignment: Alignment.bottomLeft,
+          alignment: Alignment.centerLeft,
           child: SizedBox(
             width: optionsPainter.width + 50,
             height: height,
             child: Material(
               color: Style.background,
               child: Align(
-                alignment: Alignment.bottomCenter,
+                alignment: Alignment.centerLeft,
                 child: AutocompleteListWidget(
                   options: options,
                 ),
@@ -135,9 +172,13 @@ class QuickAddState extends State<QuickAddWidget> {
     workingThing = new Map<String, dynamic>();
     _textStyle = Style.getStyle(FontRole.Content, Style.accent);
     _controller = TextEditingController();
-    // _controller = TextEditingController();
-    // ..addListener(() => onChanged(context, _controller.text));
-    ;
+    widget.focusNode.addListener(() {
+      if (!widget.focusNode.hasFocus)
+        removeOverlay(_templateAutocompleteOverlay);
+    })
+        // _controller = TextEditingController();
+        // ..addListener(() => onChanged(context, _controller.text));
+        ;
   }
 
   @override

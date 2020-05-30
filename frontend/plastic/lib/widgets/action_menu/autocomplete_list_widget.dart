@@ -12,8 +12,10 @@ class AutocompleteListWidget extends StatelessWidget {
     sortedOptions.sort((a, b) => a.key.compareTo(b.key));
 
     return ListView(
+      padding: EdgeInsets.zero,
       children: sortedOptions
           .map((option) => FlatButton(
+                padding: EdgeInsets.zero,
                 child: Text(
                   option.key,
                   style: Style.getStyle(
