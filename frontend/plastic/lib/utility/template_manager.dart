@@ -15,7 +15,7 @@ class TemplateManager {
   String token;
 
   Future<void> loadTemplates() async {
-    if (token.isEmpty) {
+    if (token == null || token.isEmpty) {
       try {
         token = (await SharedPreferences.getInstance()).getString("token");
       } on Exception {
@@ -27,12 +27,14 @@ class TemplateManager {
 
   Template getTemplate(String fullName) {
     return _templates.firstWhere(
-      (t) => t.name == fullName,
+      (t) => t.name.toLowerCase() == fullName.toLowerCase(),
       orElse: () => null,
     );
   }
 
-  List<Template> getTemplateMatches(String partial) {
-    return _templates.where((t) => t.name.indexOf(partial) != -1);
-  }
+  List<Template> getTemplateMatches(String partial) => _templates
+      .where(
+        (t) => t.name.toLowerCase().indexOf(partial.toLowerCase()) != -1,
+      )
+      .toList();
 }

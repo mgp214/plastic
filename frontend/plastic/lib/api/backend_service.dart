@@ -4,10 +4,12 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:plastic/model/api/log_in_response.dart';
 import 'package:plastic/model/template.dart';
+import 'package:plastic/utility/template_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BackendService {
-  static final String _root = 'http://66.175.219.233:8080/';
+  // static final String _root = 'http://66.175.219.233:8080/';
+  static final String _root = 'http://10.0.2.2:8080/';
   static final routes = <String, String>{
     "register": _root + 'users',
     "login": _root + "users/login",
@@ -31,7 +33,9 @@ class BackendService {
     if (response.statusCode != 200) {
       throw new HttpException(json.decode(response.body)['error']);
     }
-    return new LogInResponse.fromJson(json.decode(response.body));
+    var loginResponse = new LogInResponse.fromJson(json.decode(response.body));
+    TemplateManager().loadTemplates();
+    return loginResponse;
   }
 
   /// Register a new user
@@ -64,6 +68,9 @@ class BackendService {
 
     if (response.statusCode != 200)
       throw new HttpException(json.decode(response.body)['error']);
+
+    var result = "true" == response.body;
+    if (result) TemplateManager().loadTemplates();
 
     return "true" == response.body;
   }

@@ -61,8 +61,8 @@ class TemplateField {
     main = json.containsKey('main') ? true : false;
     defaultValue = json.containsKey('default') ? json['default'] : null;
 
-    type = FieldType.values
-        .singleWhere((ft) => ft.toString() == json['fieldType']);
+    type = FieldType.values.singleWhere(
+        (ft) => ft.toString().split('.').last == json['fieldType']);
   }
 
   Map<String, dynamic> toJson() {

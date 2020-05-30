@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
 
+const thingFieldSchema = mongoose.Schema({
+	'name': String,
+	'value': mongoose.Schema.Types.Mixed,
+});
+
+
 const thingSchema = mongoose.Schema({
 	userId: {
 		type: mongoose.Types.ObjectId,
@@ -9,9 +15,7 @@ const thingSchema = mongoose.Schema({
 		type: mongoose.Types.ObjectId,
 		required: true,
 	},
-	fields: {
-		type: mongoose.SchemaTypes.Array
-	}
+	fields: [thingFieldSchema]
 });
 
 /*

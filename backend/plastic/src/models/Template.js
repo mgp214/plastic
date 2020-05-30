@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
 
+const templateFieldSchema = mongoose.Schema({
+	'name': String,
+	'fieldType': String,
+	'value': mongoose.Schema.Types.Mixed,
+	'default': mongoose.Schema.Types.Mixed,
+	'main': Boolean,
+});
+
 const templateSchema = mongoose.Schema({
 	userId: {
 		type: mongoose.Types.ObjectId,
@@ -8,9 +16,7 @@ const templateSchema = mongoose.Schema({
 	name: {
 		type: String
 	},
-	fields: {
-		type: mongoose.SchemaTypes.Array
-	}
+	fields: [templateFieldSchema]
 });
 
 /*
@@ -32,30 +38,30 @@ exmaple:
 }
 */
 const FIELD_TYPES = [
-	'string',
-	'int',
-	'double',
-	'enum',
-	'bool',
-	'date',
-	'datetime'
+	'STRING',
+	'INT',
+	'DOUBLE',
+	'ENUM',
+	'BOOL',
+	'DATE',
+	'DATETIME'
 ];
 
 function validateFieldValue(field, value) {
 	switch (field.fieldType) {
-		case 'string':
+		case 'STRING':
 			return typeof (value) == 'string';
-		case 'int':
+		case 'INT':
 			return typeof (value) == 'number' && value % 1 == 0;
-		case 'double':
+		case 'DOUBLE':
 			return typeof (value) == 'number';
-		case 'enum':
+		case 'ENUM':
 			return field.values.indexOf(value) != -1;
-		case 'bool':
+		case 'BOOL':
 			return typeof (value) == 'boolean';
-		case 'date':
+		case 'DATE':
 			return isNaN(Date.parse(value)) && value.length == 10;
-		case 'datetime':
+		case 'DATETIME':
 			return isNaN(Date.parse(value)) && value.length >= 13;
 	}
 }
@@ -69,17 +75,16 @@ templateSchema.pre('save', async function (next) {
 		throw new Error('User already has different template with name [{' + template.name + '}]');
 	}
 	var errors = [];
-	// template.fields is a CoreMongooseArray that is a pain to work with, so we're simplifying it here
-	var simplifiedFields = template.toBSON().fields.map(o => o[0]);
-	for (var i = 0; i < simplifiedFields.length; i++) {
-		var field = simplifiedFields[i];
+	var fields = template.toBSON().fields;
+	for (var i = 0; i < fields; i++) {
+		var field = fields[i];
 		if (FIELD_TYPES.indexOf(field.fieldType) == -1) {
 			errors.push('field [' + field.name + '] has an invalid type of [' + field.fieldType + ']');
 		}
 	}
 
 	var numMains = 0;
-	simplifiedFields.forEach(field => {
+	fields.forEach(field => {
 		if (!field.name) {
 			errors.push('field without a name');
 			return;
@@ -89,7 +94,7 @@ templateSchema.pre('save', async function (next) {
 			return;
 		}
 		numMains += field.main ? 1 : 0;
-		if (field.main && field.fieldType != 'string')
+		if (field.main && field.fieldType != 'STRING')
 			errors.push('field [' + field.name + '] is marked as main, but is not of type string');
 		if (field.default && !validateFieldValue(field, field.default))
 			errors.push('field [' + field.name + '] with type [' + field.fieldType + '] has an invalid default value of [' + field.default + ']');

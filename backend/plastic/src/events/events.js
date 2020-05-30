@@ -8,18 +8,18 @@ const Events = {
 			fields: [
 				{
 					name: 'task',
-					fieldType: 'string',
+					fieldType: 'STRING',
 					required: true,
 					main: true,
 				},
 				{
 					name: 'complete',
-					fieldType: 'bool',
+					fieldType: 'BOOL',
 					default: false,
 				},
 				{
 					name: 'due date',
-					fieldType: 'date',
+					fieldType: 'DATE',
 				},
 			]
 		});
@@ -31,18 +31,18 @@ const Events = {
 			fields: [
 				{
 					name: 'title',
-					fieldType: 'string',
+					fieldType: 'STRING',
 					required: true,
 					main: true,
 				},
 				{
 					name: 'start',
-					fieldType: 'datetime',
+					fieldType: 'DATETIME',
 					required: true,
 				},
 				{
 					name: 'ends',
-					fieldType: 'datetime',
+					fieldType: 'DATETIME',
 					required: true,
 				},
 			]
