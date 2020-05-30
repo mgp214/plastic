@@ -150,10 +150,6 @@ class ActionMenuState extends State<ActionMenuWidget>
       ),
     );
 
-    // if (_isQuickAddOpen) {
-    //   _quickAddFocus.requestFocus();
-    // }
-
     List<Widget> actions = List();
     actions.addAll(widget.children);
     actions.add(main);

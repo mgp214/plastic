@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:plastic/model/template.dart';
 import 'package:plastic/utility/style.dart';
+import 'package:plastic/utility/template_manager.dart';
 
 class QuickAddWidget extends StatefulWidget {
   final FocusNode focusNode;
@@ -18,7 +20,11 @@ class QuickAddState extends State<QuickAddWidget> {
   void onChanged(BuildContext context, String newValue) {
     String templateMatch = RegExp("#\w+").firstMatch(newValue).group(0);
 
-    //TODO: check if templateMatch is a valid template, if not, show partial matches as dropdown options
+    Template template = TemplateManager().getTemplate(templateMatch);
+    if (template == null) {
+      var partialMatches = TemplateManager().getTemplateMatches(templateMatch);
+      //TODO: display partial matches
+    }
 
     //TODO: Pull up template as model, search for other field names, If partial, show partial matches as dropdown options
   }
