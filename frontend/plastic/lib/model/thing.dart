@@ -6,7 +6,14 @@ class Thing {
   String name;
   int v;
 
-  Thing({this.fields, this.id, this.userId, this.name, this.v});
+  Thing({
+    this.id,
+    this.userId,
+    this.templateId,
+    this.name,
+    this.fields,
+    this.v,
+  });
 
   Thing.fromJson(Map<String, dynamic> json) {
     if (json['fields'] != null) {

@@ -2,6 +2,7 @@ import 'dart:math' as Math;
 
 import 'package:flutter/material.dart';
 import 'package:plastic/model/template.dart';
+import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/utility/text_utilities.dart';
@@ -19,8 +20,12 @@ class QuickAddWidget extends StatefulWidget {
 }
 
 class QuickAddState extends State<QuickAddWidget> {
-  Map<String, dynamic> workingThing;
-  Template template;
+  static const String FIELD_REGEX =
+      "((?:(?<=['\"])[\\w- _]+(?=['\"]:))|(?:[\\w-_]+(?=:)))";
+  static const String TEMPLATE_REGEX =
+      "((?:(?<=#['\"])[\\w-_ ]+['\"]*?)|(?:(?<=#)[\\w-_]+))";
+  Thing workingThing;
+  Template _template;
 
   TextStyle _textStyle;
   List<OverlayEntry> _mountedOverlays;
@@ -46,10 +51,35 @@ class QuickAddState extends State<QuickAddWidget> {
     _clearOverlays();
     buildTemplateOverlay(
       quickAddFullText,
-      RegExp(
-          "((?:(?<=#['\"])[a-zA-Z0-9\-_ ]+['\"]*?)|(?:(?<=#)[a-zA-Z0-9\-_]+))"),
+      RegExp(TEMPLATE_REGEX),
       shouldAutocomplete,
     );
+
+    if (_template == null) return;
+    workingThing = new Thing(templateId: _template.id);
+    // find all completed template fields.
+    var r = RegExp(FIELD_REGEX);
+    var matches = r.allMatches(quickAddFullText).toList();
+    if (matches.length > 0) {
+      for (var matchIndex = 0; matchIndex < matches.length; matchIndex++) {
+        var match = matches[matchIndex];
+        //TODO: format valid fields
+        var fieldIndex = _template.fields
+            .indexWhere((field) => field.name == match.group(1));
+        if (fieldIndex != -1) {
+          var fieldValue = matchIndex == matches.length - 1
+              ? quickAddFullText.substring(match.end)
+              : quickAddFullText.substring(
+                  match.end, matches[matchIndex + 1].start - 1);
+          //TODO: skip forward past any closing quote and ':'s
+          workingThing.fields[fieldIndex].value == fieldValue;
+        }
+      }
+    }
+
+    // for (var field in _template.fields) {
+    //   buildFieldOverlay(quickAddFullText, RegExp(""), shouldAutocomplete);
+    // }
 
     //TODO: Pull up template as model, search for other field names, If partial, show partial matches as dropdown options
   }
@@ -71,7 +101,6 @@ class QuickAddState extends State<QuickAddWidget> {
   @override
   void initState() {
     super.initState();
-    workingThing = new Map();
     _textStyle = Style.getStyle(FontRole.Content, Style.accent);
     _controller = TextEditingController();
     _mountedOverlays = new List();
@@ -82,32 +111,7 @@ class QuickAddState extends State<QuickAddWidget> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) => Align(
-        alignment: Alignment.bottomLeft,
-        child: Container(
-          width: MediaQuery.of(context).size.width - 75,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Style.borderRadius),
-              border: Border.all(color: Style.primary),
-              color: Style.inputField),
-          padding: EdgeInsets.all(1),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: 200,
-            ),
-            child: TextField(
-              focusNode: widget.focusNode,
-              decoration:
-                  InputDecoration(border: InputBorder.none, filled: false),
-              style: _textStyle,
-              onChanged: (text) => onChanged(context, text),
-              controller: _controller,
-              maxLines: null,
-            ),
-          ),
-        ),
-      );
+  void buildFieldOverlay(String text, RegExp r, bool shouldAutocomplete) {}
 
   /// Builds the template overlay, if applicable.
   void buildTemplateOverlay(String text, RegExp r, bool shouldAutocomplete) {
@@ -121,10 +125,10 @@ class QuickAddState extends State<QuickAddWidget> {
 
     var before = text.substring(0, match.start);
     var matchText = match.group(1);
-    var after = text.substring(match.end);
+    // var after = text.substring(match.end);
 
-    var template = TemplateManager().getTemplate(matchText);
-    if (template != null) return;
+    _template = TemplateManager().getTemplate(matchText);
+    if (_template != null) return;
 
     var partialTemplateMatches =
         TemplateManager().getTemplateMatches(matchText);
@@ -195,7 +199,7 @@ class QuickAddState extends State<QuickAddWidget> {
     partialMatches.forEach((match) {
       options[match.name] = () {
         var addLeadingSpace = '';
-        var matchString = text.substring(r.start, r.end);
+        // var matchString = text.substring(r.start, r.end);
         var checkForLeadingSpaceRegExp = RegExp("( (?=#))").firstMatch(text);
         var replacementStartRegExp = RegExp("#").firstMatch(text);
         if (checkForLeadingSpaceRegExp == null) addLeadingSpace = ' ';
@@ -237,4 +241,32 @@ class QuickAddState extends State<QuickAddWidget> {
 
     return options;
   }
+
+  @override
+  Widget build(BuildContext context) => Align(
+        alignment: Alignment.bottomLeft,
+        child: Container(
+          width: MediaQuery.of(context).size.width - 75,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Style.borderRadius),
+              border: Border.all(color: Style.primary),
+              color: Style.inputField),
+          padding: EdgeInsets.all(1),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: 200,
+            ),
+            child: TextField(
+              focusNode: widget.focusNode,
+              decoration:
+                  InputDecoration(border: InputBorder.none, filled: false),
+              style: _textStyle,
+              onChanged: (text) => onChanged(context, text),
+              textInputAction: TextInputAction.done,
+              controller: _controller,
+              maxLines: null,
+            ),
+          ),
+        ),
+      );
 }
