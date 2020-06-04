@@ -56,10 +56,17 @@ class QuickAddState extends State<QuickAddWidget> {
     );
 
     if (_template == null) return;
+    workingThing = buildWorkingThing(quickAddFullText);
+
+    //TODO: Pull up template as model, search for other field names, If partial, show partial matches as dropdown options
+  }
+
+  Thing buildWorkingThing(String quickAddText) {
     workingThing = new Thing(templateId: _template.id);
+
     // find all completed template fields.
-    var r = RegExp(FIELD_REGEX);
-    var matches = r.allMatches(quickAddFullText).toList();
+    var completedFieldRegex = RegExp(FIELD_REGEX);
+    var matches = completedFieldRegex.allMatches(quickAddText).toList();
     if (matches.length > 0) {
       for (var matchIndex = 0; matchIndex < matches.length; matchIndex++) {
         var match = matches[matchIndex];
@@ -68,20 +75,44 @@ class QuickAddState extends State<QuickAddWidget> {
             .indexWhere((field) => field.name == match.group(1));
         if (fieldIndex != -1) {
           var fieldValue = matchIndex == matches.length - 1
-              ? quickAddFullText.substring(match.end)
-              : quickAddFullText.substring(
+              ? quickAddText.substring(match.end)
+              : quickAddText.substring(
                   match.end, matches[matchIndex + 1].start - 1);
-          //TODO: skip forward past any closing quote and ':'s
+
+          //skip forward past any closing quote and ':'s
+          var cleanupRegex = new RegExp('^[\'"]*:');
+          var cleanupMatch = cleanupRegex.firstMatch(fieldValue);
+          if (cleanupMatch != null) {
+            fieldValue = fieldValue.substring(cleanupMatch.end);
+          }
+
           workingThing.fields[fieldIndex].value == fieldValue;
         }
       }
     }
 
-    // for (var field in _template.fields) {
-    //   buildFieldOverlay(quickAddFullText, RegExp(""), shouldAutocomplete);
-    // }
+    // find if cursor is touching partial field match
 
-    //TODO: Pull up template as model, search for other field names, If partial, show partial matches as dropdown options
+    var whitespaceRegex = RegExp('\\s');
+    var cursorPosition = _controller.selection.start;
+    var cursorWordStart = cursorPosition;
+    var cursorWordEnd = cursorPosition;
+    while (cursorWordStart > 0 &&
+        !whitespaceRegex.hasMatch(_controller.text[cursorWordStart - 1]))
+      cursorWordStart--;
+    while (cursorWordEnd < _controller.text.length &&
+        !whitespaceRegex.hasMatch(_controller.text[cursorWordStart + 1]))
+      cursorWordEnd++;
+    var cursorWord = _controller.text.substring(cursorWordStart, cursorWordEnd);
+
+    var fieldOptions = new Map<String, VoidCallback>();
+    for (var field in _template.fields) {
+      if (field.name.toLowerCase().indexOf(cursorWord.toLowerCase()) == -1)
+        continue;
+      fieldOptions[field.name] = () {
+        print(field.name);
+      };
+    }
   }
 
   /// Tracks and displays an overlay.
@@ -96,19 +127,6 @@ class QuickAddState extends State<QuickAddWidget> {
       overlay.remove();
     }
     _mountedOverlays.clear();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _textStyle = Style.getStyle(FontRole.Content, Style.accent);
-    _controller = TextEditingController();
-    _mountedOverlays = new List();
-    overlayBuildMap = new Map();
-    previousText = '';
-    widget.focusNode.addListener(() {
-      if (!widget.focusNode.hasFocus) _clearOverlays();
-    });
   }
 
   void buildFieldOverlay(String text, RegExp r, bool shouldAutocomplete) {}
@@ -192,6 +210,11 @@ class QuickAddState extends State<QuickAddWidget> {
     _insertOverlay(templateOverlay);
   }
 
+  void buildOverlay(
+      String fullText, int startIndex, Map<String, VoidCallback> options) {
+    //TODO: extract overlay-building code in buildTemplateOverlay to here, and utilize for field overlays.
+  }
+
   /// Builds a list of matching templates with onSelected functions.
   Map<String, VoidCallback> buildTemplateOptions(
       List<Template> partialMatches, RegExpMatch r, String text) {
@@ -240,6 +263,19 @@ class QuickAddState extends State<QuickAddWidget> {
     });
 
     return options;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _textStyle = Style.getStyle(FontRole.Content, Style.accent);
+    _controller = TextEditingController();
+    _mountedOverlays = new List();
+    overlayBuildMap = new Map();
+    previousText = '';
+    widget.focusNode.addListener(() {
+      if (!widget.focusNode.hasFocus) _clearOverlays();
+    });
   }
 
   @override
