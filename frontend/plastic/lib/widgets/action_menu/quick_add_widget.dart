@@ -44,24 +44,98 @@ class QuickAddState extends State<QuickAddWidget> {
   void _updateOverlays() {
     var quickAddFullText = _controller.text;
 
-    var textChange = getTextChangeDetails(previousText, quickAddFullText);
-    var shouldAutocomplete = textChange.type == TextChangeType.Added &&
-            textChange.difference == ' ' ||
-        textChange.difference == '\t';
+    // var textChange = getTextChangeDetails(previousText, quickAddFullText);
+    // var shouldAutocomplete = textChange.type == TextChangeType.Added &&
+    //         textChange.difference == ' ' ||
+    //     textChange.difference == '\t';
     _clearOverlays();
-    buildTemplateOverlay(
-      quickAddFullText,
-      RegExp(TEMPLATE_REGEX),
-      shouldAutocomplete,
-    );
+
+    _template = updateTemplate(quickAddFullText);
+    // buildTemplateOverlay(
+    //   quickAddFullText,
+    //   RegExp(TEMPLATE_REGEX),
+    //   shouldAutocomplete,
+    // );
 
     if (_template == null) return;
-    workingThing = buildWorkingThing(quickAddFullText);
 
-    //TODO: Pull up template as model, search for other field names, If partial, show partial matches as dropdown options
+    var cursorWord = _getCursorWord();
+
+    var partialMatchingFields = _template.getFieldsByPartial(cursorWord.match);
+
+    var options = Map<String, VoidCallback>();
+    partialMatchingFields.forEach((element) {
+      options[element.name] = () => print(element.name);
+    });
+
+    buildOverlay(quickAddFullText, cursorWord.start, options);
+
+    // workingThing = buildWorkingThing(quickAddFullText, shouldAutocomplete);
+
+    // // find if cursor is touching partial field match
+
+    // var whitespaceRegex = RegExp('\\s');
+    // var cursorPosition = _controller.selection.start;
+    // var cursorWordStart = cursorPosition;
+    // var cursorWordEnd = cursorPosition;
+    // while (cursorWordStart > 0 &&
+    //     !whitespaceRegex.hasMatch(_controller.text[cursorWordStart - 1]))
+    //   cursorWordStart--;
+    // while (cursorWordEnd < _controller.text.length &&
+    //     !whitespaceRegex.hasMatch(_controller.text[cursorWordStart + 1]))
+    //   cursorWordEnd++;
+    // var cursorWord = _controller.text.substring(cursorWordStart, cursorWordEnd);
+
+    // var fieldOptions = new Map<String, VoidCallback>();
+    // for (var field in _template.fields) {
+    //   if (field.name.toLowerCase().indexOf(cursorWord.toLowerCase()) == -1)
+    //     continue;
+    //   fieldOptions[field.name] = () {
+    //     print(field.name);
+    //   };
+    // }
+
+    // buildOverlay(
+    //     _controller.text, cursorWordStart, fieldOptions, shouldAutocomplete);
   }
 
-  Thing buildWorkingThing(String quickAddText) {
+  TextMatch _getCursorWord() {
+    var whitespaceRegex = RegExp('\\s');
+    var cursorPosition = _controller.selection.start;
+    var cursorWordStart = cursorPosition;
+    var cursorWordEnd = cursorPosition;
+    while (cursorWordStart > 0 &&
+        !whitespaceRegex.hasMatch(_controller.text[cursorWordStart - 1]))
+      cursorWordStart--;
+    while (cursorWordEnd < _controller.text.length &&
+        !whitespaceRegex.hasMatch(_controller.text[cursorWordStart + 1]))
+      cursorWordEnd++;
+    var cursorWord = _controller.text.substring(cursorWordStart, cursorWordEnd);
+
+    return TextMatch(
+      start: cursorWordStart,
+      end: cursorWordEnd,
+      match: cursorWord,
+    );
+  }
+
+  Template updateTemplate(String text) {
+    var r = RegExp(TEMPLATE_REGEX);
+    if (r.hasMatch(text)) {
+      var matches = r.allMatches(text);
+      // if we only have a single match, and it's a perfect match, that's our selected template.
+      if (matches.length == 1 &&
+          TemplateManager().getTemplate(matches.first.group(0)) != null)
+        return TemplateManager().getTemplate(matches.first.group(0));
+
+      buildTemplateOverlay(text, r);
+    }
+
+    // unless we had a perfect match, don't return a valid template.
+    return null;
+  }
+
+  Thing buildWorkingThing(String quickAddText, bool shouldAutocomplete) {
     workingThing = new Thing(templateId: _template.id);
 
     // find all completed template fields.
@@ -86,33 +160,12 @@ class QuickAddState extends State<QuickAddWidget> {
             fieldValue = fieldValue.substring(cleanupMatch.end);
           }
 
-          workingThing.fields[fieldIndex].value == fieldValue;
+          workingThing.fields[fieldIndex].value = fieldValue;
         }
       }
     }
 
-    // find if cursor is touching partial field match
-
-    var whitespaceRegex = RegExp('\\s');
-    var cursorPosition = _controller.selection.start;
-    var cursorWordStart = cursorPosition;
-    var cursorWordEnd = cursorPosition;
-    while (cursorWordStart > 0 &&
-        !whitespaceRegex.hasMatch(_controller.text[cursorWordStart - 1]))
-      cursorWordStart--;
-    while (cursorWordEnd < _controller.text.length &&
-        !whitespaceRegex.hasMatch(_controller.text[cursorWordStart + 1]))
-      cursorWordEnd++;
-    var cursorWord = _controller.text.substring(cursorWordStart, cursorWordEnd);
-
-    var fieldOptions = new Map<String, VoidCallback>();
-    for (var field in _template.fields) {
-      if (field.name.toLowerCase().indexOf(cursorWord.toLowerCase()) == -1)
-        continue;
-      fieldOptions[field.name] = () {
-        print(field.name);
-      };
-    }
+    return workingThing;
   }
 
   /// Tracks and displays an overlay.
@@ -129,38 +182,48 @@ class QuickAddState extends State<QuickAddWidget> {
     _mountedOverlays.clear();
   }
 
-  void buildFieldOverlay(String text, RegExp r, bool shouldAutocomplete) {}
-
   /// Builds the template overlay, if applicable.
-  void buildTemplateOverlay(String text, RegExp r, bool shouldAutocomplete) {
-    var match;
-    if (shouldAutocomplete)
-      match = r.firstMatch(previousText.toLowerCase());
-    else
-      match = r.firstMatch(text.toLowerCase());
-
-    if (match == null) return;
-
-    var before = text.substring(0, match.start);
-    var matchText = match.group(1);
+  void buildTemplateOverlay(String text, RegExp r) {
+    // var match;
+    // if (shouldAutocomplete)
+    //   match = r.firstMatch(previousText.toLowerCase());
+    // else
+    //   match = r.firstMatch(text.toLowerCase());
+    // if (match == null) return;
+    var match = r.firstMatch(text.toLowerCase());
+    // var before = text.substring(0, match.start);
+    // var matchText = match.group(1);
     // var after = text.substring(match.end);
 
-    _template = TemplateManager().getTemplate(matchText);
-    if (_template != null) return;
+    // _template = TemplateManager().getTemplate(matchText);
+    // if (_template != null) return;
 
     var partialTemplateMatches =
-        TemplateManager().getTemplateMatches(matchText);
+        TemplateManager().getTemplateMatches(match.group(1));
 
     var options = buildTemplateOptions(partialTemplateMatches, match, text);
-    if (shouldAutocomplete && partialTemplateMatches.length == 1) {
-      options[partialTemplateMatches.first.name]();
-      return;
-    }
+    // if (shouldAutocomplete && partialTemplateMatches.length == 1) {
+    //   options[partialTemplateMatches.first.name]();
+    //   return;
+    // }
+
+    buildOverlay(text, match.start, options);
+  }
+
+  /// Build and display an autocomplete overlay
+  void buildOverlay(
+      String fullText, int startIndex, Map<String, VoidCallback> options) {
+    // if user has spaced away from a single-match overlay, auto-select only match
+    // if (shouldAutocomplete && options.length == 1) {
+    //   options.values.first();
+    //   return;
+    // }
 
     // Calculate where to show the overlay
     var quickAddContentPainter = TextPainter(
       textDirection: TextDirection.ltr,
-      text: TextSpan(style: _textStyle, text: before),
+      text:
+          TextSpan(style: _textStyle, text: fullText.substring(0, startIndex)),
     );
 
     quickAddContentPainter.layout();
@@ -208,11 +271,6 @@ class QuickAddState extends State<QuickAddWidget> {
     );
 
     _insertOverlay(templateOverlay);
-  }
-
-  void buildOverlay(
-      String fullText, int startIndex, Map<String, VoidCallback> options) {
-    //TODO: extract overlay-building code in buildTemplateOverlay to here, and utilize for field overlays.
   }
 
   /// Builds a list of matching templates with onSelected functions.

@@ -46,6 +46,12 @@ class Template {
     data['__v'] = this.v;
     return data;
   }
+
+  List<TemplateField> getFieldsByPartial(String partial) => fields
+      .where(
+        (t) => t.name.toLowerCase().indexOf(partial.toLowerCase()) != -1,
+      )
+      .toList();
 }
 
 class TemplateField {

@@ -48,3 +48,11 @@ TextChangeDetails getTextChangeDetails(String a, String b) {
     }
   return TextChangeDetails(type: type, difference: difference);
 }
+
+class TextMatch {
+  final int start;
+  final int end;
+  final String match;
+
+  TextMatch({this.start, this.end, this.match});
+}
