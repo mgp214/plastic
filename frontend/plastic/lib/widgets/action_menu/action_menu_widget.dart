@@ -4,9 +4,10 @@ import 'package:plastic/widgets/action_menu/action_widget.dart';
 import 'package:plastic/widgets/action_menu/quick_add_widget.dart';
 
 class ActionMenuWidget extends StatefulWidget {
+  final VoidCallback onAdd;
   final List<ActionWidget> children;
 
-  ActionMenuWidget({@required this.children});
+  ActionMenuWidget({@required this.onAdd, @required this.children});
 
   @override
   State<StatefulWidget> createState() => ActionMenuState();
@@ -16,7 +17,7 @@ class ActionMenuState extends State<ActionMenuWidget>
     with TickerProviderStateMixin {
   List<Key> actionKeys;
   bool _isExpanded = false;
-  bool _isQuickAddOpen = false;
+  // bool _isQuickAddOpen = false;
   AnimationController _menuController;
   AnimationController _quickAddController;
   Animation<Color> _colorAnimation;
@@ -43,37 +44,42 @@ class ActionMenuState extends State<ActionMenuWidget>
     }
   }
 
-  void toggleQuickAdd(BuildContext context) {
-    // if the action menu is open, close it first, then await further interaction.
+  // void toggleQuickAdd(BuildContext context) {
+  //   // if the action menu is open, close it first, then await further interaction.
+  //   if (_isExpanded) {
+  //     toggleMenu(context);
+  //     return;
+  //   }
+  //   setState(() {
+  //     _isQuickAddOpen = !_isQuickAddOpen;
+  //   });
+
+  //   if (_isQuickAddOpen) {
+  //     _menuController.forward();
+  //     _quickAddController.forward();
+  //     _quickAddFocus.requestFocus();
+  //   } else {
+  //     _menuController.reverse();
+  //     _quickAddController.reverse();
+  //     FocusScope.of(context).unfocus();
+  //   }
+  // }
+
+  void onPressed(BuildContext context) {
     if (_isExpanded) {
       toggleMenu(context);
       return;
     }
-    setState(() {
-      _isQuickAddOpen = !_isQuickAddOpen;
-    });
-
-    if (_isQuickAddOpen) {
-      _menuController.forward();
-      _quickAddController.forward();
-      _quickAddFocus.requestFocus();
-    } else {
-      _menuController.reverse();
-      _quickAddController.reverse();
-      FocusScope.of(context).unfocus();
-    }
-  }
-
-  void onPressed(BuildContext context) {
-    toggleQuickAdd(context);
+    widget.onAdd();
+    // toggleQuickAdd(context);
   }
 
   void onLongPressed(BuildContext context) {
     // if quick add is open, close it first, then await further interaction
-    if (_isQuickAddOpen) {
-      toggleQuickAdd(context);
-      return;
-    }
+    // if (_isQuickAddOpen) {
+    //   toggleQuickAdd(context);
+    //   return;
+    // }
     toggleMenu(context);
   }
 
@@ -81,7 +87,7 @@ class ActionMenuState extends State<ActionMenuWidget>
   void initState() {
     super.initState();
     _isExpanded = false;
-    _isQuickAddOpen = false;
+    // _isQuickAddOpen = false;
     _menuController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 200),
@@ -139,21 +145,21 @@ class ActionMenuState extends State<ActionMenuWidget>
       ),
     );
 
-    Widget quickAdd = Positioned(
-      bottom: MediaQuery.of(context).viewInsets.bottom + 10,
-      left: 5,
-      child: SlideTransition(
-        position: _quickAddAnimation,
-        child: QuickAddWidget(
-          focusNode: _quickAddFocus,
-        ),
-      ),
-    );
+    // Widget quickAdd = Positioned(
+    //   bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+    //   left: 5,
+    //   child: SlideTransition(
+    //     position: _quickAddAnimation,
+    //     child: QuickAddWidget(
+    //       focusNode: _quickAddFocus,
+    //     ),
+    //   ),
+    // );
 
     List<Widget> actions = List();
     actions.addAll(widget.children);
     actions.add(main);
-    actions.add(quickAdd);
+    // actions.add(widget.add);
     actionKeys = widget.children.map((child) => child.key).toList();
 
     return Align(

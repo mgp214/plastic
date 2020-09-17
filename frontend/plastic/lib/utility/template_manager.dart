@@ -25,12 +25,21 @@ class TemplateManager {
     _templates..addAll(await BackendService.getTemplatesByUser(token));
   }
 
-  Template getTemplate(String fullName) {
+  Template getTemplateByName(String fullName) {
     return _templates.firstWhere(
       (t) => t.name.toLowerCase() == fullName.toLowerCase(),
       orElse: () => null,
     );
   }
+
+  Template getTemplateById(String templateId) {
+    return _templates.firstWhere(
+      (t) => t.id == templateId,
+      orElse: () => null,
+    );
+  }
+
+  List<Template> getAllTemplates() => _templates.toList();
 
   List<Template> getTemplateMatches(String partial) => _templates
       .where(

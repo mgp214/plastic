@@ -1,3 +1,5 @@
+import 'package:plastic/utility/template_manager.dart';
+
 class Thing {
   List<ThingField> fields;
   String id;
@@ -13,7 +15,17 @@ class Thing {
     this.name,
     this.fields,
     this.v,
-  });
+  }) {
+    if (fields == null) {
+      fields = List<ThingField>();
+      TemplateManager().getTemplateById(templateId).fields.forEach(
+        (templateField) {
+          fields.add(ThingField(
+              name: templateField.name, value: templateField.defaultValue));
+        },
+      );
+    }
+  }
 
   Thing.fromJson(Map<String, dynamic> json) {
     if (json['fields'] != null) {

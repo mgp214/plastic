@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/utility/style.dart';
+import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/log_in_widget.dart';
 import 'package:plastic/widgets/settings_widget.dart';
+import 'package:plastic/widgets/template_picker_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'action_menu/action_menu_widget.dart';
 import 'action_menu/action_widget.dart';
@@ -91,6 +93,11 @@ class HomeState extends State<HomeWidget> {
               ],
             ),
             ActionMenuWidget(
+              onAdd: () => _goToThenReload(
+                TemplatePickerWidget(
+                  templates: TemplateManager().getAllTemplates(),
+                ),
+              ),
               children: <ActionWidget>[
                 ActionWidget(
                   key: GlobalKey<ActionState>(),

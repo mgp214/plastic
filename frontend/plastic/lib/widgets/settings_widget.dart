@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/utility/style.dart';
+import 'package:plastic/widgets/border_button.dart';
 
 class SettingsWidget extends StatefulWidget {
   final String token;
@@ -58,65 +59,15 @@ class SettingsState extends State<SettingsWidget> {
                 thickness: 1.5,
                 height: 8,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                      child: OutlineButton(
-                        borderSide: BorderSide(
-                            color: Style.primary,
-                            width: 2,
-                            style: BorderStyle.solid),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Style.borderRadius),
-                        ),
-                        padding: EdgeInsets.all(15),
-                        child: Text(
-                          "log out on this device",
-                          style: Style.getStyle(
-                            FontRole.Display3,
-                            Style.primary,
-                          ),
-                        ),
-                        onPressed: logout,
-                        color: Style.accent,
-                      ),
-                    ),
-                  ],
-                ),
+              BorderButton(
+                color: Style.primary,
+                content: "log out on this device",
+                onPressed: logout,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                      child: OutlineButton(
-                        borderSide: BorderSide(
-                            color: Style.error,
-                            width: 2,
-                            style: BorderStyle.solid),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Style.borderRadius),
-                        ),
-                        padding: EdgeInsets.all(15),
-                        child: Text(
-                          "log out on ALL devices",
-                          style: Style.getStyle(
-                            FontRole.Display3,
-                            Style.error,
-                          ),
-                        ),
-                        onPressed: logoutAll,
-                        color: Style.error,
-                      ),
-                    ),
-                  ],
-                ),
+              BorderButton(
+                color: Style.error,
+                content: "log out on ALL devices",
+                onPressed: logoutAll,
               ),
             ],
           )),

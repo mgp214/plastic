@@ -125,8 +125,8 @@ class QuickAddState extends State<QuickAddWidget> {
       var matches = r.allMatches(text);
       // if we only have a single match, and it's a perfect match, that's our selected template.
       if (matches.length == 1 &&
-          TemplateManager().getTemplate(matches.first.group(0)) != null)
-        return TemplateManager().getTemplate(matches.first.group(0));
+          TemplateManager().getTemplateByName(matches.first.group(0)) != null)
+        return TemplateManager().getTemplateByName(matches.first.group(0));
 
       buildTemplateOverlay(text, r);
     }
