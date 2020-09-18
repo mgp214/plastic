@@ -1,5 +1,7 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
@@ -27,6 +29,9 @@ class EditThingState extends State<EditThingWidget> {
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
+          onChanged: (value) => widget.thing.fields
+              .singleWhere((f) => f.name == field.name)
+              .value = value,
         );
         break;
       case FieldType.INT:
@@ -36,6 +41,9 @@ class EditThingState extends State<EditThingWidget> {
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
+          onChanged: (value) => widget.thing.fields
+              .singleWhere((f) => f.name == field.name)
+              .value = int.parse(value),
           inputFormatters: [
             TextInputFormatter.withFunction((oldValue, newValue) =>
                 int.tryParse(newValue.text) == null ? oldValue : newValue)
@@ -49,6 +57,9 @@ class EditThingState extends State<EditThingWidget> {
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
+          onChanged: (value) => widget.thing.fields
+              .singleWhere((f) => f.name == field.name)
+              .value = double.parse(value),
           inputFormatters: [
             TextInputFormatter.withFunction((oldValue, newValue) =>
                 double.tryParse(newValue.text) == null ? oldValue : newValue)
@@ -62,6 +73,7 @@ class EditThingState extends State<EditThingWidget> {
         // TODO: Handle this case.
         break;
     }
+    return Text("couldn't figure out what type of field this is.");
   }
 
   List<Widget> _getChildren(context) {
@@ -70,7 +82,30 @@ class EditThingState extends State<EditThingWidget> {
     children.add(
       BorderButton(
         color: Style.primary,
-        onPressed: () => null,
+        onPressed: () =>
+            BackendService.saveThing(widget.thing).then((response) {
+          if (response.statusCode == 201) {
+            Navigator.pop(context);
+            Navigator.pop(context);
+            String message;
+            if (widget.thing.id == null) {
+              message = 'your new ${widget.template.name} has been created.';
+            } else {
+              message = 'your ${widget.template.name} has been updated.';
+            }
+            Flushbar(
+              title: 'saved',
+              message: message,
+              duration: Duration(seconds: 2),
+            )..show(context);
+          } else {
+            Flushbar(
+              title: 'oops!',
+              message: response.reasonPhrase,
+              duration: Duration(seconds: 2),
+            )..show(context);
+          }
+        }),
         content: "Done",
       ),
     );

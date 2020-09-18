@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/action_menu/action_widget.dart';
-import 'package:plastic/widgets/action_menu/quick_add_widget.dart';
 
 class ActionMenuWidget extends StatefulWidget {
   final VoidCallback onAdd;
@@ -19,11 +18,11 @@ class ActionMenuState extends State<ActionMenuWidget>
   bool _isExpanded = false;
   // bool _isQuickAddOpen = false;
   AnimationController _menuController;
-  AnimationController _quickAddController;
+  // AnimationController _quickAddController;
   Animation<Color> _colorAnimation;
   Animation<double> _rotationAnimation;
-  Animation<Offset> _quickAddAnimation;
-  FocusNode _quickAddFocus;
+  // Animation<Offset> _quickAddAnimation;
+  // FocusNode _quickAddFocus;
 
   void toggleMenu(BuildContext context) {
     _isExpanded = !_isExpanded;
@@ -92,20 +91,20 @@ class ActionMenuState extends State<ActionMenuWidget>
       vsync: this,
       duration: Duration(milliseconds: 200),
     );
-    _quickAddController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 200),
-    );
+    // _quickAddController = AnimationController(
+    //   vsync: this,
+    //   duration: Duration(milliseconds: 200),
+    // );
     _rotationAnimation = Tween(begin: 0.0, end: 3 / 8).animate(_menuController);
-    _quickAddAnimation = Tween(begin: Offset(0, 1.5), end: Offset.zero).animate(
-      CurvedAnimation(
-        curve: Curves.easeOut,
-        parent: _quickAddController,
-      ),
-    );
+    // _quickAddAnimation = Tween(begin: Offset(0, 1.5), end: Offset.zero).animate(
+    //   CurvedAnimation(
+    //     curve: Curves.easeOut,
+    //     parent: _quickAddController,
+    //   ),
+    // );
     _colorAnimation = ColorTween(begin: Style.primary, end: Style.delete)
         .animate(_menuController);
-    _quickAddFocus = FocusNode();
+    // _quickAddFocus = FocusNode();
   }
 
   @override

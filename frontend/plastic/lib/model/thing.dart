@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:plastic/utility/template_manager.dart';
 
 class Thing {
@@ -27,7 +29,8 @@ class Thing {
     }
   }
 
-  Thing.fromJson(Map<String, dynamic> json) {
+  Thing.fromJson(String jsonString) {
+    Map<String, dynamic> json = jsonDecode(jsonString);
     if (json['fields'] != null) {
       fields = new List<ThingField>();
       json['fields'].forEach((v) {
@@ -40,7 +43,7 @@ class Thing {
     v = json['__v'];
   }
 
-  Map<String, dynamic> toJson() {
+  String toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.fields != null) {
       data['fields'] = this.fields.map((v) => v.toJson()).toList();
@@ -48,8 +51,9 @@ class Thing {
     data['_id'] = this.id;
     data['userId'] = this.userId;
     data['name'] = this.name;
+    data['templateId'] = this.templateId;
     data['__v'] = this.v;
-    return data;
+    return jsonEncode(data);
   }
 }
 
@@ -67,7 +71,7 @@ class ThingField {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = name;
-    data['value'] = value.toString();
+    data['value'] = value;
 
     return data;
   }

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:plastic/model/api/log_in_response.dart';
 import 'package:plastic/model/template.dart';
+import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,7 +19,10 @@ class BackendService {
     "logoutAll": _root + "users/me/logoutall",
     "templatesByUser": _root + "templates/all",
     "templateById": _root + "templates/",
+    "saveThing": _root + "things/create",
   };
+
+  static String token;
 
   /// Attempts to log in with the given credentials. Returns a token if successful, otherwise throws an exception.
   static Future<LogInResponse> login(String email, String password) async {
@@ -146,5 +150,25 @@ class BackendService {
         .decode(response.body)
         .forEach((v) => templates.add(new Template.fromJson(v)));
     return templates;
+  }
+
+  static Future<http.Response> saveThing(Thing thing) async {
+    if (token == null) {
+      try {
+        token = (await SharedPreferences.getInstance()).getString("token");
+      } on Exception {
+        token = null;
+        throw new Exception("Couldn't get logged in user. Please log in.");
+      }
+    }
+    final response = await http.post(
+      routes['saveThing'],
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+      body: thing.toJson(),
+    );
+    return response;
   }
 }
