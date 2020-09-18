@@ -8,26 +8,58 @@ import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum Routes {
+  register,
+  login,
+  checkToken,
+  logout,
+  logoutAll,
+  templatesByUser,
+  templateById,
+  saveThing
+}
+
 class BackendService {
   // static final String _root = 'http://66.175.219.233:8080/';
   static final String _root = 'http://10.0.2.2:8080/';
-  static final routes = <String, String>{
-    "register": _root + 'users',
-    "login": _root + "users/login",
-    "checkToken": _root + "users/checktoken",
-    "logout": _root + "users/me/logout",
-    "logoutAll": _root + "users/me/logoutall",
-    "templatesByUser": _root + "templates/all",
-    "templateById": _root + "templates/",
-    "saveThing": _root + "things/create",
-  };
+
+  static String getRoute(Routes route) {
+    String value;
+    switch (route) {
+      case Routes.register:
+        value = _root + 'users';
+        break;
+      case Routes.login:
+        value = _root + "users/login";
+        break;
+      case Routes.checkToken:
+        value = _root + "users/checktoken";
+        break;
+      case Routes.logout:
+        value = _root + "users/me/logout";
+        break;
+      case Routes.logoutAll:
+        value = _root + "users/me/logoutall";
+        break;
+      case Routes.templatesByUser:
+        value = _root + "templates/all";
+        break;
+      case Routes.templateById:
+        value = _root + "templates/";
+        break;
+      case Routes.saveThing:
+        value = _root + "things/create";
+        break;
+    }
+    return value;
+  }
 
   static String token;
 
   /// Attempts to log in with the given credentials. Returns a token if successful, otherwise throws an exception.
   static Future<LogInResponse> login(String email, String password) async {
     final response = await http.post(
-      routes["login"],
+      getRoute(Routes.login),
       headers: {HttpHeaders.contentTypeHeader: 'application/json'},
       body: json.encode({
         "email": email.trim(),
@@ -46,7 +78,7 @@ class BackendService {
   static Future<LogInResponse> register(
       String email, String password, String name) async {
     final response = await http.post(
-      routes["register"],
+      getRoute(Routes.register),
       headers: {HttpHeaders.contentTypeHeader: 'application/json'},
       body: json.encode({
         "email": email.trim(),
@@ -65,7 +97,7 @@ class BackendService {
     if (token == null) return false;
 
     final response = await http.post(
-      routes["checkToken"],
+      getRoute(Routes.checkToken),
       headers: {HttpHeaders.contentTypeHeader: 'application/json'},
       body: json.encode({"token": token}),
     );
@@ -83,7 +115,7 @@ class BackendService {
   static Future<Null> logout(String token) async {
     await clearPrefs();
     final response = await http.post(
-      routes["logout"],
+      getRoute(Routes.logout),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -98,7 +130,7 @@ class BackendService {
   static Future<Null> logoutAll(String token) async {
     await clearPrefs();
     final response = await http.post(
-      routes["logoutAll"],
+      getRoute(Routes.logoutAll),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -121,7 +153,7 @@ class BackendService {
   static Future<Template> getTemplateById(
       String token, String templateId) async {
     final response = await http.get(
-      routes['templateById'] + templateId,
+      getRoute(Routes.templateById) + templateId,
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -136,7 +168,7 @@ class BackendService {
   /// Get all of a User's templates.
   static Future<List<Template>> getTemplatesByUser(String token) async {
     final response = await http.get(
-      routes['templatesByUser'],
+      getRoute(Routes.templatesByUser),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -162,7 +194,7 @@ class BackendService {
       }
     }
     final response = await http.post(
-      routes['saveThing'],
+      getRoute(Routes.saveThing),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token',
