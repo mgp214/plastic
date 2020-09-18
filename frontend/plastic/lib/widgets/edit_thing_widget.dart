@@ -41,12 +41,18 @@ class EditThingState extends State<EditThingWidget> {
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
+          keyboardType:
+              TextInputType.numberWithOptions(signed: true, decimal: false),
           onChanged: (value) => widget.thing.fields
               .singleWhere((f) => f.name == field.name)
-              .value = int.parse(value),
+              .value = int.parse(value, onError: (value) => 0),
           inputFormatters: [
-            TextInputFormatter.withFunction((oldValue, newValue) =>
-                int.tryParse(newValue.text) == null ? oldValue : newValue)
+            TextInputFormatter.withFunction((oldValue, newValue) {
+              if (newValue.text.length == 1 && newValue.text == '-')
+                return newValue;
+              if (newValue.text.length < oldValue.text.length) return newValue;
+              return int.tryParse(newValue.text) == null ? oldValue : newValue;
+            }),
           ],
         );
         break;
@@ -57,12 +63,34 @@ class EditThingState extends State<EditThingWidget> {
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
+          keyboardType:
+              TextInputType.numberWithOptions(signed: true, decimal: true),
           onChanged: (value) => widget.thing.fields
               .singleWhere((f) => f.name == field.name)
-              .value = double.parse(value),
+              .value = double.parse(value, (value) => 0),
           inputFormatters: [
-            TextInputFormatter.withFunction((oldValue, newValue) =>
-                double.tryParse(newValue.text) == null ? oldValue : newValue)
+            TextInputFormatter.withFunction((oldValue, newValue) {
+              if (newValue.text.length == 1 && newValue.text == '-')
+                return newValue;
+              if (newValue.text.length == 1 && newValue.text == '.')
+                return TextEditingValue(
+                  text: "0.",
+                  selection: TextSelection.fromPosition(
+                    TextPosition(offset: 2),
+                  ),
+                );
+              if (newValue.text.length == 2 && newValue.text == '-.')
+                return TextEditingValue(
+                  text: "-0.",
+                  selection: TextSelection.fromPosition(
+                    TextPosition(offset: 3),
+                  ),
+                );
+              if (newValue.text.length < oldValue.text.length) return newValue;
+              return double.tryParse(newValue.text) == null
+                  ? oldValue
+                  : newValue;
+            }),
           ],
         );
         break;
