@@ -15,13 +15,20 @@ class EditThingWidget extends StatefulWidget {
   EditThingWidget({this.template, this.thing}) : super();
 
   @override
-  State<StatefulWidget> createState() => EditThingState();
+  State<StatefulWidget> createState() => EditThingState(thing);
 }
 
 class EditThingState extends State<EditThingWidget> {
+  Thing _thing;
+
+  EditThingState(Thing thing) {
+    _thing = thing;
+  }
+
   Widget _getFieldWidget(ThingField field) {
-    switch (
-        widget.template.fields.firstWhere((f) => f.name == field.name).type) {
+    var template =
+        widget.template.fields.firstWhere((f) => f.name == field.name);
+    switch (template.type) {
       case FieldType.STRING:
         return TextField(
           decoration: InputDecoration(
@@ -29,9 +36,10 @@ class EditThingState extends State<EditThingWidget> {
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
-          onChanged: (value) => widget.thing.fields
-              .singleWhere((f) => f.name == field.name)
-              .value = value,
+          controller: TextEditingController(text: field.value),
+          onChanged: (value) => setState(() {
+            field.value = value;
+          }),
         );
         break;
       case FieldType.INT:
@@ -41,11 +49,12 @@ class EditThingState extends State<EditThingWidget> {
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
+          controller: TextEditingController(text: field.value),
           keyboardType:
               TextInputType.numberWithOptions(signed: true, decimal: false),
-          onChanged: (value) => widget.thing.fields
-              .singleWhere((f) => f.name == field.name)
-              .value = int.parse(value, onError: (value) => 0),
+          onChanged: (value) => setState(() {
+            field.value = int.parse(value, onError: (value) => 0);
+          }),
           inputFormatters: [
             TextInputFormatter.withFunction((oldValue, newValue) {
               if (newValue.text.length == 1 && newValue.text == '-')
@@ -63,11 +72,12 @@ class EditThingState extends State<EditThingWidget> {
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
+          controller: TextEditingController(text: field.value),
           keyboardType:
               TextInputType.numberWithOptions(signed: true, decimal: true),
-          onChanged: (value) => widget.thing.fields
-              .singleWhere((f) => f.name == field.name)
-              .value = double.parse(value, (value) => 0),
+          onChanged: (value) => setState(() {
+            field.value = double.parse(value, (value) => 0);
+          }),
           inputFormatters: [
             TextInputFormatter.withFunction((oldValue, newValue) {
               if (newValue.text.length == 1 && newValue.text == '-')
@@ -98,7 +108,17 @@ class EditThingState extends State<EditThingWidget> {
         // TODO: Handle this case.
         break;
       case FieldType.BOOL:
-        // TODO: Handle this case.
+        return CheckboxListTile(
+          title: Text(
+            field.name,
+            style: Style.getStyle(FontRole.Content, Style.accent),
+          ),
+          checkColor: Style.primary,
+          onChanged: (value) => setState(() {
+            field.value = value;
+          }),
+          value: field.value ?? false,
+        );
         break;
     }
     return Text("couldn't figure out what type of field this is.");
@@ -106,17 +126,16 @@ class EditThingState extends State<EditThingWidget> {
 
   List<Widget> _getChildren(context) {
     List<Widget> children =
-        widget.thing.fields.map((field) => _getFieldWidget(field)).toList();
+        _thing.fields.map((field) => _getFieldWidget(field)).toList();
     children.add(
       BorderButton(
         color: Style.primary,
-        onPressed: () =>
-            BackendService.saveThing(widget.thing).then((response) {
+        onPressed: () => BackendService.saveThing(_thing).then((response) {
           if (response.statusCode == 201) {
             Navigator.pop(context);
             Navigator.pop(context);
             String message;
-            if (widget.thing.id == null) {
+            if (_thing.id == null) {
               message = 'your new ${widget.template.name} has been created.';
             } else {
               message = 'your ${widget.template.name} has been updated.';
