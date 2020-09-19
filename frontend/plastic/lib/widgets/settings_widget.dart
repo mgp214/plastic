@@ -5,10 +5,9 @@ import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/border_button.dart';
 
 class SettingsWidget extends StatefulWidget {
-  final String token;
   final User user;
 
-  SettingsWidget({@required this.token, @required this.user});
+  SettingsWidget({@required this.user});
 
   @override
   State<StatefulWidget> createState() => SettingsState();
@@ -16,12 +15,12 @@ class SettingsWidget extends StatefulWidget {
 
 class SettingsState extends State<SettingsWidget> {
   void logout() {
-    BackendService.logout(widget.token);
+    BackendService.logout();
     Navigator.pop(context);
   }
 
   void logoutAll() {
-    BackendService.logoutAll(widget.token);
+    BackendService.logoutAll();
     Navigator.pop(context);
   }
 

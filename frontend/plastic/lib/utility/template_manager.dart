@@ -22,7 +22,7 @@ class TemplateManager {
         throw new Exception("Couldn't get logged in user. Please log in.");
       }
     }
-    _templates..addAll(await BackendService.getTemplatesByUser(token));
+    _templates..addAll(await BackendService.getTemplatesByUser());
   }
 
   Template getTemplateByName(String fullName) {

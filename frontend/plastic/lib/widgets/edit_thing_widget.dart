@@ -5,6 +5,7 @@ import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
+import 'package:plastic/utility/template_manager.dart';
 
 import 'border_button.dart';
 
@@ -25,10 +26,8 @@ class EditThingState extends State<EditThingWidget> {
     _thing = thing;
   }
 
-  Widget _getFieldWidget(ThingField field) {
-    var template =
-        widget.template.fields.firstWhere((f) => f.name == field.name);
-    switch (template.type) {
+  Widget _getFieldWidget(ThingField field, FieldType type) {
+    switch (type) {
       case FieldType.STRING:
         return TextField(
           decoration: InputDecoration(
@@ -124,10 +123,21 @@ class EditThingState extends State<EditThingWidget> {
     return Text("couldn't figure out what type of field this is.");
   }
 
-  List<Widget> _getChildren(context) {
-    List<Widget> children =
-        _thing.fields.map((field) => _getFieldWidget(field)).toList();
-    children.add(
+  List<Widget> _getFields(context) {
+    var fieldWidgets = new List<Widget>();
+    var template = TemplateManager().getTemplateById(widget.thing.templateId);
+
+    for (var templateField in template.fields) {
+      var thingField = widget.thing.fields.singleWhere(
+        (f) => f.name == templateField.name,
+        orElse: () => null,
+      );
+
+      if (thingField == null) continue;
+      fieldWidgets.add(_getFieldWidget(thingField, templateField.type));
+    }
+
+    fieldWidgets.add(
       BorderButton(
         color: Style.primary,
         onPressed: () => BackendService.saveThing(_thing).then((response) {
@@ -156,20 +166,20 @@ class EditThingState extends State<EditThingWidget> {
         content: "Done",
       ),
     );
-    children.add(
+    fieldWidgets.add(
       BorderButton(
         color: Style.error,
         onPressed: () => Navigator.pop(context),
         content: "Cancel",
       ),
     );
-    return children;
+    return fieldWidgets;
   }
 
   @override
   Widget build(BuildContext context) => Material(
       color: Style.background,
       child: ListView(
-        children: _getChildren(context),
+        children: _getFields(context),
       ));
 }

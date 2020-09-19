@@ -29,6 +29,17 @@ class Thing {
     }
   }
 
+  ThingField getMainField() {
+    var templateMainField = TemplateManager()
+        .getTemplateById(templateId)
+        .fields
+        .singleWhere((element) => element.main);
+    return fields.singleWhere(
+      (element) => element.name == templateMainField.name,
+      orElse: () => fields.first,
+    );
+  }
+
   Thing.fromJson(String jsonString) {
     Map<String, dynamic> json = jsonDecode(jsonString);
     if (json['fields'] != null) {
@@ -39,8 +50,23 @@ class Thing {
     }
     id = json['_id'];
     userId = json['userId'];
+    templateId = json['templateId'];
     name = json['name'];
     v = json['__v'];
+  }
+
+  Thing.fromJsonMap(Map<String, dynamic> jsonMap) {
+    if (jsonMap['fields'] != null) {
+      fields = new List<ThingField>();
+      jsonMap['fields'].forEach((v) {
+        fields.add(new ThingField.fromJson(v));
+      });
+    }
+    id = jsonMap['_id'];
+    userId = jsonMap['userId'];
+    templateId = jsonMap['templateId'];
+    name = jsonMap['name'];
+    v = jsonMap['__v'];
   }
 
   String toJson() {

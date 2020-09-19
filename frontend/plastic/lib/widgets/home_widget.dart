@@ -6,6 +6,7 @@ import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/log_in_widget.dart';
 import 'package:plastic/widgets/settings_widget.dart';
 import 'package:plastic/widgets/template_picker_widget.dart';
+import 'package:plastic/widgets/view_all_things_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'action_menu/action_menu_widget.dart';
 import 'action_menu/action_widget.dart';
@@ -73,25 +74,13 @@ class HomeState extends State<HomeWidget> {
           alignment: Alignment.center,
           child: CircularProgressIndicator());
     return Material(
+      color: Style.background,
       child: Container(
-        color: Style.background,
         alignment: Alignment.center,
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "Hello ${user.name},",
-                  style: Style.getStyle(FontRole.Display3, Style.primary),
-                ),
-                Text(
-                  "This is where you'll find your stuff.",
-                  style: Style.getStyle(FontRole.Display3, Style.primary),
-                )
-              ],
-            ),
+            ViewAllThingsWidget(),
             ActionMenuWidget(
               onAdd: () => _goToThenReload(
                 TemplatePickerWidget(
@@ -104,7 +93,6 @@ class HomeState extends State<HomeWidget> {
                   color: Style.accent,
                   icon: Icons.settings,
                   onPressed: () => _goToThenReload(SettingsWidget(
-                    token: token,
                     user: user,
                   )),
                 ),

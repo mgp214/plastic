@@ -16,7 +16,8 @@ enum Routes {
   logoutAll,
   templatesByUser,
   templateById,
-  saveThing
+  saveThing,
+  thingsByUser,
 }
 
 class BackendService {
@@ -49,6 +50,9 @@ class BackendService {
         break;
       case Routes.saveThing:
         value = _root + "things/create";
+        break;
+      case Routes.thingsByUser:
+        value = _root + "things/all";
         break;
     }
     return value;
@@ -112,7 +116,8 @@ class BackendService {
   }
 
   /// Log out just this token
-  static Future<Null> logout(String token) async {
+  static Future<Null> logout() async {
+    await _fetchToken();
     await clearPrefs();
     final response = await http.post(
       getRoute(Routes.logout),
@@ -127,7 +132,8 @@ class BackendService {
   }
 
   /// Log out all tokens
-  static Future<Null> logoutAll(String token) async {
+  static Future<Null> logoutAll() async {
+    await _fetchToken();
     await clearPrefs();
     final response = await http.post(
       getRoute(Routes.logoutAll),
@@ -150,8 +156,8 @@ class BackendService {
   }
 
   /// Get a single template by id.
-  static Future<Template> getTemplateById(
-      String token, String templateId) async {
+  static Future<Template> getTemplateById(String templateId) async {
+    await _fetchToken();
     final response = await http.get(
       getRoute(Routes.templateById) + templateId,
       headers: {
@@ -166,7 +172,8 @@ class BackendService {
   }
 
   /// Get all of a User's templates.
-  static Future<List<Template>> getTemplatesByUser(String token) async {
+  static Future<List<Template>> getTemplatesByUser() async {
+    await _fetchToken();
     final response = await http.get(
       getRoute(Routes.templatesByUser),
       headers: {
@@ -184,15 +191,28 @@ class BackendService {
     return templates;
   }
 
-  static Future<http.Response> saveThing(Thing thing) async {
-    if (token == null) {
-      try {
-        token = (await SharedPreferences.getInstance()).getString("token");
-      } on Exception {
-        token = null;
-        throw new Exception("Couldn't get logged in user. Please log in.");
-      }
+  /// Get all of a User's things.
+  static Future<List<Thing>> getThingsByUser() async {
+    await _fetchToken();
+    final response = await http.get(
+      getRoute(Routes.thingsByUser),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw new HttpException(json.decode(response.body)['error']);
     }
+    var things = new List<Thing>();
+    json
+        .decode(response.body)
+        .forEach((v) => things.add(new Thing.fromJsonMap(v)));
+    return things;
+  }
+
+  static Future<http.Response> saveThing(Thing thing) async {
+    await _fetchToken();
     final response = await http.post(
       getRoute(Routes.saveThing),
       headers: {
@@ -202,5 +222,16 @@ class BackendService {
       body: thing.toJson(),
     );
     return response;
+  }
+
+  static Future<void> _fetchToken() async {
+    if (token == null) {
+      try {
+        token = (await SharedPreferences.getInstance()).getString("token");
+      } on Exception {
+        token = null;
+        throw new Exception("Couldn't get logged in user. Please log in.");
+      }
+    }
   }
 }
