@@ -15,7 +15,10 @@ class PlasticApp extends StatelessWidget {
         primaryColor: Style.primary,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeWidget(),
+      routes: {
+        'home': (context) => HomeWidget(),
+      },
+      initialRoute: 'home',
     );
   }
 }

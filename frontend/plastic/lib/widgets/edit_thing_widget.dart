@@ -21,34 +21,42 @@ class EditThingWidget extends StatefulWidget {
 
 class EditThingState extends State<EditThingWidget> {
   Thing _thing;
+  Map<String, TextEditingController> controllers;
 
   EditThingState(Thing thing) {
     _thing = thing;
+    controllers = Map();
   }
 
   Widget _getFieldWidget(ThingField field, FieldType type) {
     switch (type) {
       case FieldType.STRING:
+        if (controllers[field.name] == null) {
+          controllers[field.name] = TextEditingController(text: field.value);
+        }
         return TextField(
           decoration: InputDecoration(
             labelText: field.name,
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
-          controller: TextEditingController(text: field.value),
+          controller: controllers[field.name],
           onChanged: (value) => setState(() {
             field.value = value;
           }),
         );
         break;
       case FieldType.INT:
+        if (controllers[field.name] == null) {
+          controllers[field.name] = TextEditingController(text: field.value);
+        }
         return TextField(
           decoration: InputDecoration(
             labelText: field.name,
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
-          controller: TextEditingController(text: field.value),
+          controller: controllers[field.name],
           keyboardType:
               TextInputType.numberWithOptions(signed: true, decimal: false),
           onChanged: (value) => setState(() {
@@ -65,13 +73,16 @@ class EditThingState extends State<EditThingWidget> {
         );
         break;
       case FieldType.DOUBLE:
+        if (controllers[field.name] == null) {
+          controllers[field.name] = TextEditingController(text: field.value);
+        }
         return TextField(
           decoration: InputDecoration(
             labelText: field.name,
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
-          controller: TextEditingController(text: field.value),
+          controller: controllers[field.name],
           keyboardType:
               TextInputType.numberWithOptions(signed: true, decimal: true),
           onChanged: (value) => setState(() {
@@ -137,15 +148,19 @@ class EditThingState extends State<EditThingWidget> {
       fieldWidgets.add(_getFieldWidget(thingField, templateField.type));
     }
 
+    var isExistingThing = widget.thing.id != null;
+
+    var doneString = isExistingThing ? "Update" : "Create";
+    var cancelString = isExistingThing ? "Back" : "Discard";
+
     fieldWidgets.add(
       BorderButton(
         color: Style.primary,
         onPressed: () => BackendService.saveThing(_thing).then((response) {
           if (response.statusCode == 201) {
-            Navigator.pop(context);
-            Navigator.pop(context);
+            Navigator.popUntil(context, ModalRoute.withName('home'));
             String message;
-            if (_thing.id == null) {
+            if (!isExistingThing) {
               message = 'your new ${widget.template.name} has been created.';
             } else {
               message = 'your ${widget.template.name} has been updated.';
@@ -163,14 +178,40 @@ class EditThingState extends State<EditThingWidget> {
             )..show(context);
           }
         }),
-        content: "Done",
+        content: doneString,
       ),
     );
+    if (isExistingThing) {
+      fieldWidgets.add(
+        BorderButton(
+          color: Style.error,
+          onPressed: () => BackendService.deleteThing(_thing).then((response) {
+            if (response.statusCode == 200) {
+              String message = 'your ${widget.template.name} has been deleted.';
+              Navigator.popUntil(context, ModalRoute.withName('home'));
+              Flushbar(
+                title: 'deleted',
+                message: message,
+                duration: Duration(seconds: 2),
+              )..show(context);
+            } else {
+              Flushbar(
+                title: 'oops!',
+                message: response.reasonPhrase,
+                duration: Duration(seconds: 2),
+              )..show(context);
+            }
+          }),
+          content: "Delete",
+        ),
+      );
+    }
     fieldWidgets.add(
       BorderButton(
-        color: Style.error,
-        onPressed: () => Navigator.pop(context),
-        content: "Cancel",
+        color: Style.accent,
+        onPressed: () =>
+            Navigator.popUntil(context, ModalRoute.withName('home')),
+        content: cancelString,
       ),
     );
     return fieldWidgets;

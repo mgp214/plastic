@@ -1,33 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/utility/template_manager.dart';
 
 import 'edit_thing_widget.dart';
 
-class ViewAllThingsWidget extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => ViewAllThingsState();
-}
+class ViewAllThingsWidget extends StatelessWidget {
+  final List<Thing> things;
+  final VoidCallback onThingsChanged;
 
-class ViewAllThingsState extends State<ViewAllThingsWidget> {
-  List<Thing> _things;
+  ViewAllThingsWidget({@required this.things, @required this.onThingsChanged})
+      : super();
 
-  ViewAllThingsState() {
-    _things = List<Thing>();
-    BackendService.getThingsByUser().then(
-      (value) => setState(
-        () => {
-          _things = value,
-        },
-      ),
-    );
-  }
-
-  List<Widget> _getThingWidgets() {
+  List<Widget> _getThingWidgets(context) {
     var widgets = new List<Widget>();
-    if (_things.length == 0)
+    if (things.length == 0)
       widgets.add(
         Container(
           padding: EdgeInsets.all(15),
@@ -40,7 +27,7 @@ class ViewAllThingsState extends State<ViewAllThingsWidget> {
           ),
         ),
       );
-    for (var thing in _things) {
+    for (var thing in things) {
       widgets.add(
         InkWell(
           splashColor: Style.accent,
@@ -52,7 +39,7 @@ class ViewAllThingsState extends State<ViewAllThingsWidget> {
                 thing: thing,
               ),
             ),
-          ),
+          ).then((val) => onThingsChanged()),
           child: ListTile(
             title: Text(
               thing.getMainField().value ?? "???",
@@ -71,6 +58,6 @@ class ViewAllThingsState extends State<ViewAllThingsWidget> {
 
   @override
   Widget build(BuildContext context) => ListView(
-        children: _getThingWidgets(),
+        children: _getThingWidgets(context),
       );
 }

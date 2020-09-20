@@ -17,6 +17,7 @@ enum Routes {
   templatesByUser,
   templateById,
   saveThing,
+  deleteThing,
   thingsByUser,
 }
 
@@ -50,6 +51,9 @@ class BackendService {
         break;
       case Routes.saveThing:
         value = _root + "things/save";
+        break;
+      case Routes.deleteThing:
+        value = _root + "things/delete";
         break;
       case Routes.thingsByUser:
         value = _root + "things/all";
@@ -110,7 +114,7 @@ class BackendService {
       throw new HttpException(json.decode(response.body)['error']);
 
     var result = "true" == response.body;
-    if (result) TemplateManager().loadTemplates();
+    if (result) await TemplateManager().loadTemplates();
 
     return "true" == response.body;
   }
@@ -220,6 +224,19 @@ class BackendService {
         HttpHeaders.authorizationHeader: 'Bearer $token',
       },
       body: thing.toJson(),
+    );
+    return response;
+  }
+
+  static Future<http.Response> deleteThing(Thing thing) async {
+    await _fetchToken();
+    final response = await http.post(
+      getRoute(Routes.deleteThing),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      },
+      body: json.encode({'id': thing.id}),
     );
     return response;
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/api/backend_service.dart';
+import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/utility/template_manager.dart';
@@ -20,6 +21,7 @@ class HomeState extends State<HomeWidget> {
   User user;
   String token;
   bool _isDoneCheckingPrefs = false;
+  List<Thing> _things;
 
   void _goToThenReload(Widget widget) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => widget))
@@ -29,7 +31,18 @@ class HomeState extends State<HomeWidget> {
       });
 
       getPrefs();
+      getAllThings();
     });
+  }
+
+  void getAllThings() {
+    BackendService.getThingsByUser().then(
+      (value) => setState(
+        () => {
+          _things = value,
+        },
+      ),
+    );
   }
 
   Future<Null> getPrefs() async {
@@ -62,7 +75,9 @@ class HomeState extends State<HomeWidget> {
 
   @override
   void initState() {
+    _things = List<Thing>();
     getPrefs();
+    getAllThings();
     super.initState();
   }
 
@@ -80,7 +95,10 @@ class HomeState extends State<HomeWidget> {
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            ViewAllThingsWidget(),
+            ViewAllThingsWidget(
+              things: _things,
+              onThingsChanged: getAllThings,
+            ),
             ActionMenuWidget(
               onAdd: () => _goToThenReload(
                 TemplatePickerWidget(

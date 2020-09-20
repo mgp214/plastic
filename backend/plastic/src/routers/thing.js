@@ -22,6 +22,21 @@ router.post('/things/save', auth, async (req, res) => {
 	}
 });
 
+// Deletes a thing
+router.post('/things/delete', auth, async (req, res) => {
+	try {
+		const id = req.body.id;
+		const userId = req.user._id;
+		console.log('deleting thing with id: ' + id);
+		await Thing.findOneAndDelete(
+			{ _id: id.toString(), userId: userId });
+		res.status(200).send({ id });
+	} catch (error) {
+		res.status(400).send({ error: error.toString() });
+		console.log(error);
+	}
+});
+
 // Get all of a User's things
 router.get('/things/all', auth, async (req, res) => {
 	const things = await Thing.findAllByUser(req.user._id);
