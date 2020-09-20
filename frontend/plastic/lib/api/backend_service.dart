@@ -49,7 +49,7 @@ class BackendService {
         value = _root + "templates/";
         break;
       case Routes.saveThing:
-        value = _root + "things/create";
+        value = _root + "things/save";
         break;
       case Routes.thingsByUser:
         value = _root + "things/all";

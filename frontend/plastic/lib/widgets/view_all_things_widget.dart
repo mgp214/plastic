@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/api/backend_service.dart';
-import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/utility/template_manager.dart';
@@ -13,9 +12,10 @@ class ViewAllThingsWidget extends StatefulWidget {
 }
 
 class ViewAllThingsState extends State<ViewAllThingsWidget> {
-  List<Thing> _things = List<Thing>();
+  List<Thing> _things;
 
   ViewAllThingsState() {
+    _things = List<Thing>();
     BackendService.getThingsByUser().then(
       (value) => setState(
         () => {
@@ -27,7 +27,19 @@ class ViewAllThingsState extends State<ViewAllThingsWidget> {
 
   List<Widget> _getThingWidgets() {
     var widgets = new List<Widget>();
-    if (_things.length == 0) widgets.add(Text("Nothing to see here."));
+    if (_things.length == 0)
+      widgets.add(
+        Container(
+          padding: EdgeInsets.all(15),
+          child: Text(
+            "No things to see here.",
+            style: Style.getStyle(
+              FontRole.Content,
+              Style.primary,
+            ),
+          ),
+        ),
+      );
     for (var thing in _things) {
       widgets.add(
         InkWell(

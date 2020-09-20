@@ -8,7 +8,6 @@ class Thing {
   String userId;
   String templateId;
   String name;
-  int v;
 
   Thing({
     this.id,
@@ -16,7 +15,6 @@ class Thing {
     this.templateId,
     this.name,
     this.fields,
-    this.v,
   }) {
     if (fields == null) {
       fields = List<ThingField>();
@@ -52,7 +50,6 @@ class Thing {
     userId = json['userId'];
     templateId = json['templateId'];
     name = json['name'];
-    v = json['__v'];
   }
 
   Thing.fromJsonMap(Map<String, dynamic> jsonMap) {
@@ -66,7 +63,6 @@ class Thing {
     userId = jsonMap['userId'];
     templateId = jsonMap['templateId'];
     name = jsonMap['name'];
-    v = jsonMap['__v'];
   }
 
   String toJson() {
@@ -74,11 +70,12 @@ class Thing {
     if (this.fields != null) {
       data['fields'] = this.fields.map((v) => v.toJson()).toList();
     }
-    data['_id'] = this.id;
+    if (this.id != null) {
+      data['_id'] = this.id;
+    }
     data['userId'] = this.userId;
     data['name'] = this.name;
     data['templateId'] = this.templateId;
-    data['__v'] = this.v;
     return jsonEncode(data);
   }
 }

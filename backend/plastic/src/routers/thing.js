@@ -6,12 +6,15 @@ const router = express.Router();
 
 
 // Create a new thing
-router.post('/things/create', auth, async (req, res) => {
-
+router.post('/things/save', auth, async (req, res) => {
 	try {
 		const thing = new Thing(req.body);
 		thing.userId = req.user._id;
-		await thing.save();
+		console.log('saving thing: ' + thing);
+		await Thing.findOneAndUpdate(
+			{ _id: thing._id },
+			thing,
+			{ upsert: true, useFindAndModify: false });
 		res.status(201).send({ thing });
 	} catch (error) {
 		res.status(400).send({ error: error.toString() });
