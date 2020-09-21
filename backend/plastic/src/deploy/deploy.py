@@ -34,11 +34,12 @@ ssh.exec_command(f'rm -rf {remote_dir}/src/*')
 print(f'Putting {cwd} on remote at {remote_dir}')
 scp.put(f'{cwd}', recursive=True,
         remote_path=remote_dir)
+scp.put(f'{cwd}/../package.json', remote_path=remote_dir)
 
 scp.close()
 print('done copying...')
 
-start_cmd = f'{remote_dir} npm i && setsid npm start'
+start_cmd = f'{remote_dir} npm i && pm2 restart plastic_api'
 print(f'executing {start_cmd} on remote...')
 ssh.exec_command(start_cmd)
 

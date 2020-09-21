@@ -37,7 +37,7 @@ class RegisterState extends State<RegisterWidget> {
       preferences.setString("token", response.token);
       preferences.setString("email", response.user.email);
       preferences.setString("name", response.user.name);
-      Navigator.popUntil(context, (route) => route.isFirst);
+      Navigator.popUntil(context, ModalRoute.withName('home'));
     } on HttpException catch (e) {
       setState(() {
         _error = e.message;

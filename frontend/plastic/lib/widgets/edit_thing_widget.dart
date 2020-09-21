@@ -137,6 +137,7 @@ class EditThingState extends State<EditThingWidget> {
   List<Widget> _getFields(context) {
     var fieldWidgets = new List<Widget>();
     var template = TemplateManager().getTemplateById(widget.thing.templateId);
+    if (template == null) return fieldWidgets;
 
     for (var templateField in template.fields) {
       var thingField = widget.thing.fields.singleWhere(
@@ -157,7 +158,7 @@ class EditThingState extends State<EditThingWidget> {
       BorderButton(
         color: Style.primary,
         onPressed: () => BackendService.saveThing(_thing).then((response) {
-          if (response.statusCode == 201) {
+          if (response.successful) {
             Navigator.popUntil(context, ModalRoute.withName('home'));
             String message;
             if (!isExistingThing) {
@@ -173,7 +174,7 @@ class EditThingState extends State<EditThingWidget> {
           } else {
             Flushbar(
               title: 'oops!',
-              message: response.reasonPhrase,
+              message: response.message,
               duration: Duration(seconds: 2),
             )..show(context);
           }
@@ -186,7 +187,7 @@ class EditThingState extends State<EditThingWidget> {
         BorderButton(
           color: Style.error,
           onPressed: () => BackendService.deleteThing(_thing).then((response) {
-            if (response.statusCode == 200) {
+            if (response.successful) {
               String message = 'your ${widget.template.name} has been deleted.';
               Navigator.popUntil(context, ModalRoute.withName('home'));
               Flushbar(
@@ -197,7 +198,7 @@ class EditThingState extends State<EditThingWidget> {
             } else {
               Flushbar(
                 title: 'oops!',
-                message: response.reasonPhrase,
+                message: response.message,
                 duration: Duration(seconds: 2),
               )..show(context);
             }

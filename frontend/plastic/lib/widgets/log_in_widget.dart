@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:email_validator/email_validator.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/utility/style.dart';
+import 'package:plastic/widgets/border_button.dart';
 import 'package:plastic/widgets/register_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,12 +33,20 @@ class LogInState extends State<LogInWidget> {
 
     try {
       var response = await BackendService.login(_email, _password);
+      if (!response.successful) {
+        Flushbar(
+            title: 'oops',
+            message: response.message,
+            duration: Duration(seconds: 3))
+          ..show(context);
+        return;
+      }
       SharedPreferences preferences = await SharedPreferences.getInstance();
       preferences.setString("token", response.token);
       preferences.setString("email", response.user.email);
       preferences.setString("name", response.user.name);
       preferences.setString("id", response.user.id);
-      Navigator.pop(context);
+      Navigator.popUntil(context, ModalRoute.withName('home'));
     } on HttpException catch (e) {
       setState(() {
         _error = e.message;
@@ -126,80 +136,36 @@ class LogInState extends State<LogInWidget> {
                     },
                   ),
                 ),
+                BorderButton(
+                  color: Style.primary,
+                  onPressed: () => logInPressed(context),
+                  content: "hello",
+                ),
                 Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(top: 10, left: 10),
+                      child: Text(
+                        "new here? why not ",
+                        style: Style.getStyle(
+                          FontRole.Display3,
+                          Style.white,
+                        ),
+                      ),
+                    ),
                     Expanded(
-                      child: OutlineButton(
-                        borderSide: BorderSide(
-                            color: Style.primary,
-                            width: 2,
-                            style: BorderStyle.solid),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Style.borderRadius),
-                        ),
-                        padding: EdgeInsets.all(15),
-                        child: Text(
-                          "hello",
-                          style: Style.getStyle(
-                            FontRole.Display3,
-                            Style.primary,
-                          ),
-                        ),
-                        onPressed: () => logInPressed(context),
+                      child: BorderButton(
                         color: Style.accent,
+                        content: "register",
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RegisterWidget())),
                       ),
                     ),
                   ],
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(top: 10, left: 10),
-                        child: Text(
-                          "new here? why not ",
-                          style: Style.getStyle(
-                            FontRole.Display3,
-                            Style.white,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 5, left: 10),
-                          child: OutlineButton(
-                            borderSide: BorderSide(
-                                color: Style.accent,
-                                width: 2,
-                                style: BorderStyle.solid),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Style.borderRadius,
-                              ),
-                            ),
-                            padding: EdgeInsets.all(15),
-                            child: Text(
-                              "register",
-                              style: Style.getStyle(
-                                FontRole.Display3,
-                                Style.accent,
-                              ),
-                            ),
-                            onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RegisterWidget())),
-                            color: Style.accent,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.all(10),

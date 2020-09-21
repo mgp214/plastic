@@ -1,3 +1,4 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/model/thing.dart';
@@ -19,71 +20,70 @@ class HomeWidget extends StatefulWidget {
 
 class HomeState extends State<HomeWidget> {
   User user;
-  String token;
-  bool _isDoneCheckingPrefs = false;
+  bool _isDoneLoading = false;
   List<Thing> _things;
 
   void _goToThenReload(Widget widget) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => widget))
         .then((value) {
-      setState(() {
-        _isDoneCheckingPrefs = false;
-      });
-
-      getPrefs();
-      getAllThings();
+      refresh();
     });
   }
 
-  void getAllThings() {
+  Future<void> getAllThings() async {
+    if (!await BackendService.hasValidToken()) return;
     BackendService.getThingsByUser().then(
-      (value) => setState(
-        () => {
-          _things = value,
-        },
-      ),
+      (value) {
+        if (!value.successful) {
+          Flushbar(
+            title: "oops",
+            message: value.message,
+            duration: Duration(seconds: 2),
+          )..show(context);
+          return;
+        }
+        setState(() => {
+              _things = value.things,
+            });
+      },
     );
   }
 
-  Future<Null> getPrefs() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    if (!preferences.containsKey("token")) {
-      _goToThenReload(LogInWidget());
-      return;
-    }
-    var tokenFromPrefs = preferences.getString("token");
-    var name = preferences.getString("name");
-    var email = preferences.getString("email");
-    var id = preferences.getString("id");
-    var isTokenValid = await BackendService.checkToken(tokenFromPrefs);
-
-    if (!isTokenValid) {
-      preferences.remove("token");
-      preferences.remove("name");
-      preferences.remove("email");
-      preferences.remove("id");
-      _goToThenReload(LogInWidget());
-      return;
-    }
-
+  Future<void> refresh() async {
     setState(() {
-      _isDoneCheckingPrefs = true;
-      token = tokenFromPrefs;
-      user = User(name: name, email: email, id: id);
+      _isDoneLoading = false;
+      _things = List<Thing>();
     });
+    getPrefs()
+        .then((val) => TemplateManager().loadTemplates())
+        .then((val) => getAllThings());
+  }
+
+  Future<void> getPrefs() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    if (!await BackendService.hasValidToken()) {
+      _goToThenReload(LogInWidget());
+      return;
+    } else {
+      setState(() {
+        _isDoneLoading = true;
+        user = User(
+            name: preferences.getString("name"),
+            email: preferences.getString("email"),
+            id: preferences.getString("id"));
+      });
+    }
   }
 
   @override
   void initState() {
-    _things = List<Thing>();
-    getPrefs();
-    getAllThings();
+    refresh();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isDoneCheckingPrefs)
+    if (!_isDoneLoading)
       return Container(
           color: Style.background,
           alignment: Alignment.center,

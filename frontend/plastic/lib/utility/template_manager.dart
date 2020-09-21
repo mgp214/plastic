@@ -12,16 +12,9 @@ class TemplateManager {
   TemplateManager._internal();
 
   final List<Template> _templates = new List<Template>();
-  String token;
 
   Future<void> loadTemplates() async {
-    if (token == null || token.isEmpty) {
-      try {
-        token = (await SharedPreferences.getInstance()).getString("token");
-      } on Exception {
-        throw new Exception("Couldn't get logged in user. Please log in.");
-      }
-    }
+    if (!await BackendService.hasValidToken()) return;
     _templates.clear();
     _templates..addAll(await BackendService.getTemplatesByUser());
   }
@@ -40,7 +33,15 @@ class TemplateManager {
     );
   }
 
-  List<Template> getAllTemplates() => _templates.toList();
+  List<Template> getAllTemplates() {
+    return _templates.toList();
+  }
+
+  Future<void> loadTemplatesIfNeeded() async {
+    if (_templates.length == 0) await loadTemplates();
+  }
+
+  bool hasTemplates() => _templates.length > 0;
 
   List<Template> getTemplateMatches(String partial) => _templates
       .where(

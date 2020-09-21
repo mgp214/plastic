@@ -1,12 +1,17 @@
+import 'package:plastic/model/api/api_response.dart';
+
 import '../user.dart';
 
-class LogInResponse {
+class LogInResponse extends ApiResponse {
   User user;
   String token;
 
-  LogInResponse({this.user, this.token});
+  LogInResponse({this.user, this.token, bool successful, String message})
+      : super(successful: successful, message: message);
 
-  LogInResponse.fromJson(Map<String, dynamic> json) {
+  LogInResponse.fromJson(Map<String, dynamic> json,
+      {bool successful, String message})
+      : super(successful: successful, message: message) {
     user = json.containsKey('user') ? User.fromJson(json['user']) : null;
     token = json['token'];
   }
