@@ -4,6 +4,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/utility/style.dart';
+import 'package:plastic/widgets/border_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterWidget extends StatefulWidget {
@@ -200,24 +201,10 @@ class RegisterState extends State<RegisterWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
-                      child: OutlineButton(
-                        borderSide: BorderSide(
-                            color: Style.accent,
-                            width: 2,
-                            style: BorderStyle.solid),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Style.borderRadius),
-                        ),
-                        padding: EdgeInsets.all(15),
-                        child: Text(
-                          "sign me up",
-                          style: Style.getStyle(
-                            FontRole.Display3,
-                            Style.accent,
-                          ),
-                        ),
-                        onPressed: () => registerPressed(context),
+                      child: BorderButton(
+                        content: "sign me up",
                         color: Style.accent,
+                        onPressed: () => registerPressed(context),
                       ),
                     ),
                   ],
