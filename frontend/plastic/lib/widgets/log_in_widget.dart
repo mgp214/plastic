@@ -35,6 +35,7 @@ class LogInState extends State<LogInWidget> {
       var response = await BackendService.login(_email, _password);
       if (!response.successful) {
         Flushbar(
+            flushbarPosition: FlushbarPosition.TOP,
             title: 'oops',
             message: response.message,
             duration: Duration(seconds: 3))

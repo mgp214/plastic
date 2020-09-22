@@ -7,7 +7,6 @@ import 'package:plastic/model/api/get_things_response.dart';
 import 'package:plastic/model/api/log_in_response.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
-import 'package:plastic/utility/template_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum Routes {

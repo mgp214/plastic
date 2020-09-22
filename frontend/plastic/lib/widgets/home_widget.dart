@@ -43,6 +43,7 @@ class HomeState extends State<HomeWidget> {
           return;
         }
         setState(() => {
+              _isDoneLoading = true,
               _things = value.things,
             });
       },
@@ -66,7 +67,6 @@ class HomeState extends State<HomeWidget> {
       return;
     } else {
       setState(() {
-        _isDoneLoading = true;
         user = User(
             name: preferences.getString("name"),
             email: preferences.getString("email"),

@@ -167,12 +167,14 @@ class EditThingState extends State<EditThingWidget> {
               message = 'your ${widget.template.name} has been updated.';
             }
             Flushbar(
+              flushbarPosition: FlushbarPosition.TOP,
               title: 'saved',
               message: message,
               duration: Duration(seconds: 2),
             )..show(context);
           } else {
             Flushbar(
+              flushbarPosition: FlushbarPosition.TOP,
               title: 'oops!',
               message: response.message,
               duration: Duration(seconds: 2),
@@ -191,12 +193,14 @@ class EditThingState extends State<EditThingWidget> {
               String message = 'your ${widget.template.name} has been deleted.';
               Navigator.popUntil(context, ModalRoute.withName('home'));
               Flushbar(
+                flushbarPosition: FlushbarPosition.TOP,
                 title: 'deleted',
                 message: message,
                 duration: Duration(seconds: 2),
               )..show(context);
             } else {
               Flushbar(
+                flushbarPosition: FlushbarPosition.TOP,
                 title: 'oops!',
                 message: response.message,
                 duration: Duration(seconds: 2),

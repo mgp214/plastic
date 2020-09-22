@@ -32,26 +32,30 @@ class Style {
   static final double _borderRadius = 8;
   static final Radius borderRadius = Radius.circular(_borderRadius);
 
-  static final _fontRoleMap = <FontRole, double>{
-    FontRole.Title: 64,
+  static final _fontRoleSizeMap = <FontRole, double>{
+    FontRole.Title: 96,
     FontRole.Display1: 48,
-    FontRole.Display2: 34,
-    FontRole.Display3: 24,
+    FontRole.Display2: 36,
+    FontRole.Display3: 28,
     FontRole.Content: 24,
     FontRole.Tooltip: 16,
   };
 
+  static final _fontRoleFamilyMap = <FontRole, String>{
+    FontRole.Title: 'Geo',
+    FontRole.Display1: 'Geo',
+    FontRole.Display2: 'Geo',
+    FontRole.Display3: 'Geo',
+    FontRole.Content: 'Ubuntu',
+    FontRole.Tooltip: 'Ubuntu',
+  };
+
   static TextStyle getStyle(FontRole fontRole, Color color) {
     return TextStyle(
-      fontSize: _fontRoleMap[fontRole],
-      foreground: fontRole == FontRole.Title
-          ? (Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 2
-            ..color = color)
-          : Paint()
-        ..color = color,
-      letterSpacing: fontRole == FontRole.Title ? 20 : 0,
+      fontSize: _fontRoleSizeMap[fontRole],
+      fontFamily: _fontRoleFamilyMap[fontRole],
+      foreground: Paint()..color = color,
+      letterSpacing: fontRole == FontRole.Title ? 0 : 0,
     );
   }
 }
