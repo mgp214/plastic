@@ -1,8 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/home_widget.dart';
 
-void main() {
+Future main() async {
+  if (kReleaseMode) {
+    await DotEnv().load('.env');
+  } else {
+    await DotEnv().load('.env_dev');
+  }
+
   runApp(PlasticApp());
 }
 

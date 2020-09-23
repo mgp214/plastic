@@ -190,7 +190,8 @@ class EditThingState extends State<EditThingWidget> {
           color: Style.error,
           onPressed: () => BackendService.deleteThing(_thing).then((response) {
             if (response.successful) {
-              String message = 'your ${widget.template.name} has been deleted.';
+              String message =
+                  '${widget.thing.getMainField().value} has been deleted.';
               Navigator.popUntil(context, ModalRoute.withName('home'));
               Flushbar(
                 flushbarPosition: FlushbarPosition.TOP,

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/api/get_things_response.dart';
@@ -23,8 +25,7 @@ enum Routes {
 }
 
 class BackendService {
-  static final String _root = 'http://66.175.219.233:8080/';
-  // static final String _root = 'http://10.0.2.2:8080/';
+  static final String _root = DotEnv().env['API_ENDPOINT'];
 
   static String getRoute(Routes route) {
     String value;
