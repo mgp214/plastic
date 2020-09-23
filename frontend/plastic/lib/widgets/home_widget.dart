@@ -31,8 +31,8 @@ class HomeState extends State<HomeWidget> {
   }
 
   Future<void> getAllThings() async {
-    if (!await Api.hasValidToken()) return;
-    Api.getThingsByUser().then(
+    if (!await Api.account.hasValidToken()) return;
+    Api.thing.getThingsByUser().then(
       (value) {
         if (!value.successful) {
           Flushbar(
@@ -44,7 +44,7 @@ class HomeState extends State<HomeWidget> {
         }
         setState(() => {
               _isDoneLoading = true,
-              _things = value.things,
+              _things = value.getResult,
             });
       },
     );
@@ -62,7 +62,7 @@ class HomeState extends State<HomeWidget> {
 
   Future<void> getPrefs() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    if (!await Api.hasValidToken()) {
+    if (!await Api.account.hasValidToken()) {
       _goToThenReload(LogInWidget());
       return;
     } else {

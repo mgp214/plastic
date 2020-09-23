@@ -15,11 +15,11 @@ class SettingsWidget extends StatefulWidget {
 
 class SettingsState extends State<SettingsWidget> {
   void logout() {
-    Api.logout().then((value) => Navigator.pop(context));
+    Api.account.logout().then((value) => Navigator.pop(context));
   }
 
   void logoutAll() {
-    Api.logoutAll().then((value) => Navigator.pop(context));
+    Api.account.logoutAll().then((value) => Navigator.pop(context));
   }
 
   @override

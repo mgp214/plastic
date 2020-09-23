@@ -13,9 +13,9 @@ class TemplateManager {
   final List<Template> _templates = new List<Template>();
 
   Future<void> loadTemplates() async {
-    if (!await Api.hasValidToken()) return;
+    if (!await Api.account.hasValidToken()) return;
     _templates.clear();
-    _templates..addAll(await Api.getTemplatesByUser());
+    _templates..addAll((await Api.template.getTemplatesByUser()).getResult);
   }
 
   Template getTemplateByName(String fullName) {

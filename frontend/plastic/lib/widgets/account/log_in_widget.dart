@@ -32,7 +32,7 @@ class LogInState extends State<LogInWidget> {
     if (!_formKey.currentState.validate()) return;
 
     try {
-      var response = await Api.login(_email, _password);
+      var response = await Api.account.login(_email, _password);
       if (!response.successful) {
         Flushbar(
             flushbarPosition: FlushbarPosition.TOP,

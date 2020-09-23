@@ -157,7 +157,7 @@ class EditThingState extends State<EditThingWidget> {
     fieldWidgets.add(
       BorderButton(
         color: Style.primary,
-        onPressed: () => Api.saveThing(_thing).then((response) {
+        onPressed: () => Api.thing.saveThing(_thing).then((response) {
           if (response.successful) {
             Navigator.popUntil(context, ModalRoute.withName('home'));
             String message;
@@ -188,7 +188,7 @@ class EditThingState extends State<EditThingWidget> {
       fieldWidgets.add(
         BorderButton(
           color: Style.error,
-          onPressed: () => Api.deleteThing(_thing).then((response) {
+          onPressed: () => Api.thing.deleteThing(_thing).then((response) {
             if (response.successful) {
               String message =
                   '${widget.thing.getMainField().value} has been deleted.';
