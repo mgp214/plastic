@@ -4,7 +4,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:plastic/api/backend_service.dart';
+import 'package:plastic/api/api.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/account/register_widget.dart';
 import 'package:plastic/widgets/components/border_button.dart';
@@ -32,7 +32,7 @@ class LogInState extends State<LogInWidget> {
     if (!_formKey.currentState.validate()) return;
 
     try {
-      var response = await BackendService.login(_email, _password);
+      var response = await Api.login(_email, _password);
       if (!response.successful) {
         Flushbar(
             flushbarPosition: FlushbarPosition.TOP,

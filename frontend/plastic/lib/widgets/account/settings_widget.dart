@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plastic/api/backend_service.dart';
+import 'package:plastic/api/api.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/components/border_button.dart';
@@ -15,11 +15,11 @@ class SettingsWidget extends StatefulWidget {
 
 class SettingsState extends State<SettingsWidget> {
   void logout() {
-    BackendService.logout().then((value) => Navigator.pop(context));
+    Api.logout().then((value) => Navigator.pop(context));
   }
 
   void logoutAll() {
-    BackendService.logoutAll().then((value) => Navigator.pop(context));
+    Api.logoutAll().then((value) => Navigator.pop(context));
   }
 
   @override

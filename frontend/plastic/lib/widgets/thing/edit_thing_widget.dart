@@ -1,7 +1,7 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:plastic/api/backend_service.dart';
+import 'package:plastic/api/api.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
@@ -157,7 +157,7 @@ class EditThingState extends State<EditThingWidget> {
     fieldWidgets.add(
       BorderButton(
         color: Style.primary,
-        onPressed: () => BackendService.saveThing(_thing).then((response) {
+        onPressed: () => Api.saveThing(_thing).then((response) {
           if (response.successful) {
             Navigator.popUntil(context, ModalRoute.withName('home'));
             String message;
@@ -188,7 +188,7 @@ class EditThingState extends State<EditThingWidget> {
       fieldWidgets.add(
         BorderButton(
           color: Style.error,
-          onPressed: () => BackendService.deleteThing(_thing).then((response) {
+          onPressed: () => Api.deleteThing(_thing).then((response) {
             if (response.successful) {
               String message =
                   '${widget.thing.getMainField().value} has been deleted.';

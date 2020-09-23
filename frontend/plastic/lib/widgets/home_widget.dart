@@ -1,6 +1,6 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:plastic/api/backend_service.dart';
+import 'package:plastic/api/api.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/utility/style.dart';
@@ -31,8 +31,8 @@ class HomeState extends State<HomeWidget> {
   }
 
   Future<void> getAllThings() async {
-    if (!await BackendService.hasValidToken()) return;
-    BackendService.getThingsByUser().then(
+    if (!await Api.hasValidToken()) return;
+    Api.getThingsByUser().then(
       (value) {
         if (!value.successful) {
           Flushbar(
@@ -62,7 +62,7 @@ class HomeState extends State<HomeWidget> {
 
   Future<void> getPrefs() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    if (!await BackendService.hasValidToken()) {
+    if (!await Api.hasValidToken()) {
       _goToThenReload(LogInWidget());
       return;
     } else {

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:plastic/api/backend_service.dart';
+import 'package:plastic/api/api.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/components/border_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,7 +33,7 @@ class RegisterState extends State<RegisterWidget> {
     if (!_formKey.currentState.validate()) return;
 
     try {
-      var response = await BackendService.register(_email, _password, _name);
+      var response = await Api.register(_email, _password, _name);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       preferences.setString("token", response.token);
       preferences.setString("email", response.user.email);

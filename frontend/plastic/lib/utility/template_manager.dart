@@ -1,4 +1,4 @@
-import 'package:plastic/api/backend_service.dart';
+import 'package:plastic/api/api.dart';
 import 'package:plastic/model/template.dart';
 
 class TemplateManager {
@@ -13,9 +13,9 @@ class TemplateManager {
   final List<Template> _templates = new List<Template>();
 
   Future<void> loadTemplates() async {
-    if (!await BackendService.hasValidToken()) return;
+    if (!await Api.hasValidToken()) return;
     _templates.clear();
-    _templates..addAll(await BackendService.getTemplatesByUser());
+    _templates..addAll(await Api.getTemplatesByUser());
   }
 
   Template getTemplateByName(String fullName) {

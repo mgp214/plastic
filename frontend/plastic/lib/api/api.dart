@@ -23,8 +23,10 @@ enum Routes {
   thingsByUser,
 }
 
-class BackendService {
+class Api {
   static final String _root = DotEnv().env['API_ENDPOINT'];
+  static final int _tokenCacheTtl = int.parse(DotEnv().env['TOKEN_CACHE_TTL']);
+  static int _tokenCacheExpirationTime = 0;
 
   static String getRoute(Routes route) {
     String value;
@@ -115,6 +117,9 @@ class BackendService {
 
     if (!result) {
       await clearPrefs();
+    } else {
+      _tokenCacheExpirationTime =
+          DateTime.now().millisecondsSinceEpoch + _tokenCacheTtl;
     }
     return result;
   }
@@ -266,6 +271,8 @@ class BackendService {
 
   static Future<bool> hasValidToken() async {
     if (!await _fetchToken()) return false;
+    if (_tokenCacheExpirationTime > DateTime.now().millisecondsSinceEpoch)
+      return true;
     return await checkToken(token);
   }
 }
