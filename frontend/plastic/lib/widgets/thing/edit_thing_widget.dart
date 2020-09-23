@@ -7,7 +7,7 @@ import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/utility/template_manager.dart';
 
-import 'border_button.dart';
+import '../components/border_button.dart';
 
 class EditThingWidget extends StatefulWidget {
   final Template template;

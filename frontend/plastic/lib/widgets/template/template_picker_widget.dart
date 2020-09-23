@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
-import 'package:plastic/widgets/edit_thing_widget.dart';
+import 'package:plastic/widgets/thing/edit_thing_widget.dart';
 
 class TemplatePickerWidget extends StatefulWidget {
   final List<Template> templates;

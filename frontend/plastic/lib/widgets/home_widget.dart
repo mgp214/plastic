@@ -5,11 +5,11 @@ import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/utility/template_manager.dart';
-import 'package:plastic/widgets/log_in_widget.dart';
-import 'package:plastic/widgets/settings_widget.dart';
-import 'package:plastic/widgets/template_picker_widget.dart';
-import 'package:plastic/widgets/view_all_things_widget.dart';
+import 'package:plastic/widgets/account/settings_widget.dart';
+import 'package:plastic/widgets/template/template_picker_widget.dart';
+import 'package:plastic/widgets/thing/view_all_things_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'account/log_in_widget.dart';
 import 'action_menu/action_menu_widget.dart';
 import 'action_menu/action_widget.dart';
 

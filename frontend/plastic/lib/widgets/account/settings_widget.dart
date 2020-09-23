@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/utility/style.dart';
-import 'package:plastic/widgets/border_button.dart';
+import 'package:plastic/widgets/components/border_button.dart';
 
 class SettingsWidget extends StatefulWidget {
   final User user;

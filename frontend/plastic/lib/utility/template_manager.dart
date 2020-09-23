@@ -1,6 +1,5 @@
 import 'package:plastic/api/backend_service.dart';
 import 'package:plastic/model/template.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TemplateManager {
   static final TemplateManager _singleton = TemplateManager._internal();
