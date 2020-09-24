@@ -97,7 +97,7 @@ class HomeState extends State<HomeWidget> {
           children: <Widget>[
             ViewAllThingsWidget(
               things: _things,
-              onThingsChanged: getAllThings,
+              onRefresh: refresh,
             ),
             ActionMenuWidget(
               onAdd: () => _goToThenReload(

@@ -7,9 +7,9 @@ import 'edit_thing_widget.dart';
 
 class ViewAllThingsWidget extends StatelessWidget {
   final List<Thing> things;
-  final VoidCallback onThingsChanged;
+  final VoidCallback onRefresh;
 
-  ViewAllThingsWidget({@required this.things, @required this.onThingsChanged})
+  ViewAllThingsWidget({@required this.things, @required this.onRefresh})
       : super();
 
   List<Widget> _getThingWidgets(context) {
@@ -39,7 +39,7 @@ class ViewAllThingsWidget extends StatelessWidget {
                 thing: thing,
               ),
             ),
-          ).then((val) => onThingsChanged()),
+          ).then((val) => onRefresh()),
           child: ListTile(
             title: Text(
               thing.getMainField().value ?? "???",
@@ -57,7 +57,12 @@ class ViewAllThingsWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => ListView(
-        children: _getThingWidgets(context),
+  Widget build(BuildContext context) => RefreshIndicator(
+        onRefresh: onRefresh,
+        backgroundColor: Style.background,
+        color: Style.accent,
+        child: ListView(
+          children: _getThingWidgets(context),
+        ),
       );
 }
