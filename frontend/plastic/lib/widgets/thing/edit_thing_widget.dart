@@ -21,42 +21,58 @@ class EditThingWidget extends StatefulWidget {
 
 class EditThingState extends State<EditThingWidget> {
   Thing _thing;
-  Map<String, TextEditingController> controllers;
+  Map<String, TextEditingController> fieldControllers;
+  Map<String, FocusNode> fieldFocusNodes;
 
   EditThingState(Thing thing) {
     _thing = thing;
-    controllers = Map();
+    fieldControllers = Map();
+    fieldFocusNodes = Map();
   }
 
   Widget _getFieldWidget(ThingField field, FieldType type) {
+    void buildControllers(String name) {
+      if (fieldControllers[field.name] != null) return;
+      var controller = TextEditingController(text: field.value);
+      fieldControllers[field.name] = controller;
+
+      var node = FocusNode();
+      fieldFocusNodes[field.name] = node;
+      node
+        ..addListener(() {
+          if (node.hasFocus) {
+            controller.selection = TextSelection(
+                baseOffset: 0, extentOffset: controller.text.length);
+          }
+        });
+    }
+
     switch (type) {
       case FieldType.STRING:
-        if (controllers[field.name] == null) {
-          controllers[field.name] = TextEditingController(text: field.value);
-        }
+        buildControllers(field.name);
         return TextField(
           decoration: InputDecoration(
             labelText: field.name,
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
-          controller: controllers[field.name],
+          controller: fieldControllers[field.name],
+          focusNode: fieldFocusNodes[field.name],
           onChanged: (value) => setState(() {
             field.value = value;
           }),
         );
         break;
       case FieldType.INT:
-        if (controllers[field.name] == null) {
-          controllers[field.name] = TextEditingController(text: field.value);
-        }
+        buildControllers(field.name);
         return TextField(
           decoration: InputDecoration(
             labelText: field.name,
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
-          controller: controllers[field.name],
+          controller: fieldControllers[field.name],
+          focusNode: fieldFocusNodes[field.name],
           keyboardType:
               TextInputType.numberWithOptions(signed: true, decimal: false),
           onChanged: (value) => setState(() {
@@ -73,16 +89,15 @@ class EditThingState extends State<EditThingWidget> {
         );
         break;
       case FieldType.DOUBLE:
-        if (controllers[field.name] == null) {
-          controllers[field.name] = TextEditingController(text: field.value);
-        }
+        buildControllers(field.name);
         return TextField(
           decoration: InputDecoration(
             labelText: field.name,
             labelStyle: Style.getStyle(FontRole.Content, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
-          controller: controllers[field.name],
+          controller: fieldControllers[field.name],
+          focusNode: fieldFocusNodes[field.name],
           keyboardType:
               TextInputType.numberWithOptions(signed: true, decimal: true),
           onChanged: (value) => setState(() {
