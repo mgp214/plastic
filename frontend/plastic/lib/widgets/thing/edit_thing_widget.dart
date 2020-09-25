@@ -53,7 +53,7 @@ class EditThingState extends State<EditThingWidget> {
         return TextField(
           decoration: InputDecoration(
             labelText: field.name,
-            labelStyle: Style.getStyle(FontRole.Content, Style.accent),
+            labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
           controller: fieldControllers[field.name],
@@ -68,7 +68,7 @@ class EditThingState extends State<EditThingWidget> {
         return TextField(
           decoration: InputDecoration(
             labelText: field.name,
-            labelStyle: Style.getStyle(FontRole.Content, Style.accent),
+            labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
           controller: fieldControllers[field.name],
@@ -93,7 +93,7 @@ class EditThingState extends State<EditThingWidget> {
         return TextField(
           decoration: InputDecoration(
             labelText: field.name,
-            labelStyle: Style.getStyle(FontRole.Content, Style.accent),
+            labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
           ),
           style: Style.getStyle(FontRole.Display2, Style.primary),
           controller: fieldControllers[field.name],
@@ -136,7 +136,7 @@ class EditThingState extends State<EditThingWidget> {
         return CheckboxListTile(
           title: Text(
             field.name,
-            style: Style.getStyle(FontRole.Content, Style.accent),
+            style: Style.getStyle(FontRole.Display3, Style.accent),
           ),
           checkColor: Style.primary,
           onChanged: (value) => setState(() {

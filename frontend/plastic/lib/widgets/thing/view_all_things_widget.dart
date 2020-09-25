@@ -44,7 +44,7 @@ class ViewAllThingsWidget extends StatelessWidget {
             title: Text(
               thing.getMainField().value ?? "???",
               style: Style.getStyle(
-                FontRole.Content,
+                FontRole.Display3,
                 Style.primary,
               ),
             ),

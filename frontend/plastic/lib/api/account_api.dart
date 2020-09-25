@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/api/log_in_response.dart';
+import 'package:plastic/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountApi {
@@ -21,13 +22,18 @@ class AccountApi {
   final int _tokenCacheTtl = int.parse(DotEnv().env['TOKEN_CACHE_TTL']);
   int _tokenCacheExpirationTime = 0;
   String token;
+  String _userId;
 
   String authHeader() => 'Bearer $token';
+
+  String getUserId() => _userId;
 
   Future<bool> _fetchToken() async {
     if (token == null) {
       try {
-        token = (await SharedPreferences.getInstance()).getString("token");
+        var preferences = await SharedPreferences.getInstance();
+        token = preferences.getString("token");
+        _userId = preferences.getString("id");
       } on Exception {
         token = null;
       }
@@ -55,9 +61,10 @@ class AccountApi {
     if (response.statusCode != 200)
       return LogInResponse(successful: false, message: response.reasonPhrase);
 
-    var loginResponse = LogInResponse.fromJson(json.decode(response.body),
+    var logInResponse = LogInResponse.fromJson(json.decode(response.body),
         successful: true, message: response.reasonPhrase);
-    return loginResponse;
+    _userId = logInResponse.user.id;
+    return logInResponse;
   }
 
   /// Register a new user
@@ -75,7 +82,8 @@ class AccountApi {
     if (response.statusCode != 201) {
       throw new HttpException(json.decode(response.body)['error']);
     }
-    return new LogInResponse.fromJson(json.decode(response.body));
+    var logInResponse = new LogInResponse.fromJson(json.decode(response.body));
+    _userId = logInResponse.user.id;
   }
 
   /// Check if a given token is valid

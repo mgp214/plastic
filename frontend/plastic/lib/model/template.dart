@@ -13,14 +13,13 @@ class Template {
   String id;
   String userId;
   String name;
-  int v;
 
-  Template(
-      {@required this.fields,
-      @required this.id,
-      @required this.userId,
-      @required this.name,
-      @required this.v});
+  Template({
+    @required this.fields,
+    @required this.userId,
+    this.id,
+    this.name,
+  });
 
   Template.fromJson(Map<String, dynamic> json) {
     if (json['fields'] != null) {
@@ -32,7 +31,6 @@ class Template {
     id = json['_id'];
     userId = json['userId'];
     name = json['name'];
-    v = json['__v'];
   }
 
   Map<String, dynamic> toJson() {
@@ -43,7 +41,6 @@ class Template {
     data['_id'] = this.id;
     data['userId'] = this.userId;
     data['name'] = this.name;
-    data['__v'] = this.v;
     return data;
   }
 
@@ -61,6 +58,28 @@ class TemplateField {
   dynamic defaultValue;
 
   TemplateField({this.name, this.type});
+
+  static String getFriendlyName(FieldType fieldType) {
+    String friendlyName = "Field type not found!";
+    switch (fieldType) {
+      case FieldType.STRING:
+        friendlyName = "Text";
+        break;
+      case FieldType.INT:
+        friendlyName = "Whole number";
+        break;
+      case FieldType.DOUBLE:
+        friendlyName = "Real number";
+        break;
+      case FieldType.ENUM:
+        friendlyName = "Predefined list of options";
+        break;
+      case FieldType.BOOL:
+        friendlyName = "true / false";
+        break;
+    }
+    return friendlyName;
+  }
 
   TemplateField.fromJson(Map<String, dynamic> json) {
     name = json['name'];
