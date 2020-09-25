@@ -7,7 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/api/log_in_response.dart';
-import 'package:plastic/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountApi {
@@ -84,6 +83,7 @@ class AccountApi {
     }
     var logInResponse = new LogInResponse.fromJson(json.decode(response.body));
     _userId = logInResponse.user.id;
+    return logInResponse;
   }
 
   /// Check if a given token is valid

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/utility/template_manager.dart';
+import 'package:plastic/widgets/components/splash_list_tile.dart';
 
 import 'edit_thing_widget.dart';
 
@@ -29,8 +30,8 @@ class ViewAllThingsWidget extends StatelessWidget {
       );
     for (var thing in things) {
       widgets.add(
-        InkWell(
-          splashColor: Style.accent,
+        SplashListTile(
+          color: Style.accent,
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
@@ -40,13 +41,11 @@ class ViewAllThingsWidget extends StatelessWidget {
               ),
             ),
           ).then((val) => onRefresh()),
-          child: ListTile(
-            title: Text(
-              thing.getMainField().value ?? "???",
-              style: Style.getStyle(
-                FontRole.Display3,
-                Style.primary,
-              ),
+          child: Text(
+            thing.getMainField().value ?? "???",
+            style: Style.getStyle(
+              FontRole.Display3,
+              Style.primary,
             ),
           ),
         ),

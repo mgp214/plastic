@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/components/border_button.dart';
+import 'package:plastic/widgets/components/splash_list_tile.dart';
 
 class EditTemplateWidget extends StatefulWidget {
   final Template template;
@@ -17,30 +18,30 @@ class EditTemplateState extends State<EditTemplateWidget> {
 
     options = FieldType.values
         .map(
-          (fieldType) => InkWell(
-            splashColor: Style.accent,
+          (fieldType) => SplashListTile(
+            color: Style.accent,
             onTap: () => _createNewField(fieldType),
-            child: ListTile(
-              title: Text(TemplateField.getFriendlyName(fieldType),
-                  style: Style.getStyle(
-                    FontRole.Display3,
-                    Style.primary,
-                  )),
+            child: Text(
+              TemplateField.getFriendlyName(fieldType),
+              style: Style.getStyle(
+                FontRole.Display3,
+                Style.primary,
+              ),
             ),
           ),
         )
         .toList();
 
-    options.add(InkWell(
-      splashColor: Style.error,
-      onTap: () => Navigator.pop(context),
-      child: ListTile(
-        title: Text(
+    options.add(
+      SplashListTile(
+        color: Style.error,
+        onTap: () => Navigator.pop(context),
+        child: Text(
           "Cancel",
           style: Style.getStyle(FontRole.Display3, Style.error),
         ),
       ),
-    ));
+    );
 
     return Material(
       color: Style.background,
@@ -63,15 +64,33 @@ class EditTemplateState extends State<EditTemplateWidget> {
   }
 
   Widget _getFieldWidget(TemplateField field) {
-    return Text(
-      field.name,
-      style: Style.getStyle(FontRole.Display3, Style.accent),
+    switch (field.type) {
+      case FieldType.STRING:
+        // TODO: Handle this case.
+        break;
+      case FieldType.INT:
+        // TODO: Handle this case.
+        break;
+      case FieldType.DOUBLE:
+        // TODO: Handle this case.
+        break;
+      case FieldType.ENUM:
+        // TODO: Handle this case.
+        break;
+      case FieldType.BOOL:
+        // TODO: Handle this case.
+        break;
+    }
+    return ListTile(
+      title: Text(
+        "Unknown field type!",
+        style: Style.getStyle(FontRole.Display3, Style.accent),
+      ),
     );
   }
 
   List<Widget> _getChildren() {
     var children = List<Widget>();
-    //TODO: build edit widgets for each field in template
     for (var field in widget.template.fields) {
       children.add(_getFieldWidget(field));
     }

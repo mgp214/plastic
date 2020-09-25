@@ -229,7 +229,7 @@ class EditThingState extends State<EditThingWidget> {
     }
     fieldWidgets.add(
       BorderButton(
-        color: Style.accent,
+        color: isExistingThing ? Style.accent : Style.error,
         onPressed: () =>
             Navigator.popUntil(context, ModalRoute.withName('home')),
         content: cancelString,
