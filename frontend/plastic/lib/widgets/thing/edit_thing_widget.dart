@@ -185,14 +185,14 @@ class EditThingState extends State<EditThingWidget> {
               flushbarPosition: FlushbarPosition.TOP,
               title: 'saved',
               message: message,
-              duration: Duration(seconds: 2),
+              duration: Style.toastDuration,
             )..show(context);
           } else {
             Flushbar(
               flushbarPosition: FlushbarPosition.TOP,
               title: 'oops!',
               message: response.message,
-              duration: Duration(seconds: 2),
+              duration: Style.toastDuration,
             )..show(context);
           }
         }),
@@ -212,14 +212,14 @@ class EditThingState extends State<EditThingWidget> {
                 flushbarPosition: FlushbarPosition.TOP,
                 title: 'deleted',
                 message: message,
-                duration: Duration(seconds: 2),
+                duration: Style.toastDuration,
               )..show(context);
             } else {
               Flushbar(
                 flushbarPosition: FlushbarPosition.TOP,
                 title: 'oops!',
                 message: response.message,
-                duration: Duration(seconds: 2),
+                duration: Style.toastDuration,
               )..show(context);
             }
           }),

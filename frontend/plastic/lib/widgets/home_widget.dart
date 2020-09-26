@@ -36,10 +36,10 @@ class HomeState extends State<HomeWidget> {
       (value) {
         if (!value.successful) {
           Flushbar(
-            title: "oops",
-            message: value.message,
-            duration: Duration(seconds: 2),
-          )..show(context);
+              title: "oops",
+              message: value.message,
+              duration: Style.toastDuration)
+            ..show(context);
           return;
         }
         setState(() => {

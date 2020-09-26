@@ -1,4 +1,6 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/components/border_button.dart';
@@ -13,6 +15,19 @@ class EditTemplateWidget extends StatefulWidget {
 }
 
 class EditTemplateState extends State<EditTemplateWidget> {
+  Map<String, TextEditingController> _metadataControllers;
+  Map<TemplateField, TextEditingController> _fieldControllers;
+
+  Map<TemplateField, Key> fieldKeys;
+
+  @override
+  void initState() {
+    _metadataControllers = Map();
+    _fieldControllers = Map();
+    fieldKeys = Map();
+    super.initState();
+  }
+
   Widget _getAddFieldOptions(context) {
     var options = List<Widget>();
 
@@ -64,6 +79,10 @@ class EditTemplateState extends State<EditTemplateWidget> {
   }
 
   Widget _getFieldWidget(TemplateField field) {
+    Widget cardContents = Text(
+      "Unknown field type!",
+      style: Style.getStyle(FontRole.Display3, Style.accent),
+    );
     switch (field.type) {
       case FieldType.STRING:
         // TODO: Handle this case.
@@ -81,19 +100,78 @@ class EditTemplateState extends State<EditTemplateWidget> {
         // TODO: Handle this case.
         break;
     }
-    return ListTile(
-      title: Text(
-        "Unknown field type!",
-        style: Style.getStyle(FontRole.Display3, Style.accent),
-      ),
+    cardContents = Text(
+      TemplateField.getFriendlyName(field.type),
+      style: Style.getStyle(FontRole.Display3, Style.accent),
+    );
+    return Card(
+      key: UniqueKey(),
+      color: Style.inputField,
+      child: SplashListTile(
+          color: Style.accent,
+          onTap: () => Flushbar(
+                message: "Drag to rearrange fields",
+                duration: Style.toastDuration,
+              )..show(context),
+          child: cardContents),
     );
   }
 
   List<Widget> _getChildren() {
     var children = List<Widget>();
-    for (var field in widget.template.fields) {
-      children.add(_getFieldWidget(field));
+
+    var node = FocusNode();
+    TextEditingController controller;
+    if (_metadataControllers.keys.contains('name')) {
+      controller = _metadataControllers['name'];
+    } else {
+      controller = TextEditingController(text: widget.template.name);
+      _metadataControllers['name'] = controller;
     }
+    node.addListener(() {
+      if (node.hasFocus) {
+        controller.selection =
+            TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+      }
+    });
+    var templateNameField = TextField(
+      focusNode: node,
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: "Template name",
+        labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
+      ),
+      style: Style.getStyle(FontRole.Display2, Style.primary),
+      onChanged: (value) => setState(() {
+        widget.template.name = value;
+      }),
+    );
+
+    children.add(templateNameField);
+    children.add(Divider(
+      color: Style.accent,
+    ));
+
+    var fieldChildren = List<Widget>();
+
+    for (var field in widget.template.fields) {
+      fieldChildren.add(_getFieldWidget(field));
+    }
+
+    var reorderableListWidget = Container(
+      height: MediaQuery.of(context).size.height - 350,
+      child: ReorderableListView(
+        onReorder: (int oldIndex, int newIndex) {
+          var field = widget.template.fields[oldIndex];
+          widget.template.fields.removeAt(oldIndex);
+          widget.template.fields.insert(newIndex, field);
+          setState(() {});
+        },
+        children: fieldChildren,
+      ),
+    );
+
+    if (fieldChildren.length > 0) children.add(reorderableListWidget);
 
     children.add(BorderButton(
       color: Style.accent,

@@ -35,11 +35,11 @@ class LogInState extends State<LogInWidget> {
       var response = await Api.account.login(_email, _password);
       if (!response.successful) {
         Flushbar(
-            flushbarPosition: FlushbarPosition.TOP,
-            title: 'oops',
-            message: response.message,
-            duration: Duration(seconds: 3))
-          ..show(context);
+          flushbarPosition: FlushbarPosition.TOP,
+          title: 'oops',
+          message: response.message,
+          duration: Style.toastDuration,
+        )..show(context);
         return;
       }
       SharedPreferences preferences = await SharedPreferences.getInstance();

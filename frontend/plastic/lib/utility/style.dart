@@ -29,6 +29,8 @@ class Style {
   static final Color accent = Colors.lightBlue[300];
   static final Color disabled = Colors.white54;
 
+  static final Duration toastDuration = Duration(milliseconds: 1500);
+
   static final double _borderRadius = 8;
   static final Radius borderRadius = Radius.circular(_borderRadius);
 
