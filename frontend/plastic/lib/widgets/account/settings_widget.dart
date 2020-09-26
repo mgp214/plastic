@@ -24,11 +24,10 @@ class SettingsState extends State<SettingsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-          padding: EdgeInsets.all(10),
-          color: Style.background,
-          alignment: Alignment.center,
+    return Scaffold(
+      backgroundColor: Style.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: ListView(
             children: <Widget>[
               Text("Settings",
@@ -67,7 +66,9 @@ class SettingsState extends State<SettingsWidget> {
                 onPressed: logoutAll,
               ),
             ],
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

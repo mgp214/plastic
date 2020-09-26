@@ -12,7 +12,8 @@ router.post('/templates/create', auth, async (req, res) => {
 		await template.save();
 		res.status(201).send({ template });
 	} catch (error) {
-		res.status(400).send({ error: error.toString() });
+		res.status(400).statusMessage = error.toString();
+		res.send();
 		console.log(error);
 	}
 });

@@ -52,177 +52,182 @@ class RegisterState extends State<RegisterWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return new Material(
-      child: Container(
-        color: Style.background,
-        alignment: Alignment.center,
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Form(
-            autovalidate: _autoValidate,
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Text(
-                    "register",
-                    style: Style.getStyle(FontRole.Display1, Style.primary),
+    return new Scaffold(
+      backgroundColor: Style.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Form(
+              autovalidate: _autoValidate,
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(15),
+                    child: Text(
+                      "register",
+                      style: Style.getStyle(FontRole.Display1, Style.primary),
+                    ),
                   ),
-                ),
-                Container(
-                  height: 105,
-                  child: TextFormField(
-                    controller: nameController,
-                    autocorrect: false,
-                    style: Style.getStyle(FontRole.Content, Style.accent),
-                    textInputAction: TextInputAction.next,
-                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                    enableSuggestions: true,
-                    decoration: InputDecoration(
-                      fillColor: Style.inputField,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Style.borderRadius),
+                  Container(
+                    height: 105,
+                    child: TextFormField(
+                      controller: nameController,
+                      autocorrect: false,
+                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      textInputAction: TextInputAction.next,
+                      onEditingComplete: () =>
+                          FocusScope.of(context).nextFocus(),
+                      enableSuggestions: true,
+                      decoration: InputDecoration(
+                        fillColor: Style.inputField,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Style.borderRadius),
+                        ),
+                        filled: true,
+                        errorStyle:
+                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        hintText: "name",
                       ),
-                      filled: true,
-                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
-                      hintText: "name",
+                      onChanged: (value) => setState(() {
+                        _name = value.trim();
+                        _error = '';
+                      }),
+                      validator: (value) {
+                        return value != null && value.length != 0
+                            ? null
+                            : "Please enter a name (any name will do)";
+                      },
                     ),
-                    onChanged: (value) => setState(() {
-                      _name = value.trim();
-                      _error = '';
-                    }),
-                    validator: (value) {
-                      return value != null && value.length != 0
-                          ? null
-                          : "Please enter a name (any name will do)";
-                    },
                   ),
-                ),
-                Container(
-                  height: 105,
-                  child: TextFormField(
-                    controller: emailController,
-                    autocorrect: false,
-                    style: Style.getStyle(FontRole.Content, Style.accent),
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                    enableSuggestions: true,
-                    decoration: InputDecoration(
-                      fillColor: Style.inputField,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Style.borderRadius),
+                  Container(
+                    height: 105,
+                    child: TextFormField(
+                      controller: emailController,
+                      autocorrect: false,
+                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      onEditingComplete: () =>
+                          FocusScope.of(context).nextFocus(),
+                      enableSuggestions: true,
+                      decoration: InputDecoration(
+                        fillColor: Style.inputField,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Style.borderRadius),
+                        ),
+                        filled: true,
+                        errorStyle:
+                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        hintText: "email",
                       ),
-                      filled: true,
-                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
-                      hintText: "email",
+                      onChanged: (value) => setState(() {
+                        _email = value.trim();
+                        _error = '';
+                      }),
+                      validator: (value) {
+                        return EmailValidator.validate(value)
+                            ? null
+                            : "Please enter a valid email address.";
+                      },
                     ),
-                    onChanged: (value) => setState(() {
-                      _email = value.trim();
-                      _error = '';
-                    }),
-                    validator: (value) {
-                      return EmailValidator.validate(value)
-                          ? null
-                          : "Please enter a valid email address.";
-                    },
                   ),
-                ),
-                Container(
-                  height: 105,
-                  child: TextFormField(
-                    controller: password1Controller,
-                    obscureText: true,
-                    autocorrect: false,
-                    style: Style.getStyle(FontRole.Content, Style.accent),
-                    textInputAction: TextInputAction.next,
-                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                    enableSuggestions: true,
-                    decoration: InputDecoration(
-                      fillColor: Style.inputField,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Style.borderRadius),
+                  Container(
+                    height: 105,
+                    child: TextFormField(
+                      controller: password1Controller,
+                      obscureText: true,
+                      autocorrect: false,
+                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      textInputAction: TextInputAction.next,
+                      onEditingComplete: () =>
+                          FocusScope.of(context).nextFocus(),
+                      enableSuggestions: true,
+                      decoration: InputDecoration(
+                        fillColor: Style.inputField,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Style.borderRadius),
+                        ),
+                        filled: true,
+                        errorStyle:
+                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        hintText: "password",
                       ),
-                      filled: true,
-                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
-                      hintText: "password",
+                      onChanged: (value) => setState(() {
+                        _error = '';
+                        _password = value;
+                      }),
+                      validator: (value) {
+                        if (value == null) {
+                          return "Please enter a password.";
+                        }
+                        if (value.length < 7) {
+                          return "Must be at least 7 characters.";
+                        }
+                        return null;
+                      },
                     ),
-                    onChanged: (value) => setState(() {
-                      _error = '';
-                      _password = value;
-                    }),
-                    validator: (value) {
-                      if (value == null) {
-                        return "Please enter a password.";
-                      }
-                      if (value.length < 7) {
-                        return "Must be at least 7 characters.";
-                      }
-                      return null;
-                    },
                   ),
-                ),
-                Container(
-                  height: 105,
-                  child: TextFormField(
-                    controller: password2Controller,
-                    obscureText: true,
-                    autocorrect: false,
-                    style: Style.getStyle(FontRole.Content, Style.accent),
-                    onFieldSubmitted: (value) => registerPressed(context),
-                    enableSuggestions: true,
-                    decoration: InputDecoration(
-                      fillColor: Style.inputField,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Style.borderRadius),
+                  Container(
+                    height: 105,
+                    child: TextFormField(
+                      controller: password2Controller,
+                      obscureText: true,
+                      autocorrect: false,
+                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      onFieldSubmitted: (value) => registerPressed(context),
+                      enableSuggestions: true,
+                      decoration: InputDecoration(
+                        fillColor: Style.inputField,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Style.borderRadius),
+                        ),
+                        filled: true,
+                        errorStyle:
+                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        hintText: "password, again",
                       ),
-                      filled: true,
-                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
-                      hintText: "password, again",
+                      onChanged: (value) => setState(() {
+                        _error = '';
+                      }),
+                      validator: (value) {
+                        if (value == null || value.length == 0) {
+                          return "Please enter your password.";
+                        }
+                        if (value != _password) {
+                          return "Passwords don't match.";
+                        }
+                        return null;
+                      },
                     ),
-                    onChanged: (value) => setState(() {
-                      _error = '';
-                    }),
-                    validator: (value) {
-                      if (value == null || value.length == 0) {
-                        return "Please enter your password.";
-                      }
-                      if (value != _password) {
-                        return "Passwords don't match.";
-                      }
-                      return null;
-                    },
                   ),
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                      child: BorderButton(
-                        content: "sign me up",
-                        color: Style.accent,
-                        onPressed: () => registerPressed(context),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(
+                        child: BorderButton(
+                          content: "sign me up",
+                          color: Style.accent,
+                          onPressed: () => registerPressed(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      _error,
+                      style: Style.getStyle(
+                        FontRole.Display3,
+                        Style.error,
                       ),
                     ),
-                  ],
-                ),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    _error,
-                    style: Style.getStyle(
-                      FontRole.Display3,
-                      Style.error,
-                    ),
                   ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).viewInsets.bottom,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

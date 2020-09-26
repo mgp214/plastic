@@ -26,7 +26,7 @@ class LogInState extends State<LogInWidget> {
 
   final _formKey = GlobalKey<FormState>();
 
-  Future<void> logInPressed(context) async {
+  Future<void> logInPressed() async {
     FocusScope.of(context).unfocus();
     _autoValidate = true;
     if (!_formKey.currentState.validate()) return;
@@ -35,10 +35,12 @@ class LogInState extends State<LogInWidget> {
       var response = await Api.account.login(_email, _password);
       if (!response.successful) {
         Flushbar(
-          flushbarPosition: FlushbarPosition.TOP,
-          title: 'oops',
-          message: response.message,
-          duration: Style.toastDuration,
+          flushbarPosition: FlushbarPosition.BOTTOM,
+          messageText: Text(
+            response.message,
+            style: Style.getStyle(FontRole.Tooltip, Style.error),
+          ),
+          duration: Style.snackDuration,
         )..show(context);
         return;
       }
@@ -57,131 +59,131 @@ class LogInState extends State<LogInWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return new Material(
-      child: Container(
-        color: Style.background,
-        alignment: Alignment.center,
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Form(
-            autovalidate: _autoValidate,
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Text(
-                    "plastic",
-                    style: Style.getStyle(FontRole.Title, Style.primary),
-                  ),
-                ),
-                Container(
-                  height: 105,
-                  child: TextFormField(
-                    controller: emailController,
-                    autocorrect: false,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    onEditingComplete: () {
-                      FocusScope.of(context).nextFocus();
-                    },
-                    enableSuggestions: true,
-                    style: Style.getStyle(FontRole.Content, Style.accent),
-                    decoration: InputDecoration(
-                      fillColor: Style.inputField,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Style.borderRadius),
-                      ),
-                      filled: true,
-                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
-                      hintText: "email",
+    return new Scaffold(
+      backgroundColor: Style.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Form(
+              autovalidate: _autoValidate,
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(15),
+                    child: Text(
+                      "plastic",
+                      style: Style.getStyle(FontRole.Title, Style.primary),
                     ),
-                    onChanged: (value) => setState(() {
-                      _email = value.trim();
-                      _error = '';
-                    }),
-                    validator: (value) {
-                      return EmailValidator.validate(value)
-                          ? null
-                          : "Please enter a valid email address.";
-                    },
                   ),
-                ),
-                Container(
-                  height: 105,
-                  child: TextFormField(
-                    controller: passwordController,
-                    obscureText: true,
-                    autocorrect: false,
-                    onFieldSubmitted: (value) => logInPressed(context),
-                    enableSuggestions: true,
-                    style: Style.getStyle(FontRole.Content, Style.accent),
-                    decoration: InputDecoration(
-                      fillColor: Style.inputField,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Style.borderRadius),
+                  Container(
+                    height: 105,
+                    child: TextFormField(
+                      controller: emailController,
+                      autocorrect: false,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      onEditingComplete: () {
+                        FocusScope.of(context).nextFocus();
+                      },
+                      enableSuggestions: true,
+                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      decoration: InputDecoration(
+                        fillColor: Style.inputField,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Style.borderRadius),
+                        ),
+                        filled: true,
+                        errorStyle:
+                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        hintText: "email",
                       ),
-                      filled: true,
-                      errorStyle: Style.getStyle(FontRole.Tooltip, Style.error),
-                      hintText: "password",
+                      onChanged: (value) => setState(() {
+                        _email = value.trim();
+                        _error = '';
+                      }),
+                      validator: (value) {
+                        return EmailValidator.validate(value)
+                            ? null
+                            : "Please enter a valid email address.";
+                      },
                     ),
-                    onChanged: (value) => setState(() {
-                      _error = '';
-                      _password = value;
-                    }),
-                    validator: (value) {
-                      return value != null && value.length != 0
-                          ? null
-                          : "Please enter your password.";
-                    },
                   ),
-                ),
-                BorderButton(
-                  color: Style.primary,
-                  onPressed: () => logInPressed(context),
-                  content: "hello",
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 10, left: 10),
-                      child: Text(
-                        "new here? why not ",
-                        style: Style.getStyle(
-                          FontRole.Display3,
-                          Style.white,
+                  Container(
+                    height: 105,
+                    child: TextFormField(
+                      controller: passwordController,
+                      obscureText: true,
+                      autocorrect: false,
+                      onFieldSubmitted: (value) => logInPressed(),
+                      enableSuggestions: true,
+                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      decoration: InputDecoration(
+                        fillColor: Style.inputField,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Style.borderRadius),
+                        ),
+                        filled: true,
+                        errorStyle:
+                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        hintText: "password",
+                      ),
+                      onChanged: (value) => setState(() {
+                        _error = '';
+                        _password = value;
+                      }),
+                      validator: (value) {
+                        return value != null && value.length != 0
+                            ? null
+                            : "Please enter your password.";
+                      },
+                    ),
+                  ),
+                  BorderButton(
+                    color: Style.primary,
+                    onPressed: () => logInPressed(),
+                    content: "hello",
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(top: 10, left: 10),
+                        child: Text(
+                          "new here? why not ",
+                          style: Style.getStyle(
+                            FontRole.Display3,
+                            Style.white,
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: BorderButton(
-                        color: Style.accent,
-                        content: "register",
-                        onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RegisterWidget())),
+                      Expanded(
+                        child: BorderButton(
+                          color: Style.accent,
+                          content: "register",
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RegisterWidget())),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      _error,
+                      style: Style.getStyle(
+                        FontRole.Display3,
+                        Style.error,
                       ),
                     ),
-                  ],
-                ),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    _error,
-                    style: Style.getStyle(
-                      FontRole.Display3,
-                      Style.error,
-                    ),
                   ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).viewInsets.bottom,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

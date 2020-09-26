@@ -225,7 +225,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
           message: "Drag to rearrange fields",
           duration: Style.toastDuration,
         )..show(context),
-        child: (Row(
+        child: Row(
           children: [
             Expanded(
               child: cardContents,

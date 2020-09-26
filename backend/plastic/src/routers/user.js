@@ -16,7 +16,8 @@ router.post('/users', async (req, res) => {
 
 		res.status(201).send({ user, token });
 	} catch (error) {
-		res.status(400).statusMessage(error.toString()).send();
+		res.status(400).statusMessage = error.toString();
+		res.send();
 		console.log(error);
 	}
 });
@@ -33,7 +34,8 @@ router.post('/users/login', async (req, res) => {
 		const token = await user.generateAuthToken();
 		res.send({ user, token });
 	} catch (error) {
-		res.status(400).statusMessage(error.toString()).send();
+		res.status(400).statusMessage = error.toString();
+		res.send();
 		console.log(error);
 	}
 });
@@ -53,7 +55,8 @@ router.post('/users/me/logout', auth, async (req, res) => {
 		await req.user.save();
 		res.send();
 	} catch (error) {
-		res.status(500).statusMessage(error.toString()).send();
+		res.status(500).statusMessage = error.toString();
+		res.send();
 		console.log(error);
 	}
 });
@@ -65,7 +68,8 @@ router.post('/users/me/logoutall', auth, async (req, res) => {
 		await req.user.save();
 		res.send();
 	} catch (error) {
-		res.status(500).statusMessage(error.toString()).send();
+		res.status(500).statusMessage = error.toString();
+		res.send();
 		console.log(error);
 	}
 });
@@ -82,7 +86,8 @@ router.post('/users/checktoken', async (req, res) => {
 			return;
 		}
 	} catch (error) {
-		res.status(500).statusMessage(error.toString());
+		res.status(500).statusMessage = error.toString();
+		res.send();
 		console.log(error);
 	}
 	res.send(false);

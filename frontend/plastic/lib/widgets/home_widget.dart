@@ -36,8 +36,10 @@ class HomeState extends State<HomeWidget> {
       (value) {
         if (!value.successful) {
           Flushbar(
-              title: "oops",
-              message: value.message,
+              messageText: Text(
+                value.message,
+                style: Style.getStyle(FontRole.Tooltip, Style.error),
+              ),
               duration: Style.toastDuration)
             ..show(context);
           return;
@@ -88,38 +90,29 @@ class HomeState extends State<HomeWidget> {
           color: Style.background,
           alignment: Alignment.center,
           child: CircularProgressIndicator());
-    return Material(
-      color: Style.background,
-      child: Container(
-        alignment: Alignment.center,
-        child: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            ViewAllThingsWidget(
-              things: _things,
-              onRefresh: refresh,
-            ),
-            ActionMenuWidget(
-              onAdd: () => _goToThenReload(
-                TemplatePickerWidget(
-                  templates: TemplateManager().getAllTemplates(),
-                ),
-              ),
-              children: <ActionWidget>[
-                ActionWidget(
-                  key: GlobalKey<ActionState>(),
-                  color: Style.accent,
-                  icon: Icons.settings,
-                  onPressed: () => _goToThenReload(SettingsWidget(
-                    user: user,
-                  )),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).viewInsets.bottom,
-            )
-          ],
+    return Scaffold(
+      backgroundColor: Style.background,
+      floatingActionButton: ActionMenuWidget(
+        onAdd: () => _goToThenReload(
+          TemplatePickerWidget(
+            templates: TemplateManager().getAllTemplates(),
+          ),
+        ),
+        children: <ActionWidget>[
+          ActionWidget(
+            key: GlobalKey<ActionState>(),
+            color: Style.accent,
+            icon: Icons.settings,
+            onPressed: () => _goToThenReload(SettingsWidget(
+              user: user,
+            )),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: ViewAllThingsWidget(
+          things: _things,
+          onRefresh: refresh,
         ),
       ),
     );

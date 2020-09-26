@@ -17,7 +17,8 @@ router.post('/things/save', auth, async (req, res) => {
 			{ upsert: true, useFindAndModify: false });
 		res.status(201).send({ thing });
 	} catch (error) {
-		res.status(400).send({ error: error.toString() });
+		res.status(400).statusMessage = error.toString();
+		res.send();
 		console.log(error);
 	}
 });
@@ -32,7 +33,8 @@ router.post('/things/delete', auth, async (req, res) => {
 			{ _id: id.toString(), userId: userId });
 		res.status(200).send({ id });
 	} catch (error) {
-		res.status(400).send({ error: error.toString() });
+		res.status(400).statusMessage = error.toString();
+		res.send();
 		console.log(error);
 	}
 });

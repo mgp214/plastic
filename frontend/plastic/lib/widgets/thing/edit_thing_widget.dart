@@ -183,15 +183,19 @@ class EditThingState extends State<EditThingWidget> {
             }
             Flushbar(
               flushbarPosition: FlushbarPosition.TOP,
-              title: 'saved',
-              message: message,
+              messageText: Text(
+                message,
+                style: Style.getStyle(FontRole.Tooltip, Style.accent),
+              ),
               duration: Style.toastDuration,
             )..show(context);
           } else {
             Flushbar(
               flushbarPosition: FlushbarPosition.TOP,
-              title: 'oops!',
-              message: response.message,
+              messageText: Text(
+                response.message,
+                style: Style.getStyle(FontRole.Tooltip, Style.error),
+              ),
               duration: Style.toastDuration,
             )..show(context);
           }
@@ -210,15 +214,19 @@ class EditThingState extends State<EditThingWidget> {
               Navigator.popUntil(context, ModalRoute.withName('home'));
               Flushbar(
                 flushbarPosition: FlushbarPosition.TOP,
-                title: 'deleted',
-                message: message,
+                messageText: Text(
+                  message,
+                  style: Style.getStyle(FontRole.Tooltip, Style.accent),
+                ),
                 duration: Style.toastDuration,
               )..show(context);
             } else {
               Flushbar(
                 flushbarPosition: FlushbarPosition.TOP,
-                title: 'oops!',
-                message: response.message,
+                messageText: Text(
+                  response.message,
+                  style: Style.getStyle(FontRole.Tooltip, Style.error),
+                ),
                 duration: Style.toastDuration,
               )..show(context);
             }
