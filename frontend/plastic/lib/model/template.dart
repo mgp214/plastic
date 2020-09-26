@@ -21,6 +21,10 @@ class Template {
     this.name,
   });
 
+  TemplateField getMainField() {
+    return fields.singleWhere((element) => element.main == true);
+  }
+
   Template.fromJson(Map<String, dynamic> json) {
     if (json['fields'] != null) {
       fields = new List<TemplateField>();

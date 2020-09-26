@@ -16,7 +16,9 @@ class EditTemplateWidget extends StatefulWidget {
 
 class EditTemplateState extends State<EditTemplateWidget> {
   Map<String, TextEditingController> _metadataControllers;
+  Map<String, FocusNode> _metadataNodes;
   Map<TemplateField, TextEditingController> _fieldControllers;
+  Map<TemplateField, FocusNode> _fieldNodes;
 
   Map<TemplateField, Key> fieldKeys;
 
@@ -24,6 +26,8 @@ class EditTemplateState extends State<EditTemplateWidget> {
   void initState() {
     _metadataControllers = Map();
     _fieldControllers = Map();
+    _fieldNodes = Map();
+    _metadataNodes = Map();
     fieldKeys = Map();
     super.initState();
   }
@@ -71,62 +75,184 @@ class EditTemplateState extends State<EditTemplateWidget> {
   }
 
   void _createNewField(FieldType fieldType) {
-    widget.template.fields.add(TemplateField(
-        name: 'New ${TemplateField.getFriendlyName(fieldType)}',
-        type: fieldType));
+    var newField = TemplateField(
+        name: 'new ${TemplateField.getFriendlyName(fieldType)} field',
+        type: fieldType);
+    if (widget.template.fields.firstWhere((f) => f.main, orElse: () => null) ==
+        null) newField.main = true;
+    widget.template.fields.add(newField);
     setState(() {});
     Navigator.pop(context);
   }
 
   Widget _getFieldWidget(TemplateField field) {
+    void buildControllers() {
+      if (_fieldControllers[field] != null) return;
+      var controller = TextEditingController(text: field.name);
+      _fieldControllers[field] = controller;
+
+      var node = FocusNode();
+      _fieldNodes[field] = node;
+      node
+        ..addListener(() {
+          if (node.hasFocus) {
+            controller.selection = TextSelection(
+                baseOffset: 0, extentOffset: controller.text.length);
+          }
+        });
+    }
+
     Widget cardContents = Text(
       "Unknown field type!",
       style: Style.getStyle(FontRole.Display3, Style.accent),
     );
+    //TODO: default values
     switch (field.type) {
       case FieldType.STRING:
-        // TODO: Handle this case.
+        buildControllers();
+        cardContents = Column(
+          children: [
+            TextField(
+              focusNode: _fieldNodes[field],
+              controller: _fieldControllers[field],
+              decoration: InputDecoration(
+                labelText: "Field name",
+                labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
+              ),
+              style: Style.getStyle(FontRole.Display2, Style.primary),
+              onChanged: (value) {
+                setState(() {
+                  field.name = value;
+                });
+              },
+            ),
+            RadioListTile(
+              title: Text(
+                "Main template field",
+                style: Style.getStyle(FontRole.Display3, Style.accent),
+              ),
+              activeColor: Style.primary,
+              groupValue: widget.template.getMainField(),
+              onChanged: (value) => setState(() {
+                widget.template.getMainField().main = false;
+                field.main = true;
+              }),
+              value: field,
+            )
+          ],
+        );
         break;
       case FieldType.INT:
-        // TODO: Handle this case.
+        buildControllers();
+        cardContents = Column(
+          children: [
+            TextField(
+              focusNode: _fieldNodes[field],
+              controller: _fieldControllers[field],
+              decoration: InputDecoration(
+                labelText: "Field name",
+                labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
+              ),
+              style: Style.getStyle(FontRole.Display2, Style.primary),
+              onChanged: (value) {
+                setState(() {
+                  field.name = value;
+                });
+              },
+            ),
+          ],
+        );
         break;
       case FieldType.DOUBLE:
-        // TODO: Handle this case.
+        buildControllers();
+        cardContents = Column(
+          children: [
+            TextField(
+              focusNode: _fieldNodes[field],
+              controller: _fieldControllers[field],
+              decoration: InputDecoration(
+                labelText: "Field name",
+                labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
+              ),
+              style: Style.getStyle(FontRole.Display2, Style.primary),
+              onChanged: (value) {
+                setState(() {
+                  field.name = value;
+                });
+              },
+            ),
+          ],
+        );
         break;
       case FieldType.ENUM:
         // TODO: Handle this case.
         break;
       case FieldType.BOOL:
-        // TODO: Handle this case.
+        buildControllers();
+        cardContents = Column(
+          children: [
+            TextField(
+              focusNode: _fieldNodes[field],
+              controller: _fieldControllers[field],
+              decoration: InputDecoration(
+                labelText: "Field name",
+                labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
+              ),
+              style: Style.getStyle(FontRole.Display2, Style.primary),
+              onChanged: (value) {
+                setState(() {
+                  field.name = value;
+                });
+              },
+            ),
+          ],
+        );
         break;
     }
-    cardContents = Text(
-      TemplateField.getFriendlyName(field.type),
-      style: Style.getStyle(FontRole.Display3, Style.accent),
-    );
+    Key key;
+    if (fieldKeys.containsKey(field)) {
+      key = fieldKeys[field];
+    } else {
+      key = UniqueKey();
+      fieldKeys[field] = key;
+    }
     return Card(
-      key: UniqueKey(),
+      key: key,
       color: Style.inputField,
       child: SplashListTile(
-          color: Style.accent,
-          onTap: () => Flushbar(
-                message: "Drag to rearrange fields",
-                duration: Style.toastDuration,
-              )..show(context),
-          child: cardContents),
+        color: Style.accent,
+        onTap: () => Flushbar(
+          message: "Drag to rearrange fields",
+          duration: Style.toastDuration,
+        )..show(context),
+        child: (Row(
+          children: [
+            Expanded(
+              child: cardContents,
+            ),
+            Icon(
+              Icons.reorder,
+              color: Style.accent,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   List<Widget> _getChildren() {
     var children = List<Widget>();
 
-    var node = FocusNode();
+    FocusNode node;
     TextEditingController controller;
     if (_metadataControllers.keys.contains('name')) {
       controller = _metadataControllers['name'];
+      node = _metadataNodes['name'];
     } else {
       controller = TextEditingController(text: widget.template.name);
+      node = FocusNode();
       _metadataControllers['name'] = controller;
+      _metadataNodes['name'] = node;
     }
     node.addListener(() {
       if (node.hasFocus) {
@@ -158,6 +284,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
       fieldChildren.add(_getFieldWidget(field));
     }
 
+//TODO: replace with https://github.com/knopp/flutter_reorderable_list
     var reorderableListWidget = Container(
       height: MediaQuery.of(context).size.height - 350,
       child: ReorderableListView(
