@@ -187,7 +187,7 @@ class EditThingState extends State<EditThingWidget> {
                 message,
                 style: Style.getStyle(FontRole.Tooltip, Style.accent),
               ),
-              duration: Style.toastDuration,
+              duration: Style.snackDuration,
             )..show(context);
           } else {
             Flushbar(
@@ -196,7 +196,7 @@ class EditThingState extends State<EditThingWidget> {
                 response.message,
                 style: Style.getStyle(FontRole.Tooltip, Style.error),
               ),
-              duration: Style.toastDuration,
+              duration: Style.snackDuration,
             )..show(context);
           }
         }),
@@ -218,7 +218,7 @@ class EditThingState extends State<EditThingWidget> {
                   message,
                   style: Style.getStyle(FontRole.Tooltip, Style.accent),
                 ),
-                duration: Style.toastDuration,
+                duration: Style.snackDuration,
               )..show(context);
             } else {
               Flushbar(
@@ -227,7 +227,7 @@ class EditThingState extends State<EditThingWidget> {
                   response.message,
                   style: Style.getStyle(FontRole.Tooltip, Style.error),
                 ),
-                duration: Style.toastDuration,
+                duration: Style.snackDuration,
               )..show(context);
             }
           }),

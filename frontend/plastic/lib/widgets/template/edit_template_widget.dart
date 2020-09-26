@@ -223,7 +223,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
         color: Style.accent,
         onTap: () => Flushbar(
           message: "Drag to rearrange fields",
-          duration: Style.toastDuration,
+          duration: Style.snackDuration,
         )..show(context),
         child: Row(
           children: [

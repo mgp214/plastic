@@ -40,7 +40,7 @@ class HomeState extends State<HomeWidget> {
                 value.message,
                 style: Style.getStyle(FontRole.Tooltip, Style.error),
               ),
-              duration: Style.toastDuration)
+              duration: Style.snackDuration)
             ..show(context);
           return;
         }
