@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/utility/style.dart';
+import 'package:plastic/widgets/components/checkbox_field.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
+import 'package:plastic/widgets/components/string_field.dart';
 
 class EditTemplateWidget extends StatefulWidget {
   final Template template;
@@ -106,86 +108,68 @@ class EditTemplateState extends State<EditTemplateWidget> {
         });
     }
 
-    Widget cardContents = Text(
-      "Unknown field type!",
-      style: Style.getStyle(FontRole.Display3, Style.accent),
-    );
+    List<Widget> cardContents = List();
+
     //TODO: default values
     switch (field.type) {
       case FieldType.STRING:
         buildControllers();
-        cardContents = Column(
-          children: [
-            TextField(
-              focusNode: _fieldNodes[field],
-              controller: _fieldControllers[field],
-              decoration: InputDecoration(
-                labelText: "Field name",
-                labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
-              ),
-              style: Style.getStyle(FontRole.Display2, Style.primary),
-              onChanged: (value) {
-                setState(() {
-                  field.name = value;
-                });
-              },
+        cardContents.add(
+          StringField(
+            controller: _fieldControllers[field],
+            focusNode: _fieldNodes[field],
+            label: "Field name",
+            onChanged: (value) {
+              setState(() {
+                field.name = value;
+              });
+            },
+          ),
+        );
+        cardContents.add(
+          RadioListTile(
+            title: Text(
+              "Main template field",
+              style: Style.getStyle(FontRole.Display3, Style.accent),
             ),
-            RadioListTile(
-              title: Text(
-                "Main template field",
-                style: Style.getStyle(FontRole.Display3, Style.accent),
-              ),
-              activeColor: Style.primary,
-              groupValue: widget.template.getMainField(),
-              onChanged: (value) => setState(() {
-                widget.template.getMainField().main = false;
-                field.main = true;
-              }),
-              value: field,
-            )
-          ],
+            activeColor: Style.primary,
+            groupValue: widget.template.getMainField(),
+            onChanged: (value) => setState(() {
+              widget.template.getMainField().main = false;
+              field.main = true;
+            }),
+            value: field,
+          ),
         );
         break;
       case FieldType.INT:
         buildControllers();
-        cardContents = Column(
-          children: [
-            TextField(
-              focusNode: _fieldNodes[field],
-              controller: _fieldControllers[field],
-              decoration: InputDecoration(
-                labelText: "Field name",
-                labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
-              ),
-              style: Style.getStyle(FontRole.Display2, Style.primary),
-              onChanged: (value) {
-                setState(() {
-                  field.name = value;
-                });
-              },
-            ),
-          ],
+        cardContents.add(
+          StringField(
+            controller: _fieldControllers[field],
+            focusNode: _fieldNodes[field],
+            label: "Field name",
+            onChanged: (value) {
+              setState(() {
+                field.name = value;
+              });
+            },
+          ),
         );
         break;
       case FieldType.DOUBLE:
         buildControllers();
-        cardContents = Column(
-          children: [
-            TextField(
-              focusNode: _fieldNodes[field],
-              controller: _fieldControllers[field],
-              decoration: InputDecoration(
-                labelText: "Field name",
-                labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
-              ),
-              style: Style.getStyle(FontRole.Display2, Style.primary),
-              onChanged: (value) {
-                setState(() {
-                  field.name = value;
-                });
-              },
-            ),
-          ],
+        cardContents.add(
+          StringField(
+            controller: _fieldControllers[field],
+            focusNode: _fieldNodes[field],
+            label: "Field name",
+            onChanged: (value) {
+              setState(() {
+                field.name = value;
+              });
+            },
+          ),
         );
         break;
       case FieldType.ENUM:
@@ -193,25 +177,24 @@ class EditTemplateState extends State<EditTemplateWidget> {
         break;
       case FieldType.BOOL:
         buildControllers();
-        cardContents = Column(
-          children: [
-            TextField(
-              focusNode: _fieldNodes[field],
-              controller: _fieldControllers[field],
-              decoration: InputDecoration(
-                labelText: "Field name",
-                labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
-              ),
-              style: Style.getStyle(FontRole.Display2, Style.primary),
-              onChanged: (value) {
-                setState(() {
-                  field.name = value;
-                });
-              },
-            ),
-          ],
+        cardContents.add(
+          StringField(
+            controller: _fieldControllers[field],
+            focusNode: _fieldNodes[field],
+            label: "Field name",
+            onChanged: (value) {
+              setState(() {
+                field.name = value;
+              });
+            },
+          ),
         );
         break;
+      default:
+        cardContents.add(Text(
+          "Unknown field type!",
+          style: Style.getStyle(FontRole.Display3, Style.accent),
+        ));
     }
     return IntrinsicHeight(
       key: fieldKeys[field],
@@ -231,7 +214,9 @@ class EditTemplateState extends State<EditTemplateWidget> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Expanded(
-                      child: cardContents,
+                      child: Column(
+                        children: cardContents,
+                      ),
                     ),
                     VerticalDivider(
                       width: 15,
@@ -289,15 +274,10 @@ class EditTemplateState extends State<EditTemplateWidget> {
             TextSelection(baseOffset: 0, extentOffset: controller.text.length);
       }
     });
-    return TextField(
-      key: key,
-      focusNode: node,
+    return StringField(
       controller: controller,
-      decoration: InputDecoration(
-        labelText: "Template name",
-        labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
-      ),
-      style: Style.getStyle(FontRole.Display2, Style.primary),
+      focusNode: node,
+      label: "Template name",
       onChanged: (value) => setState(() {
         widget.template.name = value;
       }),

@@ -6,6 +6,10 @@ import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/utility/template_manager.dart';
+import 'package:plastic/widgets/components/checkbox_field.dart';
+import 'package:plastic/widgets/components/double_field.dart';
+import 'package:plastic/widgets/components/int_field.dart';
+import 'package:plastic/widgets/components/string_field.dart';
 
 import '../components/border_button.dart';
 
@@ -50,12 +54,8 @@ class EditThingState extends State<EditThingWidget> {
     switch (type) {
       case FieldType.STRING:
         buildControllers(field.name);
-        return TextField(
-          decoration: InputDecoration(
-            labelText: field.name,
-            labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
-          ),
-          style: Style.getStyle(FontRole.Display2, Style.primary),
+        return StringField(
+          label: field.name,
           controller: fieldControllers[field.name],
           focusNode: fieldFocusNodes[field.name],
           onChanged: (value) => setState(() {
@@ -65,84 +65,36 @@ class EditThingState extends State<EditThingWidget> {
         break;
       case FieldType.INT:
         buildControllers(field.name);
-        return TextField(
-          decoration: InputDecoration(
-            labelText: field.name,
-            labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
-          ),
-          style: Style.getStyle(FontRole.Display2, Style.primary),
+        return IntField(
+          label: field.name,
           controller: fieldControllers[field.name],
           focusNode: fieldFocusNodes[field.name],
-          keyboardType:
-              TextInputType.numberWithOptions(signed: true, decimal: false),
           onChanged: (value) => setState(() {
             field.value = int.parse(value, onError: (value) => 0);
           }),
-          inputFormatters: [
-            TextInputFormatter.withFunction((oldValue, newValue) {
-              if (newValue.text.length == 1 && newValue.text == '-')
-                return newValue;
-              if (newValue.text.length < oldValue.text.length) return newValue;
-              return int.tryParse(newValue.text) == null ? oldValue : newValue;
-            }),
-          ],
         );
         break;
       case FieldType.DOUBLE:
         buildControllers(field.name);
-        return TextField(
-          decoration: InputDecoration(
-            labelText: field.name,
-            labelStyle: Style.getStyle(FontRole.Display3, Style.accent),
-          ),
-          style: Style.getStyle(FontRole.Display2, Style.primary),
+        return DoubleField(
+          label: field.name,
           controller: fieldControllers[field.name],
           focusNode: fieldFocusNodes[field.name],
-          keyboardType:
-              TextInputType.numberWithOptions(signed: true, decimal: true),
           onChanged: (value) => setState(() {
             field.value = double.parse(value, (value) => 0);
           }),
-          inputFormatters: [
-            TextInputFormatter.withFunction((oldValue, newValue) {
-              if (newValue.text.length == 1 && newValue.text == '-')
-                return newValue;
-              if (newValue.text.length == 1 && newValue.text == '.')
-                return TextEditingValue(
-                  text: "0.",
-                  selection: TextSelection.fromPosition(
-                    TextPosition(offset: 2),
-                  ),
-                );
-              if (newValue.text.length == 2 && newValue.text == '-.')
-                return TextEditingValue(
-                  text: "-0.",
-                  selection: TextSelection.fromPosition(
-                    TextPosition(offset: 3),
-                  ),
-                );
-              if (newValue.text.length < oldValue.text.length) return newValue;
-              return double.tryParse(newValue.text) == null
-                  ? oldValue
-                  : newValue;
-            }),
-          ],
         );
         break;
       case FieldType.ENUM:
         // TODO: Handle this case.
         break;
       case FieldType.BOOL:
-        return CheckboxListTile(
-          title: Text(
-            field.name,
-            style: Style.getStyle(FontRole.Display3, Style.accent),
-          ),
-          checkColor: Style.primary,
+        return CheckboxField(
+          label: field.name,
           onChanged: (value) => setState(() {
             field.value = value;
           }),
-          value: field.value ?? false,
+          value: field.value,
         );
         break;
     }
