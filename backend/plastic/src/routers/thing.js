@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 
-// Create a new thing
+// Create a new thing, or update if it exists already
 router.post('/things/save', auth, async (req, res) => {
 	try {
 		const thing = new Thing(req.body);

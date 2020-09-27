@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:plastic/api/account_api.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_get_response.dart';
+import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
 
 class TemplateApi {
@@ -58,5 +59,36 @@ class TemplateApi {
         .forEach((v) => templates.add(new Template.fromJson(v)));
     return ApiGetResponse<List<Template>>(
         successful: true, message: response.reasonPhrase, getResult: templates);
+  }
+
+  Future<ApiResponse> saveTemplate(Template template) async {
+    if (!await AccountApi().hasValidToken())
+      return ApiResponse(successful: false, message: 'Please log in.');
+    final response = await http.post(
+      Api.getRoute(Routes.saveTemplate),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: AccountApi().authHeader(),
+      },
+      body: template.toJson(),
+    );
+    return ApiResponse(
+        successful: response.statusCode == 201, message: response.reasonPhrase);
+  }
+
+  Future<ApiResponse> deleteTemplate(Template template) async {
+    if (!await AccountApi().hasValidToken())
+      return ApiResponse(successful: false, message: 'Please log in.');
+
+    final response = await http.post(
+      Api.getRoute(Routes.deleteTemplate),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: AccountApi().authHeader(),
+      },
+      body: json.encode({'id': template.id}),
+    );
+    return ApiResponse(
+        successful: response.statusCode == 200, message: response.reasonPhrase);
   }
 }

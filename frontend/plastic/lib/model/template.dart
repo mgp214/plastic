@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 enum FieldType {
@@ -38,15 +40,17 @@ class Template {
     name = json['name'];
   }
 
-  Map<String, dynamic> toJson() {
+  String toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.fields != null) {
       data['fields'] = this.fields.map((v) => v.toJson()).toList();
     }
-    data['_id'] = this.id;
+    if (this.id != null) {
+      data['_id'] = this.id;
+    }
     data['userId'] = this.userId;
     data['name'] = this.name;
-    return data;
+    return jsonEncode(data);
   }
 
   List<TemplateField> getFieldsByPartial(String partial) => fields
@@ -98,8 +102,8 @@ class TemplateField {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = name;
-    data['fieldType'] = type.toString();
-    if (main) data['main'] = true;
+    data['fieldType'] = type.toString().split('.').last;
+    if (main == true) data['main'] = true;
     if (defaultValue != null) data['default'] = defaultValue;
 
     return data;

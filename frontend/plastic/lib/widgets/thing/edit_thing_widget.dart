@@ -10,6 +10,7 @@ import 'package:plastic/widgets/components/checkbox_field.dart';
 import 'package:plastic/widgets/components/double_field.dart';
 import 'package:plastic/widgets/components/int_field.dart';
 import 'package:plastic/widgets/components/string_field.dart';
+import 'package:plastic/widgets/template/edit_template_widget.dart';
 
 import '../components/border_button.dart';
 
@@ -37,7 +38,7 @@ class EditThingState extends State<EditThingWidget> {
   Widget _getFieldWidget(ThingField field, FieldType type) {
     void buildControllers(String name) {
       if (fieldControllers[field.name] != null) return;
-      var controller = TextEditingController(text: field.value);
+      var controller = TextEditingController(text: field.value.toString());
       fieldControllers[field.name] = controller;
 
       var node = FocusNode();
@@ -187,6 +188,22 @@ class EditThingState extends State<EditThingWidget> {
         ),
       );
     }
+
+    fieldWidgets.add(
+      BorderButton(
+        color: Style.primary,
+        onPressed: () {
+          Navigator.popUntil(context, ModalRoute.withName('home'));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      EditTemplateWidget(template: widget.template)));
+        },
+        content: "Edit ${widget.template.name} template",
+      ),
+    );
+
     fieldWidgets.add(
       BorderButton(
         color: isExistingThing ? Style.accent : Style.error,

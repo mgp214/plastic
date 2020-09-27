@@ -1,6 +1,8 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:plastic/api/api.dart';
+import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/components/checkbox_field.dart';
@@ -115,7 +117,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
       // default value objects
       if (!includeDefaultValue) return;
       var defaultValuecontroller =
-          TextEditingController(text: field.defaultValue);
+          TextEditingController(text: field.defaultValue.toString());
       _fieldDefaultValueControllers[field] = defaultValuecontroller;
       var defaultValueNode = FocusNode();
       _fieldDefaultValueNodes[field] = defaultValueNode;
@@ -216,7 +218,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
         cardContents.add(DoubleField(
           controller: _fieldDefaultValueControllers[field],
           focusNode: _fieldDefaultValueNodes[field],
-          label: "Default state",
+          label: "Default value",
           onChanged: (value) {
             setState(() {
               field.defaultValue = double.parse(value, (value) => 0);
@@ -247,7 +249,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
               field.defaultValue = value ?? false;
             });
           },
-          label: "Default value",
+          label: "Default state",
           value: field.defaultValue ?? null,
         ));
         break;
@@ -402,6 +404,28 @@ class EditTemplateState extends State<EditTemplateWidget> {
     );
   }
 
+  void handleApiResponse(Routes route, ApiResponse response) {
+    if (route == Routes.saveTemplate) {
+      if (response.successful) {
+        Flushbar(
+                messageText: Text(
+                  "Template saved.",
+                  style: Style.getStyle(FontRole.Tooltip, Style.accent),
+                ),
+                duration: Style.snackDuration)
+            .show(context);
+      } else {
+        Flushbar(
+                messageText: Text(
+                  response.message,
+                  style: Style.getStyle(FontRole.Tooltip, Style.error),
+                ),
+                duration: Style.snackDuration)
+            .show(context);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Style.background,
@@ -448,6 +472,9 @@ class EditTemplateState extends State<EditTemplateWidget> {
                       ],
                     ),
                     onPressed: () {
+                      Api.template.saveTemplate(widget.template).then(
+                          (response) =>
+                              handleApiResponse(Routes.saveTemplate, response));
                       Navigator.pop(context);
                     },
                   ),
@@ -459,7 +486,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
                           color: Style.error,
                         ),
                         Text(
-                          "Discard",
+                          widget.template.id != null ? "Delete" : "Discard",
                           style: Style.getStyle(FontRole.Display3, Style.error),
                         ),
                       ],
@@ -472,7 +499,9 @@ class EditTemplateState extends State<EditTemplateWidget> {
                           title: Padding(
                             padding: EdgeInsets.only(bottom: 15),
                             child: Text(
-                              "Discard new template?",
+                              widget.template.id != null
+                                  ? "Delete existing template?"
+                                  : "Discard new template?",
                               style: Style.getStyle(
                                   FontRole.Display3, Style.accent),
                             ),
@@ -488,11 +517,16 @@ class EditTemplateState extends State<EditTemplateWidget> {
                             ),
                             SimpleDialogOption(
                               child: Text(
-                                "Confirm cancel",
+                                widget.template.id != null
+                                    ? "Delete ${widget.template.name} PERMANENTLY!"
+                                    : "Confirm cancel",
                                 style: Style.getStyle(
                                     FontRole.Display3, Style.error),
                               ),
                               onPressed: () {
+                                if (widget.template.id != null) {
+                                  Api.template.deleteTemplate(widget.template);
+                                }
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                               },

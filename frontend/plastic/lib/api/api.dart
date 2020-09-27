@@ -11,6 +11,8 @@ enum Routes {
   logoutAll,
   templatesByUser,
   templateById,
+  saveTemplate,
+  deleteTemplate,
   saveThing,
   deleteThing,
   thingsByUser,
@@ -45,6 +47,12 @@ class Api {
         break;
       case Routes.templateById:
         value = root + "templates/";
+        break;
+      case Routes.saveTemplate:
+        value = root + "templates/save";
+        break;
+      case Routes.deleteTemplate:
+        value = root + "templates/delete";
         break;
       case Routes.saveThing:
         value = root + "things/save";
