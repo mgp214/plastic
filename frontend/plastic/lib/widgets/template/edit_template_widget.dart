@@ -12,6 +12,7 @@ import 'package:plastic/widgets/components/double_field.dart';
 import 'package:plastic/widgets/components/int_field.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
 import 'package:plastic/widgets/components/string_field.dart';
+import 'package:plastic/widgets/thing/bulk_update_things.dart';
 
 class EditTemplateWidget extends StatefulWidget {
   final Template template;
@@ -33,6 +34,8 @@ class EditTemplateState extends State<EditTemplateWidget> {
 
   Map<TemplateField, Key> fieldKeys;
 
+  Template _originalTemplate;
+
   @override
   void initState() {
     _metadataControllers = Map();
@@ -43,6 +46,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
     _metadataNodes = Map();
     _metadataKeys = Map();
     fieldKeys = Map();
+    _originalTemplate = Template.clone(widget.template);
     super.initState();
   }
 
@@ -478,7 +482,18 @@ class EditTemplateState extends State<EditTemplateWidget> {
 
   _reviewEachAffectedThing(List<Thing> affectedThings) {}
 
-  _updateAllThings(List<Thing> affectedThings) {}
+  _updateAllThings(List<Thing> affectedThings) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BulkUpdateThings(
+          affectedThings: affectedThings,
+          newTemplate: widget.template,
+          oldTemplate: _originalTemplate,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(

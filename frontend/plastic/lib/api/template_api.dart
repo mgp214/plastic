@@ -80,9 +80,13 @@ class TemplateApi {
       }),
     );
 
-    var affectedThings = jsonDecode(response.body)
-        .map<Thing>((thing) => Thing.fromJsonMap(thing))
-        .toList();
+    List<Thing> affectedThings;
+
+    if (response.statusCode == 422) {
+      affectedThings = jsonDecode(response.body)
+          .map<Thing>((thing) => Thing.fromJsonMap(thing))
+          .toList();
+    }
 
     return ApiPostResponse<List<Thing>>(
         postResult: affectedThings,

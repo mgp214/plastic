@@ -49,6 +49,7 @@ router.post('/templates/save', auth, async (req, res) => {
 			// console.log(affectedThings);
 			console.log('request didn\'t include updates for all affected things, returning full list of affected things.');
 			res.status(422).send(JSON.stringify(affectedThings));
+			return;
 		} else {
 			console.log('no affected things');
 		}
@@ -57,7 +58,7 @@ router.post('/templates/save', auth, async (req, res) => {
 			{ _id: template._id },
 			template,
 			{ upsert: true, useFindAndModify: false });
-		res.status(201).send({ thing: template });
+		res.status(201).send({ template: template });
 	} catch (error) {
 		res.status(400).statusMessage = error.toString();
 		res.send();

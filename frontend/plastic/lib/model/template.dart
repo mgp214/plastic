@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:plastic/model/template_change.dart';
 
 enum FieldType {
   STRING,
@@ -26,6 +27,76 @@ class Template {
   TemplateField getMainField() {
     return fields.singleWhere((element) => element.main == true,
         orElse: () => null);
+  }
+
+  Template.clone(Template original) {
+    fields = List<TemplateField>();
+    userId = original.userId;
+    id = original.id;
+    name = original.name;
+    for (var originalField in original.fields) {
+      fields.add(TemplateField(
+          name: originalField.name,
+          type: originalField.type,
+          defaultValue: originalField.defaultValue,
+          id: originalField.id));
+    }
+  }
+
+  static List<TemplateChange> diff(Template a, Template b) {
+    var changes = List<TemplateChange>();
+    for (var aField in a.fields) {
+      var matchingIndex =
+          b.fields.indexWhere((bField) => aField.id == bField.id);
+      if (matchingIndex != -1) {
+        // field still exists in b
+        var bField = b.fields[matchingIndex];
+        if (aField.defaultValue != bField.defaultValue) {
+          changes.add(TemplateChange(
+            changeType: TemplateChangeType.DefaultValueChanged,
+            fieldId: aField.id,
+            fieldName: bField.name,
+            oldValue: aField.defaultValue,
+            newValue: bField.defaultValue,
+          ));
+        }
+        if (aField.name != bField.name) {
+          changes.add(TemplateChange(
+            changeType: TemplateChangeType.NameChanged,
+            fieldId: aField.id,
+            fieldName: bField.name,
+            oldValue: aField.name,
+            newValue: bField.name,
+          ));
+        }
+        if (aField.type != bField.type) {
+          changes.add(TemplateChange(
+            changeType: TemplateChangeType.TypeChanged,
+            fieldId: aField.id,
+            oldValue: aField.type,
+            newValue: bField.type,
+          ));
+        }
+      } else {
+        changes.add(TemplateChange(
+            changeType: TemplateChangeType.Deleted,
+            fieldId: aField.id,
+            fieldName: aField.name,
+            oldValue: aField));
+      }
+    }
+    for (var bField in b.fields) {
+      var matchingIndex =
+          a.fields.indexWhere((aField) => bField.id == aField.id);
+      if (matchingIndex == -1) {
+        changes.add(TemplateChange(
+            changeType: TemplateChangeType.Added,
+            fieldId: bField.id,
+            fieldName: bField.name,
+            newValue: bField));
+      }
+    }
+    return changes;
   }
 
   Template.fromJson(Map<String, dynamic> json) {
@@ -63,10 +134,11 @@ class Template {
 class TemplateField {
   String name;
   FieldType type;
+  String id;
   bool main;
   dynamic defaultValue;
 
-  TemplateField({this.name, this.type});
+  TemplateField({this.name, this.type, this.id, this.defaultValue, this.main});
 
   static String getFriendlyName(FieldType fieldType) {
     String friendlyName = "Field type not found!";
@@ -92,6 +164,7 @@ class TemplateField {
 
   TemplateField.fromJson(Map<String, dynamic> json) {
     name = json['name'];
+    id = json['_id'];
     main = json.containsKey('main') ? true : false;
     defaultValue = json.containsKey('default') ? json['default'] : null;
 
@@ -102,6 +175,7 @@ class TemplateField {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = name;
+    if (id != null) data['_id'] = id;
     data['fieldType'] = type.toString().split('.').last;
     if (main == true) data['main'] = true;
     if (defaultValue != null) data['default'] = defaultValue;
