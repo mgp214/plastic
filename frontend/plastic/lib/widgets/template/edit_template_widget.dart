@@ -116,8 +116,9 @@ class EditTemplateState extends State<EditTemplateWidget> {
 
       // default value objects
       if (!includeDefaultValue) return;
-      var defaultValuecontroller =
-          TextEditingController(text: field.defaultValue.toString());
+      var defaultValuecontroller = TextEditingController(
+          text:
+              field.defaultValue == null ? "" : field.defaultValue.toString());
       _fieldDefaultValueControllers[field] = defaultValuecontroller;
       var defaultValueNode = FocusNode();
       _fieldDefaultValueNodes[field] = defaultValueNode;

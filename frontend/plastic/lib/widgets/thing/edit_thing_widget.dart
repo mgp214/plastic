@@ -38,7 +38,8 @@ class EditThingState extends State<EditThingWidget> {
   Widget _getFieldWidget(ThingField field, FieldType type) {
     void buildControllers(String name) {
       if (fieldControllers[field.name] != null) return;
-      var controller = TextEditingController(text: field.value.toString());
+      var controller = TextEditingController(
+          text: field.value == null ? "" : field.value.toString());
       fieldControllers[field.name] = controller;
 
       var node = FocusNode();
