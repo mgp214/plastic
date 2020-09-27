@@ -4,6 +4,8 @@ import 'package:flutter/rendering.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/components/checkbox_field.dart';
+import 'package:plastic/widgets/components/double_field.dart';
+import 'package:plastic/widgets/components/int_field.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
 import 'package:plastic/widgets/components/string_field.dart';
 
@@ -22,6 +24,9 @@ class EditTemplateState extends State<EditTemplateWidget> {
   Map<TemplateField, TextEditingController> _fieldControllers;
   Map<TemplateField, FocusNode> _fieldNodes;
 
+  Map<TemplateField, TextEditingController> _fieldDefaultValueControllers;
+  Map<TemplateField, FocusNode> _fieldDefaultValueNodes;
+
   Map<TemplateField, Key> fieldKeys;
 
   @override
@@ -29,6 +34,8 @@ class EditTemplateState extends State<EditTemplateWidget> {
     _metadataControllers = Map();
     _fieldControllers = Map();
     _fieldNodes = Map();
+    _fieldDefaultValueControllers = Map();
+    _fieldDefaultValueNodes = Map();
     _metadataNodes = Map();
     _metadataKeys = Map();
     fieldKeys = Map();
@@ -91,14 +98,15 @@ class EditTemplateState extends State<EditTemplateWidget> {
   }
 
   Widget _getFieldWidget(TemplateField field) {
-    void buildControllers() {
+    void buildControllers(bool includeDefaultValue) {
+      //name objects
       if (_fieldControllers[field] != null) return;
       var controller = TextEditingController(text: field.name);
       _fieldControllers[field] = controller;
       fieldKeys[field] = UniqueKey();
-
       var node = FocusNode();
       _fieldNodes[field] = node;
+
       node
         ..addListener(() {
           if (node.hasFocus) {
@@ -106,14 +114,29 @@ class EditTemplateState extends State<EditTemplateWidget> {
                 baseOffset: 0, extentOffset: controller.text.length);
           }
         });
+
+      // default value objects
+      if (!includeDefaultValue) return;
+      controller = TextEditingController(text: field.defaultValue);
+      _fieldDefaultValueControllers[field] = controller;
+      node = FocusNode();
+      _fieldDefaultValueNodes[field] = node;
+      node
+        ..addListener(() {
+          if (node.hasFocus) {
+            controller.selection = TextSelection(
+                baseOffset: 0, extentOffset: controller.text.length);
+          } else {
+            controller.text = field.defaultValue.toString();
+          }
+        });
     }
 
     List<Widget> cardContents = List();
 
-    //TODO: default values
     switch (field.type) {
       case FieldType.STRING:
-        buildControllers();
+        buildControllers(true);
         cardContents.add(
           StringField(
             controller: _fieldControllers[field],
@@ -122,6 +145,18 @@ class EditTemplateState extends State<EditTemplateWidget> {
             onChanged: (value) {
               setState(() {
                 field.name = value;
+              });
+            },
+          ),
+        );
+        cardContents.add(
+          StringField(
+            controller: _fieldDefaultValueControllers[field],
+            focusNode: _fieldDefaultValueNodes[field],
+            label: "Default value",
+            onChanged: (value) {
+              setState(() {
+                field.defaultValue = value;
               });
             },
           ),
@@ -143,7 +178,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
         );
         break;
       case FieldType.INT:
-        buildControllers();
+        buildControllers(true);
         cardContents.add(
           StringField(
             controller: _fieldControllers[field],
@@ -156,9 +191,19 @@ class EditTemplateState extends State<EditTemplateWidget> {
             },
           ),
         );
+        cardContents.add(IntField(
+          controller: _fieldDefaultValueControllers[field],
+          focusNode: _fieldDefaultValueNodes[field],
+          label: "Default value",
+          onChanged: (value) {
+            setState(() {
+              field.defaultValue = int.parse(value, onError: (value) => 0);
+            });
+          },
+        ));
         break;
       case FieldType.DOUBLE:
-        buildControllers();
+        buildControllers(true);
         cardContents.add(
           StringField(
             controller: _fieldControllers[field],
@@ -171,12 +216,22 @@ class EditTemplateState extends State<EditTemplateWidget> {
             },
           ),
         );
+        cardContents.add(DoubleField(
+          controller: _fieldDefaultValueControllers[field],
+          focusNode: _fieldDefaultValueNodes[field],
+          label: "Default state",
+          onChanged: (value) {
+            setState(() {
+              field.defaultValue = double.parse(value, (value) => 0);
+            });
+          },
+        ));
         break;
       case FieldType.ENUM:
         // TODO: Handle this case.
         break;
       case FieldType.BOOL:
-        buildControllers();
+        buildControllers(false);
         cardContents.add(
           StringField(
             controller: _fieldControllers[field],
@@ -189,6 +244,15 @@ class EditTemplateState extends State<EditTemplateWidget> {
             },
           ),
         );
+        cardContents.add(CheckboxField(
+          onChanged: (value) {
+            setState(() {
+              field.defaultValue = value ?? false;
+            });
+          },
+          label: "Default value",
+          value: field.defaultValue ?? null,
+        ));
         break;
       default:
         cardContents.add(Text(
@@ -203,7 +267,6 @@ class EditTemplateState extends State<EditTemplateWidget> {
         child: SplashListTile(
           color: Style.accent,
           onTap: () => Flushbar(
-            message: "Drag to rearrange fields",
             duration: Style.snackDuration,
           )..show(context),
           child: Column(
