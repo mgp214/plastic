@@ -22,7 +22,8 @@ class Template {
   });
 
   TemplateField getMainField() {
-    return fields.singleWhere((element) => element.main == true);
+    return fields.singleWhere((element) => element.main == true,
+        orElse: () => null);
   }
 
   Template.fromJson(Map<String, dynamic> json) {

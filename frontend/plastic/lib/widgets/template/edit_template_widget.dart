@@ -88,10 +88,8 @@ class EditTemplateState extends State<EditTemplateWidget> {
     var newField = TemplateField(
         name: 'new ${TemplateField.getFriendlyName(fieldType)} field',
         type: fieldType);
-    if (fieldType == FieldType.STRING &&
-        widget.template.fields
-                .firstWhere((f) => f.main == true, orElse: () => null) ==
-            null) newField.main = true;
+    if (fieldType == FieldType.STRING && widget.template.getMainField() == null)
+      newField.main = true;
     widget.template.fields.add(newField);
     setState(() {});
     Navigator.pop(context);
@@ -107,29 +105,28 @@ class EditTemplateState extends State<EditTemplateWidget> {
       var node = FocusNode();
       _fieldNodes[field] = node;
 
-      node
-        ..addListener(() {
-          if (node.hasFocus) {
-            controller.selection = TextSelection(
-                baseOffset: 0, extentOffset: controller.text.length);
-          }
-        });
+      node.addListener(() {
+        if (node.hasFocus) {
+          controller.selection = TextSelection(
+              baseOffset: 0, extentOffset: controller.text.length);
+        }
+      });
 
       // default value objects
       if (!includeDefaultValue) return;
-      controller = TextEditingController(text: field.defaultValue);
-      _fieldDefaultValueControllers[field] = controller;
-      node = FocusNode();
-      _fieldDefaultValueNodes[field] = node;
-      node
-        ..addListener(() {
-          if (node.hasFocus) {
-            controller.selection = TextSelection(
-                baseOffset: 0, extentOffset: controller.text.length);
-          } else {
-            controller.text = field.defaultValue.toString();
-          }
-        });
+      var defaultValuecontroller =
+          TextEditingController(text: field.defaultValue);
+      _fieldDefaultValueControllers[field] = defaultValuecontroller;
+      var defaultValueNode = FocusNode();
+      _fieldDefaultValueNodes[field] = defaultValueNode;
+      defaultValueNode.addListener(() {
+        if (defaultValueNode.hasFocus) {
+          defaultValuecontroller.selection = TextSelection(
+              baseOffset: 0, extentOffset: defaultValuecontroller.text.length);
+        } else {
+          defaultValuecontroller.text = field.defaultValue.toString();
+        }
+      });
     }
 
     List<Widget> cardContents = List();
@@ -264,39 +261,97 @@ class EditTemplateState extends State<EditTemplateWidget> {
       key: fieldKeys[field],
       child: Card(
         color: Style.inputField,
-        child: SplashListTile(
-          color: Style.accent,
-          onTap: () => Flushbar(
-            duration: Style.snackDuration,
-          )..show(context),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IntrinsicHeight(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: cardContents,
-                      ),
+        child: Stack(
+          children: [
+            SplashListTile(
+              color: Style.accent,
+              onTap: () => Flushbar(
+                message: "Hold to rearrange fields",
+                duration: Style.snackDuration,
+              ).show(context),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IntrinsicHeight(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: cardContents,
+                          ),
+                        ),
+                        VerticalDivider(
+                          width: 15,
+                          thickness: 1,
+                          color: Style.background,
+                          indent: 10,
+                          endIndent: 10,
+                        ),
+                        Icon(
+                          Icons.reorder,
+                          color: Style.background,
+                        ),
+                      ],
                     ),
-                    VerticalDivider(
-                      width: 15,
-                      thickness: 1,
-                      color: Style.background,
-                      indent: 10,
-                      endIndent: 10,
-                    ),
-                    Icon(
-                      Icons.reorder,
-                      color: Style.background,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            Positioned(
+              top: 5,
+              right: 0,
+              child: IconButton(
+                icon: Icon(
+                  Icons.delete,
+                ),
+                color: Style.error,
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => SimpleDialog(
+                      backgroundColor: Style.background,
+                      title: Text(
+                        "Are you sure you want to delete field \"${field.name}\"?",
+                        style: Style.getStyle(FontRole.Display3, Style.primary),
+                      ),
+                      children: [
+                        SimpleDialogOption(
+                          child: Text(
+                            "Delete",
+                            style:
+                                Style.getStyle(FontRole.Display3, Style.error),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              widget.template.fields.remove(field);
+                              if (widget.template.getMainField() == null) {
+                                var newMainField = widget.template.fields
+                                    .firstWhere(
+                                        (f) => f.type == FieldType.STRING,
+                                        orElse: () => null);
+                                if (newMainField != null)
+                                  newMainField.main = true;
+                              }
+                              Navigator.pop(context);
+                            });
+                          },
+                        ),
+                        SimpleDialogOption(
+                          child: Text(
+                            "Cancel",
+                            style:
+                                Style.getStyle(FontRole.Display3, Style.accent),
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
