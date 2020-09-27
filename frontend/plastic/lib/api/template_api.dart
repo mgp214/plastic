@@ -6,8 +6,10 @@ import 'package:http/http.dart' as http;
 import 'package:plastic/api/account_api.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_get_response.dart';
+import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
+import 'package:plastic/model/thing.dart';
 
 class TemplateApi {
   static final TemplateApi _singleton = TemplateApi._internal();
@@ -61,19 +63,31 @@ class TemplateApi {
         successful: true, message: response.reasonPhrase, getResult: templates);
   }
 
-  Future<ApiResponse> saveTemplate(Template template) async {
+  Future<ApiPostResponse<List<Thing>>> saveTemplate(
+      Template template, List<Thing> updatedThings) async {
     if (!await AccountApi().hasValidToken())
-      return ApiResponse(successful: false, message: 'Please log in.');
+      return ApiPostResponse<List<Thing>>(
+          postResult: null, successful: false, message: 'Please log in.');
     final response = await http.post(
       Api.getRoute(Routes.saveTemplate),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: AccountApi().authHeader(),
       },
-      body: template.toJson(),
+      body: jsonEncode({
+        "template": template,
+        "updatedThings": updatedThings,
+      }),
     );
-    return ApiResponse(
-        successful: response.statusCode == 201, message: response.reasonPhrase);
+
+    var affectedThings = jsonDecode(response.body)
+        .map<Thing>((thing) => Thing.fromJsonMap(thing))
+        .toList();
+
+    return ApiPostResponse<List<Thing>>(
+        postResult: affectedThings,
+        successful: response.statusCode == 201,
+        message: response.reasonPhrase);
   }
 
   Future<ApiResponse> deleteTemplate(Template template) async {

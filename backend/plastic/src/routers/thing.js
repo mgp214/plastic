@@ -4,7 +4,6 @@ const auth = require('../middleware/auth');
 const router = express.Router();
 
 
-
 // Create a new thing, or update if it exists already
 router.post('/things/save', auth, async (req, res) => {
 	try {

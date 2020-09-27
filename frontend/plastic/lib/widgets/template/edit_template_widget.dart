@@ -2,8 +2,10 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
+import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/components/checkbox_field.dart';
 import 'package:plastic/widgets/components/double_field.dart';
@@ -416,16 +418,67 @@ class EditTemplateState extends State<EditTemplateWidget> {
                 duration: Style.snackDuration)
             .show(context);
       } else {
-        Flushbar(
-                messageText: Text(
-                  response.message,
-                  style: Style.getStyle(FontRole.Tooltip, Style.error),
-                ),
-                duration: Style.snackDuration)
-            .show(context);
+        var affectedThings =
+            (response as ApiPostResponse<List<Thing>>).postResult;
+        if (affectedThings.length > 0) {
+          _handleSaveRejection(affectedThings);
+        } else {
+          Flushbar(
+                  messageText: Text(
+                    response.message,
+                    style: Style.getStyle(FontRole.Tooltip, Style.error),
+                  ),
+                  duration: Style.snackDuration)
+              .show(context);
+        }
       }
     }
   }
+
+  _handleSaveRejection(List<Thing> affectedThings) {
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        backgroundColor: Style.background,
+        title: Padding(
+          padding: EdgeInsets.only(bottom: 15),
+          child: Text(
+            "Updating ${widget.template.name} will affect ${affectedThings.length} thing${affectedThings.length == 0 ? '' : 's'}. Do you want to update update one at a time, or all at the same time?",
+            style: Style.getStyle(FontRole.Content, Style.accent),
+          ),
+        ),
+        children: [
+          SimpleDialogOption(
+            child: Text("Update each thing",
+                style: Style.getStyle(FontRole.Display3, Style.primary)),
+            onPressed: () {
+              Navigator.pop(context);
+              _reviewEachAffectedThing(affectedThings);
+            },
+          ),
+          SimpleDialogOption(
+            child: Text("All at the same time",
+                style: Style.getStyle(FontRole.Display3, Style.primary)),
+            onPressed: () {
+              Navigator.pop(context);
+              _updateAllThings(affectedThings);
+            },
+          ),
+          SimpleDialogOption(
+            child: Text("Back (don't save)",
+                style: Style.getStyle(FontRole.Display3, Style.error)),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  _reviewEachAffectedThing(List<Thing> affectedThings) {}
+
+  _updateAllThings(List<Thing> affectedThings) {}
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -473,7 +526,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
                       ],
                     ),
                     onPressed: () {
-                      Api.template.saveTemplate(widget.template).then(
+                      Api.template.saveTemplate(widget.template, List()).then(
                           (response) =>
                               handleApiResponse(Routes.saveTemplate, response));
                       Navigator.pop(context);

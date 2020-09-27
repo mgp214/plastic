@@ -78,6 +78,10 @@ class Thing {
     data['templateId'] = this.templateId;
     return jsonEncode(data);
   }
+
+  static String listToJson(List<Thing> things) {
+    return jsonEncode(things);
+  }
 }
 
 class ThingField {

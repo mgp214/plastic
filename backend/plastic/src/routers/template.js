@@ -1,5 +1,6 @@
 const express = require('express');
 const Template = require('../models/Template');
+const Thing = require('../models/Thing');
 const auth = require('../middleware/auth');
 const router = express.Router();
 
@@ -30,11 +31,27 @@ router.get('/templates/:id', auth, async (req, res) => {
 	res.send(templates);
 });
 
+async function getListOfAffectedThings(template) {
+	var affectedThings = await Thing.find({ templateId: template.id }).exec();
+	return affectedThings.length > 0 ? affectedThings : false;
+}
+
 // Create a new template, or update if it exists already
 router.post('/templates/save', auth, async (req, res) => {
 	try {
-		const template = new Template(req.body);
+		const template = new Template(JSON.parse(req.body.template));
+		const updatedThings = req.body.updatedThings;
 		template.userId = req.user._id;
+		var affectedThings = await getListOfAffectedThings(template);
+		console.log(updatedThings);
+		if (affectedThings) {
+			//TODO: verify each affected thing is included in the updated things provided.
+			// console.log(affectedThings);
+			console.log('request didn\'t include updates for all affected things, returning full list of affected things.');
+			res.status(422).send(JSON.stringify(affectedThings));
+		} else {
+			console.log('no affected things');
+		}
 		console.log('saving thing: ' + template);
 		await Template.findOneAndUpdate(
 			{ _id: template._id },
