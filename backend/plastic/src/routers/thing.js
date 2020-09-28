@@ -9,7 +9,7 @@ router.post('/things/save', auth, async (req, res) => {
 	try {
 		const thing = new Thing(req.body);
 		thing.userId = req.user._id;
-		console.log('saving thing: ' + thing);
+		console.log('saving thing ' + thing._id.toString());
 		await Thing.findOneAndUpdate(
 			{ _id: thing._id },
 			thing,

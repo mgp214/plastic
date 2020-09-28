@@ -36,28 +36,48 @@ async function getListOfAffectedThings(template) {
 	return affectedThings.length > 0 ? affectedThings : false;
 }
 
+async function saveTemplate(template) {
+	console.log('saving template: ' + template._id.toString());
+	await Template.findOneAndUpdate(
+		{ _id: template._id },
+		template,
+		{ upsert: true, useFindAndModify: false });
+}
+
 // Create a new template, or update if it exists already
 router.post('/templates/save', auth, async (req, res) => {
 	try {
 		const template = new Template(JSON.parse(req.body.template));
-		const updatedThings = req.body.updatedThings;
+		// const updatedThingsJson = JSON.parse(req.body.updatedThings);
+		const updatedThings = req.body.updatedThings.map(t => new Thing(JSON.parse(t)));
 		template.userId = req.user._id;
 		var affectedThings = await getListOfAffectedThings(template);
 		console.log(updatedThings);
 		if (affectedThings) {
 			//TODO: verify each affected thing is included in the updated things provided.
 			// console.log(affectedThings);
-			console.log('request didn\'t include updates for all affected things, returning full list of affected things.');
-			res.status(422).send(JSON.stringify(affectedThings));
+			var updatedThingIds = updatedThings.map(thing => thing._id.toString());
+			if (affectedThings.some(thing => updatedThingIds.indexOf(thing._id.toString()) == -1)) {
+				console.log('request didn\'t include updates for all affected things, returning full list of affected things.');
+				res.status(422).send(JSON.stringify({ affectedThings: affectedThings }));
+			} else {
+				console.log('request includes updates for all affected things. performing updates');
+				for (var i = 0; i < updatedThings.length; i++) {
+					var thing = updatedThings[i];
+					thing.userId = req.user._id;
+					console.log('saving thing ' + thing._id.toString());
+					await Thing.findOneAndUpdate(
+						{ _id: thing._id },
+						thing,
+						{ upsert: true, useFindAndModify: false });
+				}
+				saveTemplate(template);
+				res.status(201).send({ template: template });
+			}
 			return;
-		} else {
-			console.log('no affected things');
 		}
-		console.log('saving thing: ' + template);
-		await Template.findOneAndUpdate(
-			{ _id: template._id },
-			template,
-			{ upsert: true, useFindAndModify: false });
+		console.log('no affected things.');
+		saveTemplate(template);
 		res.status(201).send({ template: template });
 	} catch (error) {
 		res.status(400).statusMessage = error.toString();

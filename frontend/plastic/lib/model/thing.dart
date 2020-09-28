@@ -20,8 +20,13 @@ class Thing {
       fields = List<ThingField>();
       TemplateManager().getTemplateById(templateId).fields.forEach(
         (templateField) {
-          fields.add(ThingField(
-              name: templateField.name, value: templateField.defaultValue));
+          fields.add(
+            ThingField(
+              name: templateField.name,
+              value: templateField.defaultValue,
+              id: templateField.id,
+            ),
+          );
         },
       );
     }
@@ -86,19 +91,22 @@ class Thing {
 
 class ThingField {
   String name;
+  String id;
   dynamic value;
 
-  ThingField({this.name, this.value});
+  ThingField({this.name, this.value, this.id});
 
   ThingField.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     value = json['value'];
+    id = json['_id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = name;
     data['value'] = value;
+    data['_id'] = id;
 
     return data;
   }

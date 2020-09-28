@@ -83,7 +83,7 @@ class TemplateApi {
     List<Thing> affectedThings;
 
     if (response.statusCode == 422) {
-      affectedThings = jsonDecode(response.body)
+      affectedThings = jsonDecode(response.body)["affectedThings"]
           .map<Thing>((thing) => Thing.fromJsonMap(thing))
           .toList();
     }

@@ -1,9 +1,14 @@
+import 'dart:developer';
+
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:plastic/api/api.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/template_change.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
+import 'package:plastic/widgets/components/border_button.dart';
 
 class BulkUpdateThings extends StatefulWidget {
   final Template oldTemplate;
@@ -31,8 +36,76 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
     super.initState();
   }
 
+  void applyChanges() {
+    for (var thing in widget.affectedThings) {
+      for (var change in changes) {
+        var fieldIndex =
+            thing.fields.indexWhere((field) => field.id == change.fieldId);
+        var field = fieldIndex != -1 ? thing.fields[fieldIndex] : null;
+        switch (change.changeType) {
+          case TemplateChangeType.Deleted:
+            thing.fields.removeAt(fieldIndex);
+            break;
+          case TemplateChangeType.Added:
+            thing.fields.add(
+              ThingField(
+                id: change.fieldId,
+                name: change.fieldName,
+                value: (change.newValue as TemplateField).defaultValue,
+              ),
+            );
+            break;
+          case TemplateChangeType.NameChanged:
+            field.name = change.newValue;
+            break;
+          case TemplateChangeType.DefaultValueChanged:
+            if (changeAnswers[change] == true &&
+                field.value == change.oldValue) {
+              // replace existing default values
+              field.value = change.newValue;
+            }
+            break;
+          case TemplateChangeType.TypeChanged:
+            // TODO: Handle this case.
+            break;
+        }
+      }
+    }
+
+    Api.template
+        .saveTemplate(widget.newTemplate, widget.affectedThings)
+        .then((response) {
+      if (response.successful) {
+        Flushbar(
+          messageText: Text(
+            response.message,
+            style: Style.getStyle(FontRole.Tooltip, Style.accent),
+          ),
+          duration: Style.snackDuration,
+        ).show(context);
+        Navigator.popUntil(context, ModalRoute.withName("home"));
+      } else {
+        Navigator.pop(context);
+        Flushbar(
+          messageText: Text(
+            response.message,
+            style: Style.getStyle(FontRole.Tooltip, Style.error),
+          ),
+          duration: Style.snackDuration,
+        ).show(context);
+      }
+    });
+  }
+
   List<Widget> _getChangeWidgets() {
     var widgets = List<Widget>();
+
+    widgets.add(Padding(
+      padding: EdgeInsets.all(15),
+      child: Text(
+          "Reviewing bulk changes to ${widget.affectedThings.length} \"${widget.oldTemplate.name}\" thing${widget.affectedThings.length == 1 ? "" : "s"}",
+          style: Style.getStyle(FontRole.Display3, Style.accent)),
+    ));
 
     Widget cardContents;
     for (var change in changes) {
@@ -111,6 +184,43 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
       );
     }
 
+    widgets.add(BorderButton(
+      color: Style.primary,
+      content: "Done",
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (context) => SimpleDialog(
+                  backgroundColor: Style.background,
+                  title: Text(
+                    "Are you sure you want to apply these changes to all ${widget.oldTemplate.name} things?",
+                    style: Style.getStyle(FontRole.Display3, Style.accent),
+                  ),
+                  children: [
+                    SimpleDialogOption(
+                      child: Text(
+                        "Yes",
+                        style: Style.getStyle(FontRole.Display3, Style.primary),
+                      ),
+                      onPressed: applyChanges,
+                    ),
+                    SimpleDialogOption(
+                      child: Text(
+                        "No",
+                        style: Style.getStyle(FontRole.Display3, Style.primary),
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ));
+      },
+    ));
+
+    widgets.add(BorderButton(
+      color: Style.error,
+      content: "Back",
+      onPressed: () => Navigator.pop(context),
+    ));
     return widgets;
   }
 
