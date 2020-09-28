@@ -194,7 +194,6 @@ class EditThingState extends State<EditThingWidget> {
       BorderButton(
         color: Style.primary,
         onPressed: () {
-          Navigator.popUntil(context, ModalRoute.withName('home'));
           Navigator.push(
               context,
               MaterialPageRoute(

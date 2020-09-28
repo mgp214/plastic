@@ -1,6 +1,7 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:objectid/objectid.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
@@ -95,7 +96,9 @@ class EditTemplateState extends State<EditTemplateWidget> {
   void _createNewField(FieldType fieldType) {
     var newField = TemplateField(
         name: 'new ${TemplateField.getFriendlyName(fieldType)} field',
-        type: fieldType);
+        type: fieldType,
+        defaultValue: TemplateField.getDefaultDefaultValue(fieldType),
+        id: ObjectId().hexString);
     if (fieldType == FieldType.STRING && widget.template.getMainField() == null)
       newField.main = true;
     widget.template.fields.add(newField);

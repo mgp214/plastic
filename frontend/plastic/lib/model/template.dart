@@ -162,6 +162,21 @@ class TemplateField {
     return friendlyName;
   }
 
+  static dynamic getDefaultDefaultValue(FieldType type) {
+    switch (type) {
+      case FieldType.STRING:
+        return "";
+      case FieldType.INT:
+        return 0;
+      case FieldType.DOUBLE:
+        return 0.0;
+      case FieldType.ENUM:
+        return null;
+      case FieldType.BOOL:
+        return false;
+    }
+  }
+
   TemplateField.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     id = json['_id'];
