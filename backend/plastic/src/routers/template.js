@@ -31,8 +31,8 @@ router.get('/templates/:id', auth, async (req, res) => {
 	res.send(templates);
 });
 
-async function getListOfAffectedThings(template) {
-	var affectedThings = await Thing.find({ templateId: template.id }).exec();
+async function getListOfAffectedThings(templateId) {
+	var affectedThings = await Thing.find({ templateId: templateId }).exec();
 	return affectedThings.length > 0 ? affectedThings : false;
 }
 
@@ -51,7 +51,7 @@ router.post('/templates/save', auth, async (req, res) => {
 		// const updatedThingsJson = JSON.parse(req.body.updatedThings);
 		const updatedThings = req.body.updatedThings.map(t => new Thing(JSON.parse(t)));
 		template.userId = req.user._id;
-		var affectedThings = await getListOfAffectedThings(template);
+		var affectedThings = await getListOfAffectedThings(template._id);
 		console.log(updatedThings);
 		if (affectedThings) {
 			//TODO: verify each affected thing is included in the updated things provided.
@@ -91,7 +91,16 @@ router.post('/templates/delete', auth, async (req, res) => {
 	try {
 		const id = req.body.id;
 		const userId = req.user._id;
-		console.log('deleting template with id: ' + id);
+		var affectedThings = await getListOfAffectedThings(id);
+		if (affectedThings) {
+			for (var i = 0; i < affectedThings.length; i++) {
+				var thingId = affectedThings[i]._id;
+				console.log('deleting thing with id: ' + thingId.toString());
+				await Thing.findOneAndDelete(
+					{ _id: thingId, userId: userId });
+			}
+		}
+		console.log('deleting template with id: ' + id.toString());
 		await Template.findOneAndDelete(
 			{ _id: id.toString(), userId: userId });
 		res.status(200).send({ id });
