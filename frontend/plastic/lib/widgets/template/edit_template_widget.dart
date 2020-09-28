@@ -370,9 +370,11 @@ class EditTemplateState extends State<EditTemplateWidget> {
         child: ReorderableListView(
           onReorder: (int oldIndex, int newIndex) {
             var field = widget.template.fields[oldIndex];
-            widget.template.fields.removeAt(oldIndex);
-            widget.template.fields.insert(newIndex, field);
-            setState(() {});
+            newIndex = oldIndex < newIndex ? newIndex - 1 : newIndex;
+            setState(() {
+              widget.template.fields.removeAt(oldIndex);
+              widget.template.fields.insert(newIndex, field);
+            });
           },
           children:
               widget.template.fields.map((f) => _getFieldWidget(f)).toList(),
