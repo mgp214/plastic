@@ -3,7 +3,8 @@ enum TemplateChangeType {
   Added,
   NameChanged,
   DefaultValueChanged,
-  TypeChanged
+  TypeChanged,
+  Metadata
 }
 
 class TemplateChange {

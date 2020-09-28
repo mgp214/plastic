@@ -108,17 +108,29 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
     ));
 
     Widget cardContents;
+    var changedFieldNames = Map<String, String>();
     for (var change in changes) {
+      if (change.changeType != TemplateChangeType.NameChanged) continue;
+      changedFieldNames[change.newValue] =
+          "\"${change.newValue}\" (previously \"${change.oldValue}\")";
+      changedFieldNames[change.oldValue] =
+          "\"${change.newValue}\" (previously \"${change.oldValue}\")";
+    }
+    for (var change in changes) {
+      var affectedFieldName = changedFieldNames.containsKey(change.fieldName)
+          ? changedFieldNames[change.fieldName]
+          : "\"${change.fieldName}\"";
+
       switch (change.changeType) {
         case TemplateChangeType.Deleted:
           cardContents = Text(
-            "Field \"${(change.oldValue as TemplateField).name}\" was deleted, the field and value in each affected thing will be deleted.",
+            "Field $affectedFieldName was deleted, the field and value in each affected thing will be deleted.",
             style: Style.getStyle(FontRole.Display3, Style.primary),
           );
           break;
         case TemplateChangeType.Added:
           cardContents = Text(
-            "Field \"${change.fieldName}\" was created. Existing things will have this field set to the default value of " +
+            "Field $affectedFieldName was created. Existing things will have this field set to the default value of " +
                 "\"${(change.newValue as TemplateField).defaultValue}\".",
             style: Style.getStyle(FontRole.Display3, Style.primary),
           );
@@ -133,7 +145,7 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
           cardContents = Column(
             children: [
               Text(
-                "Field \"${change.fieldName}\" had its default value changed from \"${change.oldValue}\" to \"${change.newValue}\"." +
+                "Field $affectedFieldName had its default value changed from \"${change.oldValue}\" to \"${change.newValue}\"." +
                     " Do you want to replace the old value of things which currently have the default value with the new one?",
                 style: Style.getStyle(FontRole.Display3, Style.primary),
               ),
@@ -168,6 +180,12 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
           break;
         case TemplateChangeType.TypeChanged:
           // TODO: Handle this case.
+          break;
+        case TemplateChangeType.Metadata:
+          cardContents = Text(
+            "Template had ${change.fieldName} changed from \"${change.oldValue}\" to \"${change.newValue}\".",
+            style: Style.getStyle(FontRole.Display3, Style.primary),
+          );
           break;
       }
       widgets.add(

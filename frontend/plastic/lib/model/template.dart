@@ -45,12 +45,31 @@ class Template {
 
   static List<TemplateChange> diff(Template a, Template b) {
     var changes = List<TemplateChange>();
+    if (a.name != b.name) {
+      changes.add(
+        TemplateChange(
+          changeType: TemplateChangeType.Metadata,
+          fieldName: "name",
+          oldValue: a.name,
+          newValue: b.name,
+        ),
+      );
+    }
     for (var aField in a.fields) {
       var matchingIndex =
           b.fields.indexWhere((bField) => aField.id == bField.id);
       if (matchingIndex != -1) {
         // field still exists in b
         var bField = b.fields[matchingIndex];
+        if (aField.name != bField.name) {
+          changes.add(TemplateChange(
+            changeType: TemplateChangeType.NameChanged,
+            fieldId: aField.id,
+            fieldName: aField.name,
+            oldValue: aField.name,
+            newValue: bField.name,
+          ));
+        }
         if (aField.defaultValue != bField.defaultValue) {
           changes.add(TemplateChange(
             changeType: TemplateChangeType.DefaultValueChanged,
@@ -58,15 +77,6 @@ class Template {
             fieldName: bField.name,
             oldValue: aField.defaultValue,
             newValue: bField.defaultValue,
-          ));
-        }
-        if (aField.name != bField.name) {
-          changes.add(TemplateChange(
-            changeType: TemplateChangeType.NameChanged,
-            fieldId: aField.id,
-            fieldName: bField.name,
-            oldValue: aField.name,
-            newValue: bField.name,
           ));
         }
         if (aField.type != bField.type) {
