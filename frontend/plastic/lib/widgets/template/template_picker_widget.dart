@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:objectid/objectid.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
@@ -61,7 +62,10 @@ class TemplatePickerState extends State<TemplatePickerWidget> {
           context,
           MaterialPageRoute(
             builder: (context) => EditTemplateWidget(
-              template: Template(fields: [], userId: Api.account.getUserId()),
+              template: Template(
+                  id: ObjectId().hexString,
+                  fields: [],
+                  userId: Api.account.getUserId()),
             ),
           ),
         ),

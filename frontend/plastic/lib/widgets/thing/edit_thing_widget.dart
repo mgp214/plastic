@@ -197,8 +197,9 @@ class EditThingState extends State<EditThingWidget> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      EditTemplateWidget(template: widget.template)));
+                builder: (context) =>
+                    EditTemplateWidget(template: widget.template),
+              ));
         },
         content: "Edit ${widget.template.name} template",
       ),

@@ -8,6 +8,7 @@ import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
+import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/checkbox_field.dart';
 import 'package:plastic/widgets/components/double_field.dart';
 import 'package:plastic/widgets/components/int_field.dart';
@@ -426,6 +427,14 @@ class EditTemplateState extends State<EditTemplateWidget> {
                 ),
                 duration: Style.snackDuration)
             .show(context);
+        (TemplateManager().loadTemplates()).then((x) {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    EditTemplateWidget(template: widget.template),
+              ));
+        });
       } else {
         var affectedThings =
             (response as ApiPostResponse<List<Thing>>).postResult;
