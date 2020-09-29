@@ -469,11 +469,11 @@ class EditTemplateState extends State<EditTemplateWidget> {
         children: [
           SimpleDialogOption(
             child: Text("Update each thing",
-                style: Style.getStyle(FontRole.Display3, Style.primary)),
-            onPressed: () {
-              Navigator.pop(context);
-              _reviewEachAffectedThing(affectedThings);
-            },
+                style: Style.getStyle(FontRole.Display3, Style.inputField)),
+            // onPressed: () {
+            //   Navigator.pop(context);
+            //   _reviewEachAffectedThing(affectedThings);
+            // },
           ),
           SimpleDialogOption(
             child: Text("All at the same time",
