@@ -510,125 +510,164 @@ class EditTemplateState extends State<EditTemplateWidget> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Style.background,
-        floatingActionButton: FloatingActionButton(
-          shape: CircleBorder(side: BorderSide(color: Style.primary, width: 3)),
-          backgroundColor: Colors.transparent,
-          child: Icon(
-            Icons.menu,
-            color: Style.primary,
-          ),
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => SimpleDialog(
-                backgroundColor: Style.background,
-                children: [
-                  SimpleDialogOption(
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.add,
-                          color: Style.primary,
-                        ),
-                        Text("Add a new field",
-                            style: Style.getStyle(
-                                FontRole.Display3, Style.primary)),
-                      ],
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _onAddNewFieldPressed();
-                    },
-                  ),
-                  SimpleDialogOption(
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.save,
-                          color: Style.primary,
-                        ),
-                        Text("Save template",
-                            style: Style.getStyle(
-                                FontRole.Display3, Style.primary)),
-                      ],
-                    ),
-                    onPressed: () {
-                      Api.template.saveTemplate(widget.template, List()).then(
-                          (response) =>
-                              handleApiResponse(Routes.saveTemplate, response));
-                      Navigator.pop(context);
-                    },
-                  ),
-                  SimpleDialogOption(
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.cancel,
-                          color: Style.error,
-                        ),
-                        Text(
-                          widget.template.id != null ? "Delete" : "Discard",
-                          style: Style.getStyle(FontRole.Display3, Style.error),
-                        ),
-                      ],
-                    ),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => SimpleDialog(
-                          backgroundColor: Style.background,
-                          title: Padding(
-                            padding: EdgeInsets.only(bottom: 15),
-                            child: Text(
-                              widget.template.id != null
-                                  ? "Delete existing template?"
-                                  : "Discard new template?",
-                              style: Style.getStyle(
-                                  FontRole.Display3, Style.accent),
-                            ),
+  Widget build(BuildContext context) => WillPopScope(
+        child: Scaffold(
+          backgroundColor: Style.background,
+          floatingActionButton: FloatingActionButton(
+            shape:
+                CircleBorder(side: BorderSide(color: Style.primary, width: 3)),
+            backgroundColor: Colors.transparent,
+            child: Icon(
+              Icons.menu,
+              color: Style.primary,
+            ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => SimpleDialog(
+                  backgroundColor: Style.background,
+                  children: [
+                    SimpleDialogOption(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.add,
+                            color: Style.primary,
                           ),
-                          children: [
-                            SimpleDialogOption(
-                              child: Text(
-                                "Stay here",
-                                style: Style.getStyle(
-                                    FontRole.Display3, Style.primary),
-                              ),
-                              onPressed: () => Navigator.pop(context),
-                            ),
-                            SimpleDialogOption(
+                          Text("Add a new field",
+                              style: Style.getStyle(
+                                  FontRole.Display3, Style.primary)),
+                        ],
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _onAddNewFieldPressed();
+                      },
+                    ),
+                    SimpleDialogOption(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.save,
+                            color: Style.primary,
+                          ),
+                          Text("Save template",
+                              style: Style.getStyle(
+                                  FontRole.Display3, Style.primary)),
+                        ],
+                      ),
+                      onPressed: () {
+                        Api.template.saveTemplate(widget.template, List()).then(
+                            (response) => handleApiResponse(
+                                Routes.saveTemplate, response));
+                        Navigator.pop(context);
+                      },
+                    ),
+                    SimpleDialogOption(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.cancel,
+                            color: Style.error,
+                          ),
+                          Text(
+                            widget.template.id != null ? "Delete" : "Discard",
+                            style:
+                                Style.getStyle(FontRole.Display3, Style.error),
+                          ),
+                        ],
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => SimpleDialog(
+                            backgroundColor: Style.background,
+                            title: Padding(
+                              padding: EdgeInsets.only(bottom: 15),
                               child: Text(
                                 widget.template.id != null
-                                    ? "Delete ${widget.template.name} PERMANENTLY!"
-                                    : "Confirm cancel",
+                                    ? "Delete existing template?"
+                                    : "Discard new template?",
                                 style: Style.getStyle(
-                                    FontRole.Display3, Style.error),
+                                    FontRole.Display3, Style.accent),
                               ),
-                              onPressed: () {
-                                if (widget.template.id != null) {
-                                  Api.template.deleteTemplate(widget.template);
-                                }
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                              },
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  )
-                ],
+                            children: [
+                              SimpleDialogOption(
+                                child: Text(
+                                  "Stay here",
+                                  style: Style.getStyle(
+                                      FontRole.Display3, Style.primary),
+                                ),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                              SimpleDialogOption(
+                                child: Text(
+                                  widget.template.id != null
+                                      ? "Delete ${widget.template.name} PERMANENTLY!"
+                                      : "Confirm cancel",
+                                  style: Style.getStyle(
+                                      FontRole.Display3, Style.error),
+                                ),
+                                onPressed: () {
+                                  if (widget.template.id != null) {
+                                    Api.template
+                                        .deleteTemplate(widget.template);
+                                  }
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    )
+                  ],
+                ),
+              );
+            },
+          ),
+          body: Column(
+            children: [
+              _getTemplateNameField(),
+              _getReorderableFieldWidget(),
+            ],
+          ),
+        ),
+        onWillPop: () {
+          if (Template.diff(_originalTemplate, widget.template).length == 0)
+            return Future.value(true);
+          return showDialog(
+            context: context,
+            builder: (context) => SimpleDialog(
+              backgroundColor: Style.background,
+              title: Text(
+                "Are you sure you want to discard your changes?",
+                style: Style.getStyle(FontRole.Display3, Style.primary),
               ),
-            );
-          },
-        ),
-        body: Column(
-          children: [
-            _getTemplateNameField(),
-            _getReorderableFieldWidget(),
-          ],
-        ),
+              children: [
+                SimpleDialogOption(
+                  child: Text(
+                    "Yes",
+                    style: Style.getStyle(FontRole.Display3, Style.error),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                ),
+                SimpleDialogOption(
+                  child: Text(
+                    "Stay here",
+                    style: Style.getStyle(FontRole.Display3, Style.accent),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                ),
+              ],
+            ),
+          );
+        },
       );
 }
