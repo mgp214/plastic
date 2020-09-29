@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +65,8 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
             break;
           case TemplateChangeType.TypeChanged:
             // TODO: Handle this case.
+            break;
+          case TemplateChangeType.Metadata:
             break;
         }
       }

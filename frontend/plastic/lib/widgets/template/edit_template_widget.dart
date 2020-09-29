@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:objectid/objectid.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/api/invalid_api_request_exception.dart';
 import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
@@ -557,10 +558,53 @@ class EditTemplateState extends State<EditTemplateWidget> {
                         ],
                       ),
                       onPressed: () {
-                        Api.template.saveTemplate(widget.template, List()).then(
-                            (response) => handleApiResponse(
-                                Routes.saveTemplate, response));
-                        Navigator.pop(context);
+                        Api.template
+                            .saveTemplate(widget.template, List())
+                            .then((response) {
+                          Navigator.pop(context);
+                          handleApiResponse(Routes.saveTemplate, response);
+                        }).catchError((e) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              backgroundColor: Style.background,
+                              title: Text(
+                                  "There are problems with this template",
+                                  style: Style.getStyle(
+                                      FontRole.Display3, Style.error)),
+                              content: SingleChildScrollView(
+                                child: Container(
+                                  height: 200,
+                                  width: double.maxFinite,
+                                  child: ListView(
+                                    children: e.errors
+                                        .map<Widget>(
+                                          (e) => ListTile(
+                                            title: Text(e,
+                                                style: Style.getStyle(
+                                                    FontRole.Content,
+                                                    Style.primary)),
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                                ),
+                              ),
+                              actions: [
+                                FlatButton(
+                                  child: Text(
+                                    "Okay",
+                                    style: Style.getStyle(
+                                      FontRole.Display3,
+                                      Style.primary,
+                                    ),
+                                  ),
+                                  onPressed: () => Navigator.pop(context),
+                                )
+                              ],
+                            ),
+                          ).then((val) => Navigator.pop(context));
+                        });
                       },
                     ),
                     SimpleDialogOption(
@@ -614,8 +658,8 @@ class EditTemplateState extends State<EditTemplateWidget> {
                                     Api.template
                                         .deleteTemplate(widget.template);
                                   }
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
+                                  Navigator.popUntil(
+                                      context, ModalRoute.withName('home'));
                                 },
                               ),
                             ],

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:plastic/api/account_api.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/api/invalid_api_request_exception.dart';
 import 'package:plastic/model/api/api_get_response.dart';
 import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
@@ -83,9 +84,15 @@ class TemplateApi {
     List<Thing> affectedThings;
 
     if (response.statusCode == 422) {
-      affectedThings = jsonDecode(response.body)["affectedThings"]
-          .map<Thing>((thing) => Thing.fromJsonMap(thing))
-          .toList();
+      Map body = jsonDecode(response.body);
+      if (body.containsKey("affectedThings")) {
+        affectedThings = body["affectedThings"]
+            .map<Thing>((thing) => Thing.fromJsonMap(thing))
+            .toList();
+      } else {
+        return Future.error(InvalidApiRequestException(
+            body["templateErrors"].map<String>((i) => i.toString()).toList()));
+      }
     }
 
     return ApiPostResponse<List<Thing>>(
