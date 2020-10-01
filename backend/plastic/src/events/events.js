@@ -7,47 +7,15 @@ const Events = {
 			name: 'Task',
 			fields: [
 				{
-					name: 'task',
+					name: 'description',
 					fieldType: 'STRING',
 					required: true,
 					main: true,
-				},
-				{
-					name: 'complete',
-					fieldType: 'BOOL',
-					default: false,
-				},
-				{
-					name: 'due date',
-					fieldType: 'DATE',
-				},
+					default: 'new task'
+				}
 			]
 		});
 		await taskTemplate.save();
-
-		const eventTemplate = new Template({
-			userId: user._id,
-			name: 'Event',
-			fields: [
-				{
-					name: 'title',
-					fieldType: 'STRING',
-					required: true,
-					main: true,
-				},
-				{
-					name: 'start',
-					fieldType: 'DATETIME',
-					required: true,
-				},
-				{
-					name: 'ends',
-					fieldType: 'DATETIME',
-					required: true,
-				},
-			]
-		});
-		await eventTemplate.save();
 	}
 };
 

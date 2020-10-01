@@ -35,6 +35,7 @@ print(f'Putting {cwd} on remote at {remote_dir}')
 scp.put(f'{cwd}', recursive=True,
         remote_path=remote_dir)
 scp.put(f'{cwd}/../package.json', remote_path=remote_dir)
+scp.put(f'{cwd}/../.env_prod', remote_path=f'{remote_dir}/.env')
 
 scp.close()
 print('done copying...')
