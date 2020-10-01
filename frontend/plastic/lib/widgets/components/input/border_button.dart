@@ -22,20 +22,20 @@ class BorderButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Expanded(
-              child: OutlineButton(
-                borderSide: BorderSide(
-                    color: color, width: 2, style: BorderStyle.solid),
+              child: FlatButton(
+                // borderSide: BorderSide(
+                //     color: color, width: 2, style: BorderStyle.solid),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Style.borderRadius),
                 ),
                 splashColor: color,
-                highlightedBorderColor: color,
+                // highlightedBorderColor: color,
                 padding: EdgeInsets.all(15),
                 child: Text(
                   content,
                   style: Style.getStyle(
                     FontRole.Display3,
-                    color,
+                    Style.white,
                   ),
                 ),
                 onPressed: onPressed,

@@ -88,6 +88,11 @@ flutter:
         - asset: assets/fonts/Ubuntu-Regular.ttf
         - asset: assets/fonts/Ubuntu-Italic.ttf
           style: italic
+    - family: Asap
+      fonts:
+        - asset: assets/fonts/Asap-Regular.ttf
+        - asset: assets/fonts/Asap-Italic.ttf
+          style: italic
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

@@ -28,44 +28,48 @@ class SettingsState extends State<SettingsWidget> {
       backgroundColor: Style.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: ListView(
-            children: <Widget>[
-              Text("Settings",
-                  style: Style.getStyle(FontRole.Display2, Style.accent)),
-              Divider(
-                color: Style.accent,
-                thickness: 1.5,
-                height: 8,
-                endIndent: 30,
-              ),
-              Divider(
-                color: Style.accent,
-                thickness: 1.5,
-                height: 8,
-              ),
-              Text(
-                "This is where you'll find all the wonderful settings you can adjust.",
-                style: Style.getStyle(
-                  FontRole.Content,
-                  Style.white,
+          child: Container(
+            height: double.maxFinite,
+            width: double.maxFinite,
+            child: ListView(
+              children: <Widget>[
+                Text("Settings",
+                    style: Style.getStyle(FontRole.Display2, Style.accent)),
+                Divider(
+                  color: Style.accent,
+                  thickness: 1.5,
+                  height: 8,
+                  endIndent: 30,
                 ),
-              ),
-              Divider(
-                color: Style.accent,
-                thickness: 1.5,
-                height: 8,
-              ),
-              BorderButton(
-                color: Style.primary,
-                content: "log out on this device",
-                onPressed: logout,
-              ),
-              BorderButton(
-                color: Style.error,
-                content: "log out on ALL devices",
-                onPressed: logoutAll,
-              ),
-            ],
+                Divider(
+                  color: Style.accent,
+                  thickness: 1.5,
+                  height: 8,
+                ),
+                Text(
+                  "This is where you'll find all the wonderful settings you can adjust.",
+                  style: Style.getStyle(
+                    FontRole.Content,
+                    Style.white,
+                  ),
+                ),
+                Divider(
+                  color: Style.accent,
+                  thickness: 1.5,
+                  height: 8,
+                ),
+                BorderButton(
+                  color: Style.primary,
+                  content: "log out on this device",
+                  onPressed: logout,
+                ),
+                BorderButton(
+                  color: Style.error,
+                  content: "log out on ALL devices",
+                  onPressed: logoutAll,
+                ),
+              ],
+            ),
           ),
         ),
       ),
