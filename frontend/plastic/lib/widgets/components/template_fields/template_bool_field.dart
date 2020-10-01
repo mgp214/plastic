@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/model/template.dart';
-import 'package:plastic/widgets/components/checkbox_field.dart';
-import 'package:plastic/widgets/components/string_field.dart';
+import 'package:plastic/widgets/components/input/checkbox_field.dart';
+import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/components/template_fields/template_field.dart';
 
 class TemplateBoolField extends TemplateFieldWidget {

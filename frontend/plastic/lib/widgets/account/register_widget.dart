@@ -4,7 +4,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/utility/style.dart';
-import 'package:plastic/widgets/components/border_button.dart';
+import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterWidget extends StatefulWidget {

@@ -6,7 +6,7 @@ import 'package:plastic/model/template.dart';
 import 'package:plastic/model/template_change.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
-import 'package:plastic/widgets/components/border_button.dart';
+import 'package:plastic/widgets/components/input/border_button.dart';
 
 class BulkUpdateThings extends StatefulWidget {
   final Template oldTemplate;

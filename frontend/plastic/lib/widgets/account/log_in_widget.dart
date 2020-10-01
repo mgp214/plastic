@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/widgets/account/register_widget.dart';
-import 'package:plastic/widgets/components/border_button.dart';
+import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LogInWidget extends StatefulWidget {

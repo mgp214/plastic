@@ -6,13 +6,12 @@ import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/utility/template_manager.dart';
-import 'package:plastic/widgets/components/checkbox_field.dart';
-import 'package:plastic/widgets/components/double_field.dart';
-import 'package:plastic/widgets/components/int_field.dart';
-import 'package:plastic/widgets/components/string_field.dart';
+import 'package:plastic/widgets/components/input/checkbox_field.dart';
+import 'package:plastic/widgets/components/input/double_field.dart';
+import 'package:plastic/widgets/components/input/int_field.dart';
+import 'package:plastic/widgets/components/input/string_field.dart';
+import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:plastic/widgets/template/edit_template_widget.dart';
-
-import '../components/border_button.dart';
 
 class EditThingWidget extends StatefulWidget {
   final Template template;

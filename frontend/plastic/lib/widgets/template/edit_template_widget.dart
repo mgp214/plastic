@@ -13,7 +13,7 @@ import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/dialogs/scrolling_alert_dialog.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
-import 'package:plastic/widgets/components/string_field.dart';
+import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/components/template_fields/field_card.dart';
 import 'package:plastic/widgets/components/template_fields/template_bool_field.dart';
 import 'package:plastic/widgets/components/template_fields/template_double_field.dart';
