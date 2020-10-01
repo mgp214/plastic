@@ -9,6 +9,9 @@ import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/utility/style.dart';
 import 'package:plastic/utility/template_manager.dart';
+import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
+import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
+import 'package:plastic/widgets/components/dialogs/scrolling_alert_dialog.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
 import 'package:plastic/widgets/components/string_field.dart';
 import 'package:plastic/widgets/components/template_fields/field_card.dart';
@@ -84,7 +87,8 @@ class EditTemplateState extends State<EditTemplateWidget> {
     );
   }
 
-  void _onAddNewFieldPressed() {
+  void _onAddNewFieldPressed(BuildContext context) {
+    Navigator.pop(context);
     showModalBottomSheet(context: context, builder: _getAddFieldOptions);
   }
 
@@ -234,39 +238,18 @@ class EditTemplateState extends State<EditTemplateWidget> {
   _handleSaveRejection(List<Thing> affectedThings) {
     showDialog(
       context: context,
-      builder: (context) => SimpleDialog(
-        backgroundColor: Style.background,
-        title: Padding(
-          padding: EdgeInsets.only(bottom: 15),
-          child: Text(
+      builder: (context) => ChoiceActionsDialog(
+        message:
             "Updating ${widget.template.name} will affect ${affectedThings.length} thing${affectedThings.length == 0 ? '' : 's'}. Do you want to update update one at a time, or all at the same time?",
-            style: Style.getStyle(FontRole.Content, Style.accent),
-          ),
-        ),
-        children: [
-          SimpleDialogOption(
-            child: Text("Update each thing",
-                style: Style.getStyle(FontRole.Display3, Style.inputField)),
-            // onPressed: () {
-            //   Navigator.pop(context);
-            //   _reviewEachAffectedThing(affectedThings);
-            // },
-          ),
-          SimpleDialogOption(
-            child: Text("All at the same time",
-                style: Style.getStyle(FontRole.Display3, Style.primary)),
-            onPressed: () {
-              Navigator.pop(context);
-              _updateAllThings(affectedThings);
-            },
-          ),
-          SimpleDialogOption(
-            child: Text("Back (don't save)",
-                style: Style.getStyle(FontRole.Display3, Style.error)),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+        choices: [
+          DialogTextChoice("Update each thing", Style.inputField, null),
+          DialogTextChoice("All at the same time", Style.primary, () {
+            Navigator.pop(context);
+            _updateAllThings(affectedThings);
+          }),
+          DialogTextChoice("Back (don't save)", Style.error, () {
+            Navigator.pop(context);
+          }),
         ],
       ),
     );
@@ -287,6 +270,90 @@ class EditTemplateState extends State<EditTemplateWidget> {
     );
   }
 
+  void _saveTemplatePressed(BuildContext context) {
+    Api.template.saveTemplate(widget.template, List()).then((response) {
+      Navigator.pop(context);
+      handleApiResponse(Routes.saveTemplate, response);
+    }).catchError((e) {
+      showDialog(
+        context: context,
+        builder: (context) => ScrollingAlertDialog(
+          headerColor: Style.error,
+          header: "There are problems with this template",
+          okColor: Style.primary,
+          children: e.errors
+              .map<Widget>(
+                (e) => ListTile(
+                  title: Text(e,
+                      style: Style.getStyle(FontRole.Content, Style.primary)),
+                ),
+              )
+              .toList(),
+        ),
+      ).then((val) => Navigator.pop(context));
+    });
+  }
+
+  void _deleteTemplatePressed(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => ChoiceActionsDialog(
+        message: widget.template.id != null
+            ? "Delete existing template?"
+            : "Discard new template?",
+        choices: [
+          DialogTextChoice(
+              "Stay here", Style.primary, () => Navigator.pop(context)),
+          DialogTextChoice(
+              widget.template.id != null
+                  ? "Delete ${widget.template.name} PERMANENTLY!"
+                  : "Confirm cancel",
+              Style.error, () {
+            if (widget.template.id != null) {
+              Api.template.deleteTemplate(widget.template);
+            }
+            Navigator.popUntil(context, ModalRoute.withName('home'));
+          }),
+        ],
+      ),
+    );
+  }
+
+  Future<bool> _onTryPop(BuildContext context) {
+    if (Template.diff(_originalTemplate, widget.template).length == 0)
+      return Future.value(true);
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        backgroundColor: Style.background,
+        title: Text(
+          "Are you sure you want to discard your changes?",
+          style: Style.getStyle(FontRole.Display3, Style.primary),
+        ),
+        children: [
+          SimpleDialogOption(
+            child: Text(
+              "Yes",
+              style: Style.getStyle(FontRole.Display3, Style.error),
+            ),
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
+          ),
+          SimpleDialogOption(
+            child: Text(
+              "Stay here",
+              style: Style.getStyle(FontRole.Display3, Style.accent),
+            ),
+            onPressed: () {
+              Navigator.pop(context, false);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => WillPopScope(
         child: Scaffold(
@@ -302,148 +369,18 @@ class EditTemplateState extends State<EditTemplateWidget> {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (context) => SimpleDialog(
-                  backgroundColor: Style.background,
-                  children: [
-                    SimpleDialogOption(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.add,
-                            color: Style.primary,
-                          ),
-                          Text("Add a new field",
-                              style: Style.getStyle(
-                                  FontRole.Display3, Style.primary)),
-                        ],
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _onAddNewFieldPressed();
-                      },
-                    ),
-                    SimpleDialogOption(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.save,
-                            color: Style.primary,
-                          ),
-                          Text("Save template",
-                              style: Style.getStyle(
-                                  FontRole.Display3, Style.primary)),
-                        ],
-                      ),
-                      onPressed: () {
-                        Api.template
-                            .saveTemplate(widget.template, List())
-                            .then((response) {
-                          Navigator.pop(context);
-                          handleApiResponse(Routes.saveTemplate, response);
-                        }).catchError((e) {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              backgroundColor: Style.background,
-                              title: Text(
-                                  "There are problems with this template",
-                                  style: Style.getStyle(
-                                      FontRole.Display3, Style.error)),
-                              content: SingleChildScrollView(
-                                child: Container(
-                                  height: 200,
-                                  width: double.maxFinite,
-                                  child: ListView(
-                                    children: e.errors
-                                        .map<Widget>(
-                                          (e) => ListTile(
-                                            title: Text(e,
-                                                style: Style.getStyle(
-                                                    FontRole.Content,
-                                                    Style.primary)),
-                                          ),
-                                        )
-                                        .toList(),
-                                  ),
-                                ),
-                              ),
-                              actions: [
-                                FlatButton(
-                                  child: Text(
-                                    "Okay",
-                                    style: Style.getStyle(
-                                      FontRole.Display3,
-                                      Style.primary,
-                                    ),
-                                  ),
-                                  onPressed: () => Navigator.pop(context),
-                                )
-                              ],
-                            ),
-                          ).then((val) => Navigator.pop(context));
-                        });
-                      },
-                    ),
-                    SimpleDialogOption(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.cancel,
-                            color: Style.error,
-                          ),
-                          Text(
-                            widget.template.id != null ? "Delete" : "Discard",
-                            style:
-                                Style.getStyle(FontRole.Display3, Style.error),
-                          ),
-                        ],
-                      ),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => SimpleDialog(
-                            backgroundColor: Style.background,
-                            title: Padding(
-                              padding: EdgeInsets.only(bottom: 15),
-                              child: Text(
-                                widget.template.id != null
-                                    ? "Delete existing template?"
-                                    : "Discard new template?",
-                                style: Style.getStyle(
-                                    FontRole.Display3, Style.accent),
-                              ),
-                            ),
-                            children: [
-                              SimpleDialogOption(
-                                child: Text(
-                                  "Stay here",
-                                  style: Style.getStyle(
-                                      FontRole.Display3, Style.primary),
-                                ),
-                                onPressed: () => Navigator.pop(context),
-                              ),
-                              SimpleDialogOption(
-                                child: Text(
-                                  widget.template.id != null
-                                      ? "Delete ${widget.template.name} PERMANENTLY!"
-                                      : "Confirm cancel",
-                                  style: Style.getStyle(
-                                      FontRole.Display3, Style.error),
-                                ),
-                                onPressed: () {
-                                  if (widget.template.id != null) {
-                                    Api.template
-                                        .deleteTemplate(widget.template);
-                                  }
-                                  Navigator.popUntil(
-                                      context, ModalRoute.withName('home'));
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    )
+                builder: (context) => ChoiceActionsDialog(
+                  message: null,
+                  choices: [
+                    DialogTextIconChoice("Add a new field", Icons.add,
+                        Style.primary, () => _onAddNewFieldPressed(context)),
+                    DialogTextIconChoice("Save template", Icons.save,
+                        Style.primary, () => _saveTemplatePressed(context)),
+                    DialogTextIconChoice(
+                        widget.template.id != null ? "Delete" : "Discard",
+                        Icons.cancel,
+                        Style.error,
+                        () => _deleteTemplatePressed(context)),
                   ],
                 ),
               );
@@ -456,39 +393,6 @@ class EditTemplateState extends State<EditTemplateWidget> {
             ],
           ),
         ),
-        onWillPop: () {
-          if (Template.diff(_originalTemplate, widget.template).length == 0)
-            return Future.value(true);
-          return showDialog(
-            context: context,
-            builder: (context) => SimpleDialog(
-              backgroundColor: Style.background,
-              title: Text(
-                "Are you sure you want to discard your changes?",
-                style: Style.getStyle(FontRole.Display3, Style.primary),
-              ),
-              children: [
-                SimpleDialogOption(
-                  child: Text(
-                    "Yes",
-                    style: Style.getStyle(FontRole.Display3, Style.error),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  },
-                ),
-                SimpleDialogOption(
-                  child: Text(
-                    "Stay here",
-                    style: Style.getStyle(FontRole.Display3, Style.accent),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  },
-                ),
-              ],
-            ),
-          );
-        },
+        onWillPop: () => _onTryPop(context),
       );
 }
