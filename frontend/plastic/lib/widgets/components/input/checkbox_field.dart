@@ -24,7 +24,7 @@ class CheckboxField extends StatelessWidget {
   Widget build(BuildContext context) => CheckboxListTile(
         title: Text(
           label ?? "",
-          style: labelStyle ?? Motif.headerStyle(Sizes.Header, Motif.black),
+          style: labelStyle ?? Motif.headerStyle(Sizes.Label, Motif.black),
         ),
         checkColor: checkColor ?? Motif.neutral,
         onChanged: onChanged,
