@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/user.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 
 class SettingsWidget extends StatefulWidget {
@@ -25,7 +25,7 @@ class SettingsState extends State<SettingsWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Style.background,
+      backgroundColor: Motif.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
@@ -34,37 +34,34 @@ class SettingsState extends State<SettingsWidget> {
             child: ListView(
               children: <Widget>[
                 Text("Settings",
-                    style: Style.getStyle(FontRole.Display2, Style.accent)),
+                    style: Motif.contentStyle(Sizes.Header, Motif.title)),
                 Divider(
-                  color: Style.accent,
+                  color: Motif.black,
                   thickness: 1.5,
                   height: 8,
                   endIndent: 30,
                 ),
                 Divider(
-                  color: Style.accent,
+                  color: Motif.black,
                   thickness: 1.5,
                   height: 8,
                 ),
                 Text(
                   "This is where you'll find all the wonderful settings you can adjust.",
-                  style: Style.getStyle(
-                    FontRole.Content,
-                    Style.white,
-                  ),
+                  style: Motif.contentStyle(Sizes.Content, Motif.black),
                 ),
                 Divider(
-                  color: Style.accent,
+                  color: Motif.black,
                   thickness: 1.5,
                   height: 8,
                 ),
                 BorderButton(
-                  color: Style.primary,
+                  color: Motif.neutral,
                   content: "log out on this device",
                   onPressed: logout,
                 ),
                 BorderButton(
-                  color: Style.error,
+                  color: Motif.negative,
                   content: "log out on ALL devices",
                   onPressed: logoutAll,
                 ),

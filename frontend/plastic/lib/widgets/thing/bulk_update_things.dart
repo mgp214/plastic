@@ -5,7 +5,10 @@ import 'package:plastic/api/api.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/template_change.dart';
 import 'package:plastic/model/thing.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
+import 'package:plastic/utility/constants.dart';
+import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
+import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 
 class BulkUpdateThings extends StatefulWidget {
@@ -77,21 +80,23 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
         .then((response) {
       if (response.successful) {
         Flushbar(
+          backgroundColor: Motif.background,
           messageText: Text(
             response.message,
-            style: Style.getStyle(FontRole.Tooltip, Style.accent),
+            style: Motif.contentStyle(Sizes.Notification, Motif.black),
           ),
-          duration: Style.snackDuration,
+          duration: Constants.snackDuration,
         ).show(context);
         Navigator.popUntil(context, ModalRoute.withName("home"));
       } else {
         Navigator.pop(context);
         Flushbar(
+          backgroundColor: Motif.background,
           messageText: Text(
             response.message,
-            style: Style.getStyle(FontRole.Tooltip, Style.error),
+            style: Motif.contentStyle(Sizes.Notification, Motif.negative),
           ),
-          duration: Style.snackDuration,
+          duration: Constants.snackDuration,
         ).show(context);
       }
     });
@@ -104,7 +109,7 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
       padding: EdgeInsets.all(15),
       child: Text(
           "Reviewing bulk changes to ${widget.affectedThings.length} \"${widget.oldTemplate.name}\" thing${widget.affectedThings.length == 1 ? "" : "s"}",
-          style: Style.getStyle(FontRole.Display3, Style.accent)),
+          style: Motif.contentStyle(Sizes.Header, Motif.black)),
     ));
 
     Widget cardContents;
@@ -125,20 +130,20 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
         case TemplateChangeType.Deleted:
           cardContents = Text(
             "Field $affectedFieldName was deleted, the field and value in each affected thing will be deleted.",
-            style: Style.getStyle(FontRole.Display3, Style.primary),
+            style: Motif.contentStyle(Sizes.Label, Motif.black),
           );
           break;
         case TemplateChangeType.Added:
           cardContents = Text(
             "Field $affectedFieldName was created. Existing things will have this field set to the default value of " +
                 "\"${(change.newValue as TemplateField).defaultValue}\".",
-            style: Style.getStyle(FontRole.Display3, Style.primary),
+            style: Motif.contentStyle(Sizes.Label, Motif.black),
           );
           break;
         case TemplateChangeType.NameChanged:
           cardContents = Text(
             "Field \"${change.oldValue}\" had its name changed to \"${change.newValue}\". Values in this field will be unchanged.",
-            style: Style.getStyle(FontRole.Display3, Style.primary),
+            style: Motif.contentStyle(Sizes.Label, Motif.black),
           );
           break;
         case TemplateChangeType.DefaultValueChanged:
@@ -147,12 +152,12 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
               Text(
                 "Field $affectedFieldName had its default value changed from \"${change.oldValue}\" to \"${change.newValue}\"." +
                     " Do you want to replace the old value of things which currently have the default value with the new one?",
-                style: Style.getStyle(FontRole.Display3, Style.primary),
+                style: Motif.contentStyle(Sizes.Label, Motif.black),
               ),
               RadioListTile(
                 title: Text(
                   "Yes, replace \"${change.oldValue}\" with \"${change.newValue}\"",
-                  style: Style.getStyle(FontRole.Display3, Style.accent),
+                  style: Motif.actionStyle(Sizes.Action, Motif.black),
                 ),
                 groupValue: changeAnswers[change] as bool,
                 onChanged: (value) {
@@ -165,7 +170,7 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
               RadioListTile(
                 title: Text(
                   "No, leave the \"${change.oldValue}\" values in existing things.",
-                  style: Style.getStyle(FontRole.Display3, Style.error),
+                  style: Motif.actionStyle(Sizes.Action, Motif.black),
                 ),
                 groupValue: changeAnswers[change] as bool,
                 onChanged: (value) {
@@ -184,7 +189,7 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
         case TemplateChangeType.Metadata:
           cardContents = Text(
             "Template had ${change.fieldName} changed from \"${change.oldValue}\" to \"${change.newValue}\".",
-            style: Style.getStyle(FontRole.Display3, Style.primary),
+            style: Motif.contentStyle(Sizes.Label, Motif.black),
           );
           break;
       }
@@ -192,7 +197,7 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
         Padding(
           padding: EdgeInsets.only(bottom: 15),
           child: Card(
-            color: Style.inputField,
+            color: Motif.lightBackground,
             child: Padding(
               padding: EdgeInsets.all(15),
               child: cardContents,
@@ -203,39 +208,26 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
     }
 
     widgets.add(BorderButton(
-      color: Style.primary,
+      color: Motif.black,
       content: "Done",
       onPressed: () {
         showDialog(
             context: context,
-            builder: (context) => SimpleDialog(
-                  backgroundColor: Style.background,
-                  title: Text(
-                    "Are you sure you want to apply these changes to all ${widget.oldTemplate.name} things?",
-                    style: Style.getStyle(FontRole.Display3, Style.accent),
-                  ),
-                  children: [
-                    SimpleDialogOption(
-                      child: Text(
-                        "Yes",
-                        style: Style.getStyle(FontRole.Display3, Style.primary),
-                      ),
-                      onPressed: applyChanges,
-                    ),
-                    SimpleDialogOption(
-                      child: Text(
-                        "No",
-                        style: Style.getStyle(FontRole.Display3, Style.primary),
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                    ),
+            builder: (context) => ChoiceActionsDialog(
+                  message:
+                      "Are you sure you want to apply these changes to all ${widget.oldTemplate.name} things?",
+                  choices: [
+                    DialogTextChoice("Yes", Motif.black, applyChanges),
+                    DialogTextChoice("No", Motif.black, () {
+                      Navigator.pop(context);
+                    }),
                   ],
                 ));
       },
     ));
 
     widgets.add(BorderButton(
-      color: Style.error,
+      color: Motif.negative,
       content: "Back",
       onPressed: () => Navigator.pop(context),
     ));
@@ -244,7 +236,7 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: Style.background,
+      backgroundColor: Motif.background,
       body: ListView(
         children: _getChangeWidgets(),
       ));

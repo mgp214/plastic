@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
 import 'package:plastic/widgets/action_menu/action_widget.dart';
 
 class ActionMenuWidget extends StatefulWidget {
@@ -102,7 +102,7 @@ class ActionMenuState extends State<ActionMenuWidget>
     //     parent: _quickAddController,
     //   ),
     // );
-    _colorAnimation = ColorTween(begin: Style.primary, end: Style.delete)
+    _colorAnimation = ColorTween(begin: Motif.title, end: Motif.negative)
         .animate(_menuController);
     // _quickAddFocus = FocusNode();
   }
@@ -134,8 +134,8 @@ class ActionMenuState extends State<ActionMenuWidget>
               ),
               onPressed: () => onPressed(context),
               onLongPress: () => onLongPressed(context),
-              shape: CircleBorder(
-                  side: BorderSide(color: Style.primary, width: 3)),
+              shape:
+                  CircleBorder(side: BorderSide(color: Motif.title, width: 3)),
             ),
             onVerticalDragStart: (details) => onLongPressed(context),
             onHorizontalDragStart: (details) => onLongPressed(context),

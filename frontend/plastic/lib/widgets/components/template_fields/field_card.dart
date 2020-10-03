@@ -1,7 +1,10 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/model/template.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
+import 'package:plastic/utility/constants.dart';
+import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
+import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
 import 'package:plastic/widgets/components/template_fields/template_field.dart';
 
@@ -18,14 +21,15 @@ class FieldCard extends StatelessWidget {
 
   Widget build(BuildContext context) => Card(
         key: key,
-        color: Style.inputField,
+        color: Motif.lightBackground,
         child: Stack(
           children: [
             SplashListTile(
-              color: Style.accent,
+              color: Motif.title,
               onTap: () => Flushbar(
+                backgroundColor: Motif.background,
                 message: "Hold to rearrange fields",
-                duration: Style.snackDuration,
+                duration: Constants.snackDuration,
               ).show(context),
               child: Column(
                 children: [
@@ -39,13 +43,13 @@ class FieldCard extends StatelessWidget {
                         VerticalDivider(
                           width: 15,
                           thickness: 1,
-                          color: Style.background,
+                          color: Motif.background,
                           indent: 10,
                           endIndent: 10,
                         ),
                         Icon(
                           Icons.reorder,
-                          color: Style.background,
+                          color: Motif.neutral,
                         ),
                       ],
                     ),
@@ -60,35 +64,26 @@ class FieldCard extends StatelessWidget {
                 icon: Icon(
                   Icons.delete,
                 ),
-                color: Style.error,
+                color: Motif.negative,
                 onPressed: () {
                   showDialog(
                     context: context,
-                    builder: (context) => SimpleDialog(
-                      backgroundColor: Style.background,
-                      title: Text(
-                        "Are you sure you want to delete field \"${fieldWidget.field.name}\"?",
-                        style: Style.getStyle(FontRole.Display3, Style.primary),
-                      ),
-                      children: [
-                        SimpleDialogOption(
-                          child: Text(
-                            "Delete",
-                            style:
-                                Style.getStyle(FontRole.Display3, Style.error),
-                          ),
-                          onPressed: () {
+                    builder: (context) => ChoiceActionsDialog(
+                      message:
+                          "Are you sure you want to delete field \"${fieldWidget.field.name}\"?",
+                      choices: [
+                        DialogTextChoice(
+                          "Delete",
+                          Motif.negative,
+                          () {
                             Navigator.pop(context);
                             onDelete();
                           },
                         ),
-                        SimpleDialogOption(
-                          child: Text(
-                            "Cancel",
-                            style:
-                                Style.getStyle(FontRole.Display3, Style.accent),
-                          ),
-                          onPressed: () => Navigator.pop(context),
+                        DialogTextChoice(
+                          "Cancel",
+                          Motif.black,
+                          () => Navigator.pop(context),
                         ),
                       ],
                     ),

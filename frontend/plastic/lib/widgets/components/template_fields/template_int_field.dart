@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/widgets/components/input/int_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
@@ -38,6 +39,7 @@ class TemplateIntFieldState extends TemplateFieldWidgetState {
   Widget build(BuildContext context) => Column(
         children: [
           StringField(
+            fillColor: Motif.background,
             controller: nameController,
             focusNode: nameFocusNode,
             label: "Field name",
@@ -48,6 +50,7 @@ class TemplateIntFieldState extends TemplateFieldWidgetState {
             },
           ),
           IntField(
+            fillColor: Motif.background,
             controller: _valueController,
             focusNode: _valueFocusNode,
             label: "Default value",

@@ -7,7 +7,8 @@ import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
+import 'package:plastic/utility/constants.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
@@ -55,14 +56,11 @@ class EditTemplateState extends State<EditTemplateWidget> {
     options = FieldType.values
         .map(
           (fieldType) => SplashListTile(
-            color: Style.accent,
+            color: Motif.title,
             onTap: () => _createNewField(fieldType),
             child: Text(
               TemplateField.getFriendlyName(fieldType),
-              style: Style.getStyle(
-                FontRole.Display3,
-                Style.primary,
-              ),
+              style: Motif.actionStyle(Sizes.Action, Motif.black),
             ),
           ),
         )
@@ -70,17 +68,17 @@ class EditTemplateState extends State<EditTemplateWidget> {
 
     options.add(
       SplashListTile(
-        color: Style.error,
+        color: Motif.negative,
         onTap: () => Navigator.pop(context),
         child: Text(
           "Cancel",
-          style: Style.getStyle(FontRole.Display3, Style.error),
+          style: Motif.actionStyle(Sizes.Action, Motif.negative),
         ),
       ),
     );
 
     return Material(
-      color: Style.background,
+      color: Motif.lightBackground,
       child: ListView(
         children: options,
       ),
@@ -112,6 +110,12 @@ class EditTemplateState extends State<EditTemplateWidget> {
         fieldWidget = TemplateStringField(
           field: field,
           template: widget.template,
+          onMainFieldChanged: (TemplateField field) {
+            setState(() {
+              widget.template.getMainField().main = false;
+              field.main = true;
+            });
+          },
         );
         break;
       case FieldType.INT:
@@ -192,6 +196,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
     return StringField(
       controller: controller,
       focusNode: node,
+      fillColor: Motif.background,
       label: "Template name",
       onChanged: (value) => setState(() {
         widget.template.name = value;
@@ -203,11 +208,12 @@ class EditTemplateState extends State<EditTemplateWidget> {
     if (route == Routes.saveTemplate) {
       if (response.successful) {
         Flushbar(
+                backgroundColor: Motif.background,
                 messageText: Text(
                   "Template saved.",
-                  style: Style.getStyle(FontRole.Tooltip, Style.accent),
+                  style: Motif.contentStyle(Sizes.Notification, Motif.neutral),
                 ),
-                duration: Style.snackDuration)
+                duration: Constants.snackDuration)
             .show(context);
         (TemplateManager().loadTemplates()).then((x) {
           Navigator.pushReplacement(
@@ -224,11 +230,13 @@ class EditTemplateState extends State<EditTemplateWidget> {
           _handleSaveRejection(affectedThings);
         } else {
           Flushbar(
+                  backgroundColor: Motif.background,
                   messageText: Text(
                     response.message,
-                    style: Style.getStyle(FontRole.Tooltip, Style.error),
+                    style:
+                        Motif.contentStyle(Sizes.Notification, Motif.negative),
                   ),
-                  duration: Style.snackDuration)
+                  duration: Constants.snackDuration)
               .show(context);
         }
       }
@@ -242,12 +250,12 @@ class EditTemplateState extends State<EditTemplateWidget> {
         message:
             "Updating ${widget.template.name} will affect ${affectedThings.length} thing${affectedThings.length == 0 ? '' : 's'}. Do you want to update update one at a time, or all at the same time?",
         choices: [
-          DialogTextChoice("Update each thing", Style.inputField, null),
-          DialogTextChoice("All at the same time", Style.primary, () {
+          DialogTextChoice("Update each thing", Motif.lightBackground, null),
+          DialogTextChoice("All at the same time", Motif.black, () {
             Navigator.pop(context);
             _updateAllThings(affectedThings);
           }),
-          DialogTextChoice("Back (don't save)", Style.error, () {
+          DialogTextChoice("Back (don't save)", Motif.negative, () {
             Navigator.pop(context);
           }),
         ],
@@ -278,14 +286,14 @@ class EditTemplateState extends State<EditTemplateWidget> {
       showDialog(
         context: context,
         builder: (context) => ScrollingAlertDialog(
-          headerColor: Style.error,
+          headerColor: Motif.negative,
           header: "There are problems with this template",
-          okColor: Style.primary,
+          okColor: Motif.black,
           children: e.errors
               .map<Widget>(
                 (e) => ListTile(
                   title: Text(e,
-                      style: Style.getStyle(FontRole.Content, Style.primary)),
+                      style: Motif.contentStyle(Sizes.Content, Motif.black)),
                 ),
               )
               .toList(),
@@ -303,12 +311,12 @@ class EditTemplateState extends State<EditTemplateWidget> {
             : "Discard new template?",
         choices: [
           DialogTextChoice(
-              "Stay here", Style.primary, () => Navigator.pop(context)),
+              "Stay here", Motif.black, () => Navigator.pop(context)),
           DialogTextChoice(
               widget.template.id != null
                   ? "Delete ${widget.template.name} PERMANENTLY!"
                   : "Confirm cancel",
-              Style.error, () {
+              Motif.negative, () {
             if (widget.template.id != null) {
               Api.template.deleteTemplate(widget.template);
             }
@@ -323,48 +331,31 @@ class EditTemplateState extends State<EditTemplateWidget> {
     if (Template.diff(_originalTemplate, widget.template).length == 0)
       return Future.value(true);
     return showDialog(
-      context: context,
-      builder: (context) => SimpleDialog(
-        backgroundColor: Style.background,
-        title: Text(
-          "Are you sure you want to discard your changes?",
-          style: Style.getStyle(FontRole.Display3, Style.primary),
-        ),
-        children: [
-          SimpleDialogOption(
-            child: Text(
-              "Yes",
-              style: Style.getStyle(FontRole.Display3, Style.error),
-            ),
-            onPressed: () {
-              Navigator.pop(context, true);
-            },
-          ),
-          SimpleDialogOption(
-            child: Text(
-              "Stay here",
-              style: Style.getStyle(FontRole.Display3, Style.accent),
-            ),
-            onPressed: () {
-              Navigator.pop(context, false);
-            },
-          ),
-        ],
-      ),
-    );
+        context: context,
+        builder: (context) => ChoiceActionsDialog(
+              message: "Are you sure you want to discard your changes?",
+              choices: [
+                DialogTextChoice("Yes", Motif.negative, () {
+                  Navigator.pop(context, true);
+                }),
+                DialogTextChoice("Stay here", Motif.black, () {
+                  Navigator.pop(context, false);
+                }),
+              ],
+            ));
   }
 
   @override
   Widget build(BuildContext context) => WillPopScope(
         child: Scaffold(
-          backgroundColor: Style.background,
+          backgroundColor: Motif.background,
           floatingActionButton: FloatingActionButton(
-            shape:
-                CircleBorder(side: BorderSide(color: Style.primary, width: 3)),
+            shape: CircleBorder(side: BorderSide(color: Motif.title, width: 3)),
+            elevation: 0,
             backgroundColor: Colors.transparent,
             child: Icon(
               Icons.menu,
-              color: Style.primary,
+              color: Motif.title,
             ),
             onPressed: () {
               showDialog(
@@ -373,13 +364,13 @@ class EditTemplateState extends State<EditTemplateWidget> {
                   message: null,
                   choices: [
                     DialogTextIconChoice("Add a new field", Icons.add,
-                        Style.primary, () => _onAddNewFieldPressed(context)),
+                        Motif.black, () => _onAddNewFieldPressed(context)),
                     DialogTextIconChoice("Save template", Icons.save,
-                        Style.primary, () => _saveTemplatePressed(context)),
+                        Motif.black, () => _saveTemplatePressed(context)),
                     DialogTextIconChoice(
                         widget.template.id != null ? "Delete" : "Discard",
                         Icons.cancel,
-                        Style.error,
+                        Motif.negative,
                         () => _deleteTemplatePressed(context)),
                   ],
                 ),

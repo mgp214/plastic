@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
 
 abstract class DialogChoice {
   final Color color;
@@ -20,7 +20,7 @@ class DialogTextChoice extends DialogChoice {
   Widget build() => SimpleDialogOption(
         child: Text(
           text,
-          style: Style.getStyle(FontRole.Display3, color),
+          style: Motif.actionStyle(Sizes.Action, color),
         ),
         onPressed: action,
       );
@@ -41,7 +41,7 @@ class DialogTextIconChoice extends DialogChoice {
               icon,
               color: color,
             ),
-            Text(text, style: Style.getStyle(FontRole.Display3, color)),
+            Text(text, style: Motif.actionStyle(Sizes.Action, color)),
           ],
         ),
         onPressed: action,

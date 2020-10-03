@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 
 class ChoiceActionsDialog extends StatelessWidget {
@@ -16,14 +16,14 @@ class ChoiceActionsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SimpleDialog(
-        backgroundColor: Style.background,
+        backgroundColor: Motif.lightBackground,
         title: message == null
             ? null
             : Padding(
                 padding: EdgeInsets.only(bottom: 15),
                 child: Text(
                   message,
-                  style: Style.getStyle(FontRole.Content, Style.accent),
+                  style: Motif.contentStyle(Sizes.Content, Motif.black),
                 ),
               ),
         children: choices

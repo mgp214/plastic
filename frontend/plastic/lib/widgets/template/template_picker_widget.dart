@@ -3,7 +3,8 @@ import 'package:objectid/objectid.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
+import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
 import 'package:plastic/widgets/template/edit_template_widget.dart';
 import 'package:plastic/widgets/thing/edit_thing_widget.dart';
@@ -20,45 +21,49 @@ class TemplatePickerWidget extends StatefulWidget {
 class TemplatePickerState extends State<TemplatePickerWidget> {
   @override
   Widget build(BuildContext context) => Material(
-        color: Style.background,
-        child: Container(
-          padding: EdgeInsets.all(10),
-          alignment: Alignment.center,
-          child: ListView(
-            children: _getChildren(),
-          ),
+        color: Motif.background,
+        child: ListView(
+          children: _getChildren(),
         ),
       );
 
   List<Widget> _getChildren() {
-    var children = widget.templates
-        .map(
-          (template) => SplashListTile(
-            color: Style.accent,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EditThingWidget(
-                  template: template,
-                  thing: Thing(
-                    templateId: template.id,
-                    userId: template.userId,
+    List children = widget.templates
+        .map<Widget>(
+          (template) => Padding(
+            padding: EdgeInsets.symmetric(horizontal: 3),
+            child: Card(
+              elevation: 5,
+              color: Motif.lightBackground,
+              child: SplashListTile(
+                color: Motif.title,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditThingWidget(
+                      template: template,
+                      thing: Thing(
+                        templateId: template.id,
+                        userId: template.userId,
+                      ),
+                    ),
                   ),
                 ),
+                child: Text(template.name,
+                    style: Motif.contentStyle(
+                      Sizes.Action,
+                      Motif.black,
+                    )),
               ),
             ),
-            child: Text(template.name,
-                style: Style.getStyle(
-                  FontRole.Display3,
-                  Style.primary,
-                )),
           ),
         )
         .toList();
     children.add(
-      SplashListTile(
-        color: Style.accent,
-        onTap: () => Navigator.push(
+      BorderButton(
+        content: "Create a new template",
+        color: Motif.neutral,
+        onPressed: () => Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => EditTemplateWidget(
@@ -69,8 +74,6 @@ class TemplatePickerState extends State<TemplatePickerWidget> {
             ),
           ),
         ),
-        child: Text("Create a new template",
-            style: Style.getStyle(FontRole.Display3, Style.accent)),
       ),
     );
     return children;

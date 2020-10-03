@@ -5,7 +5,8 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plastic/api/api.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
+import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/account/register_widget.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,12 +36,13 @@ class LogInState extends State<LogInWidget> {
       var response = await Api.account.login(_email, _password);
       if (!response.successful) {
         Flushbar(
+          backgroundColor: Motif.background,
           flushbarPosition: FlushbarPosition.BOTTOM,
           messageText: Text(
             response.message,
-            style: Style.getStyle(FontRole.Tooltip, Style.error),
+            style: Motif.contentStyle(Sizes.Notification, Motif.negative),
           ),
-          duration: Style.snackDuration,
+          duration: Constants.snackDuration,
         )..show(context);
         return;
       }
@@ -60,7 +62,7 @@ class LogInState extends State<LogInWidget> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      backgroundColor: Style.background,
+      backgroundColor: Motif.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -75,7 +77,7 @@ class LogInState extends State<LogInWidget> {
                     padding: EdgeInsets.all(15),
                     child: Text(
                       "plastic",
-                      style: Style.getStyle(FontRole.Title, Style.primary),
+                      style: Motif.titleStyle(Sizes.Title, Motif.title),
                     ),
                   ),
                   Container(
@@ -89,15 +91,16 @@ class LogInState extends State<LogInWidget> {
                         FocusScope.of(context).nextFocus();
                       },
                       enableSuggestions: true,
-                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      style: Motif.contentStyle(Sizes.Content, Motif.black),
                       decoration: InputDecoration(
-                        fillColor: Style.inputField,
+                        fillColor: Motif.lightBackground,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Style.borderRadius),
+                          borderRadius:
+                              BorderRadius.all(Constants.borderRadius),
                         ),
                         filled: true,
-                        errorStyle:
-                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        errorStyle: Motif.contentStyle(
+                            Sizes.Notification, Motif.negative),
                         hintText: "email",
                       ),
                       onChanged: (value) => setState(() {
@@ -119,15 +122,16 @@ class LogInState extends State<LogInWidget> {
                       autocorrect: false,
                       onFieldSubmitted: (value) => logInPressed(),
                       enableSuggestions: true,
-                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      style: Motif.contentStyle(Sizes.Content, Motif.black),
                       decoration: InputDecoration(
-                        fillColor: Style.inputField,
+                        fillColor: Motif.lightBackground,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Style.borderRadius),
+                          borderRadius:
+                              BorderRadius.all(Constants.borderRadius),
                         ),
                         filled: true,
-                        errorStyle:
-                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        errorStyle: Motif.contentStyle(
+                            Sizes.Notification, Motif.negative),
                         hintText: "password",
                       ),
                       onChanged: (value) => setState(() {
@@ -142,7 +146,7 @@ class LogInState extends State<LogInWidget> {
                     ),
                   ),
                   BorderButton(
-                    color: Style.primary,
+                    color: Motif.neutral,
                     onPressed: () => logInPressed(),
                     content: "hello",
                   ),
@@ -154,15 +158,12 @@ class LogInState extends State<LogInWidget> {
                         padding: EdgeInsets.only(top: 10, left: 10),
                         child: Text(
                           "new here? why not ",
-                          style: Style.getStyle(
-                            FontRole.Display3,
-                            Style.white,
-                          ),
+                          style: Motif.contentStyle(Sizes.Label, Motif.black),
                         ),
                       ),
                       Expanded(
                         child: BorderButton(
-                          color: Style.accent,
+                          color: Motif.title,
                           content: "register",
                           onPressed: () => Navigator.push(
                               context,
@@ -176,10 +177,7 @@ class LogInState extends State<LogInWidget> {
                     padding: EdgeInsets.all(10),
                     child: Text(
                       _error,
-                      style: Style.getStyle(
-                        FontRole.Display3,
-                        Style.error,
-                      ),
+                      style: Motif.contentStyle(Sizes.Content, Motif.negative),
                     ),
                   ),
                 ],

@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/api/api.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
+import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -53,7 +54,7 @@ class RegisterState extends State<RegisterWidget> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      backgroundColor: Style.background,
+      backgroundColor: Motif.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -68,7 +69,7 @@ class RegisterState extends State<RegisterWidget> {
                     padding: EdgeInsets.all(15),
                     child: Text(
                       "register",
-                      style: Style.getStyle(FontRole.Display1, Style.primary),
+                      style: Motif.contentStyle(Sizes.Header, Motif.title),
                     ),
                   ),
                   Container(
@@ -76,19 +77,20 @@ class RegisterState extends State<RegisterWidget> {
                     child: TextFormField(
                       controller: nameController,
                       autocorrect: false,
-                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      style: Motif.contentStyle(Sizes.Content, Motif.black),
                       textInputAction: TextInputAction.next,
                       onEditingComplete: () =>
                           FocusScope.of(context).nextFocus(),
                       enableSuggestions: true,
                       decoration: InputDecoration(
-                        fillColor: Style.inputField,
+                        fillColor: Motif.lightBackground,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Style.borderRadius),
+                          borderRadius:
+                              BorderRadius.all(Constants.borderRadius),
                         ),
                         filled: true,
-                        errorStyle:
-                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        errorStyle: Motif.contentStyle(
+                            Sizes.Notification, Motif.negative),
                         hintText: "name",
                       ),
                       onChanged: (value) => setState(() {
@@ -107,20 +109,21 @@ class RegisterState extends State<RegisterWidget> {
                     child: TextFormField(
                       controller: emailController,
                       autocorrect: false,
-                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      style: Motif.contentStyle(Sizes.Content, Motif.black),
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       onEditingComplete: () =>
                           FocusScope.of(context).nextFocus(),
                       enableSuggestions: true,
                       decoration: InputDecoration(
-                        fillColor: Style.inputField,
+                        fillColor: Motif.lightBackground,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Style.borderRadius),
+                          borderRadius:
+                              BorderRadius.all(Constants.borderRadius),
                         ),
                         filled: true,
-                        errorStyle:
-                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        errorStyle: Motif.contentStyle(
+                            Sizes.Notification, Motif.negative),
                         hintText: "email",
                       ),
                       onChanged: (value) => setState(() {
@@ -140,19 +143,20 @@ class RegisterState extends State<RegisterWidget> {
                       controller: password1Controller,
                       obscureText: true,
                       autocorrect: false,
-                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      style: Motif.contentStyle(Sizes.Content, Motif.black),
                       textInputAction: TextInputAction.next,
                       onEditingComplete: () =>
                           FocusScope.of(context).nextFocus(),
                       enableSuggestions: true,
                       decoration: InputDecoration(
-                        fillColor: Style.inputField,
+                        fillColor: Motif.lightBackground,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Style.borderRadius),
+                          borderRadius:
+                              BorderRadius.all(Constants.borderRadius),
                         ),
                         filled: true,
-                        errorStyle:
-                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        errorStyle: Motif.contentStyle(
+                            Sizes.Notification, Motif.negative),
                         hintText: "password",
                       ),
                       onChanged: (value) => setState(() {
@@ -176,17 +180,18 @@ class RegisterState extends State<RegisterWidget> {
                       controller: password2Controller,
                       obscureText: true,
                       autocorrect: false,
-                      style: Style.getStyle(FontRole.Content, Style.accent),
+                      style: Motif.contentStyle(Sizes.Content, Motif.black),
                       onFieldSubmitted: (value) => registerPressed(context),
                       enableSuggestions: true,
                       decoration: InputDecoration(
-                        fillColor: Style.inputField,
+                        fillColor: Motif.lightBackground,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Style.borderRadius),
+                          borderRadius:
+                              BorderRadius.all(Constants.borderRadius),
                         ),
                         filled: true,
-                        errorStyle:
-                            Style.getStyle(FontRole.Tooltip, Style.error),
+                        errorStyle: Motif.contentStyle(
+                            Sizes.Notification, Motif.negative),
                         hintText: "password, again",
                       ),
                       onChanged: (value) => setState(() {
@@ -210,7 +215,7 @@ class RegisterState extends State<RegisterWidget> {
                       Expanded(
                         child: BorderButton(
                           content: "sign me up",
-                          color: Style.accent,
+                          color: Motif.neutral,
                           onPressed: () => registerPressed(context),
                         ),
                       ),
@@ -220,10 +225,7 @@ class RegisterState extends State<RegisterWidget> {
                     padding: EdgeInsets.all(10),
                     child: Text(
                       _error,
-                      style: Style.getStyle(
-                        FontRole.Display3,
-                        Style.error,
-                      ),
+                      style: Motif.contentStyle(Sizes.Content, Motif.negative),
                     ),
                   ),
                 ],

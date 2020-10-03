@@ -4,7 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
+import 'package:plastic/utility/constants.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/input/checkbox_field.dart';
 import 'package:plastic/widgets/components/input/double_field.dart';
@@ -57,6 +58,7 @@ class EditThingState extends State<EditThingWidget> {
         buildControllers(field.name);
         return StringField(
           label: field.name,
+          fillColor: Motif.lightBackground,
           controller: fieldControllers[field.name],
           focusNode: fieldFocusNodes[field.name],
           onChanged: (value) => setState(() {
@@ -124,7 +126,7 @@ class EditThingState extends State<EditThingWidget> {
 
     fieldWidgets.add(
       BorderButton(
-        color: Style.primary,
+        color: Motif.neutral,
         onPressed: () => Api.thing.saveThing(_thing).then((response) {
           if (response.successful) {
             Navigator.popUntil(context, ModalRoute.withName('home'));
@@ -135,21 +137,23 @@ class EditThingState extends State<EditThingWidget> {
               message = 'your ${widget.template.name} has been updated.';
             }
             Flushbar(
+              backgroundColor: Motif.background,
               flushbarPosition: FlushbarPosition.TOP,
               messageText: Text(
                 message,
-                style: Style.getStyle(FontRole.Tooltip, Style.accent),
+                style: Motif.contentStyle(Sizes.Notification, Motif.neutral),
               ),
-              duration: Style.snackDuration,
+              duration: Constants.snackDuration,
             )..show(context);
           } else {
             Flushbar(
+              backgroundColor: Motif.background,
               flushbarPosition: FlushbarPosition.TOP,
               messageText: Text(
                 response.message,
-                style: Style.getStyle(FontRole.Tooltip, Style.error),
+                style: Motif.contentStyle(Sizes.Notification, Motif.negative),
               ),
-              duration: Style.snackDuration,
+              duration: Constants.snackDuration,
             )..show(context);
           }
         }),
@@ -159,28 +163,30 @@ class EditThingState extends State<EditThingWidget> {
     if (isExistingThing) {
       fieldWidgets.add(
         BorderButton(
-          color: Style.error,
+          color: Motif.negative,
           onPressed: () => Api.thing.deleteThing(_thing).then((response) {
             if (response.successful) {
               String message =
                   '${widget.thing.getMainField().value} has been deleted.';
               Navigator.popUntil(context, ModalRoute.withName('home'));
               Flushbar(
+                backgroundColor: Motif.background,
                 flushbarPosition: FlushbarPosition.TOP,
                 messageText: Text(
                   message,
-                  style: Style.getStyle(FontRole.Tooltip, Style.accent),
+                  style: Motif.contentStyle(Sizes.Notification, Motif.neutral),
                 ),
-                duration: Style.snackDuration,
+                duration: Constants.snackDuration,
               )..show(context);
             } else {
               Flushbar(
+                backgroundColor: Motif.background,
                 flushbarPosition: FlushbarPosition.TOP,
                 messageText: Text(
                   response.message,
-                  style: Style.getStyle(FontRole.Tooltip, Style.error),
+                  style: Motif.contentStyle(Sizes.Notification, Motif.negative),
                 ),
-                duration: Style.snackDuration,
+                duration: Constants.snackDuration,
               )..show(context);
             }
           }),
@@ -191,7 +197,7 @@ class EditThingState extends State<EditThingWidget> {
 
     fieldWidgets.add(
       BorderButton(
-        color: Style.primary,
+        color: Motif.neutral,
         onPressed: () {
           Navigator.push(
               context,
@@ -206,7 +212,7 @@ class EditThingState extends State<EditThingWidget> {
 
     fieldWidgets.add(
       BorderButton(
-        color: isExistingThing ? Style.accent : Style.error,
+        color: Motif.caution,
         onPressed: () =>
             Navigator.popUntil(context, ModalRoute.withName('home')),
         content: cancelString,
@@ -217,8 +223,9 @@ class EditThingState extends State<EditThingWidget> {
 
   @override
   Widget build(BuildContext context) => Material(
-      color: Style.background,
-      child: ListView(
-        children: _getFields(context),
-      ));
+        color: Motif.background,
+        child: ListView(
+          children: _getFields(context),
+        ),
+      );
 }

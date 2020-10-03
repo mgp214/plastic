@@ -3,7 +3,7 @@
 // import 'package:flutter/material.dart';
 // import 'package:plastic/model/template.dart';
 // import 'package:plastic/model/thing.dart';
-// import 'package:plastic/utility/style.dart';
+// import 'package:plastic/model/motif.dart';
 // import 'package:plastic/utility/template_manager.dart';
 // import 'package:plastic/utility/text_utilities.dart';
 // import 'package:plastic/widgets/action_menu/autocomplete_list_widget.dart';
@@ -257,7 +257,7 @@
 //             width: optionsPainter.width + 50,
 //             height: height,
 //             child: Material(
-//               color: Style.background,
+//               color: Motif.background,
 //               child: Align(
 //                 alignment: Alignment.centerLeft,
 //                 child: AutocompleteListWidget(
@@ -326,7 +326,7 @@
 //   @override
 //   void initState() {
 //     super.initState();
-//     _textStyle = Style.getStyle(FontRole.Content, Style.accent);
+//     _textStyle = Motif.contentStyle(FontRole.Content, Style.accent);
 //     _controller = TextEditingController();
 //     _mountedOverlays = new List();
 //     overlayBuildMap = new Map();
@@ -342,9 +342,9 @@
 //         child: Container(
 //           width: MediaQuery.of(context).size.width - 75,
 //           decoration: BoxDecoration(
-//               borderRadius: BorderRadius.all(Style.borderRadius),
-//               border: Border.all(color: Style.primary),
-//               color: Style.inputField),
+//               borderRadius: BorderRadius.all(Constants.borderRadius),
+//               border: Border.all(color: Motif.black),
+//               color: Motif.lightBackground),
 //           padding: EdgeInsets.all(1),
 //           child: ConstrainedBox(
 //             constraints: BoxConstraints(

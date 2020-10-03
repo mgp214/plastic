@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/model/thing.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
 
@@ -21,31 +21,39 @@ class ViewAllThingsWidget extends StatelessWidget {
           padding: EdgeInsets.all(15),
           child: Text(
             "No things to see here.",
-            style: Style.getStyle(
-              FontRole.Content,
-              Style.primary,
+            style: Motif.contentStyle(
+              Sizes.Content,
+              Motif.black,
             ),
           ),
         ),
       );
     for (var thing in things) {
       widgets.add(
-        SplashListTile(
-          color: Style.accent,
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => EditThingWidget(
-                template: TemplateManager().getTemplateById(thing.templateId),
-                thing: thing,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 3),
+          child: Card(
+            elevation: 5,
+            color: Motif.lightBackground,
+            child: SplashListTile(
+              color: Motif.title,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditThingWidget(
+                    template:
+                        TemplateManager().getTemplateById(thing.templateId),
+                    thing: thing,
+                  ),
+                ),
+              ).then((val) => onRefresh()),
+              child: Text(
+                thing.getMainField().value ?? "???",
+                style: Motif.contentStyle(
+                  Sizes.Content,
+                  Motif.black,
+                ),
               ),
-            ),
-          ).then((val) => onRefresh()),
-          child: Text(
-            thing.getMainField().value ?? "???",
-            style: Style.getStyle(
-              FontRole.Display3,
-              Style.primary,
             ),
           ),
         ),
@@ -58,8 +66,8 @@ class ViewAllThingsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => RefreshIndicator(
         onRefresh: onRefresh,
-        backgroundColor: Style.background,
-        color: Style.accent,
+        backgroundColor: Motif.background,
+        color: Motif.title,
         child: ListView(
           children: _getThingWidgets(context),
         ),

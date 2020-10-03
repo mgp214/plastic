@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/model/template.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/components/template_fields/template_field.dart';
 
 class TemplateStringField extends TemplateFieldWidget {
+  final Function(TemplateField) onMainFieldChanged;
+
   TemplateStringField({
     Key key,
     @required TemplateField field,
     @required template,
+    @required this.onMainFieldChanged,
   }) : super(key: key, field: field, template: template);
 
   @override
@@ -21,7 +24,7 @@ class TemplateStringFieldState extends TemplateFieldWidgetState {
 
   @override
   void initState() {
-    _valueController = TextEditingController(text: widget.field.name);
+    _valueController = TextEditingController(text: widget.field.defaultValue);
     _valueFocusNode = FocusNode();
 
     _valueFocusNode.addListener(() {
@@ -37,6 +40,7 @@ class TemplateStringFieldState extends TemplateFieldWidgetState {
   Widget build(BuildContext context) => Column(
         children: [
           StringField(
+            fillColor: Motif.background,
             controller: nameController,
             focusNode: nameFocusNode,
             label: "Field name",
@@ -47,6 +51,7 @@ class TemplateStringFieldState extends TemplateFieldWidgetState {
             },
           ),
           StringField(
+            fillColor: Motif.background,
             controller: _valueController,
             focusNode: _valueFocusNode,
             label: "Default value",
@@ -59,14 +64,15 @@ class TemplateStringFieldState extends TemplateFieldWidgetState {
           RadioListTile(
             title: Text(
               "Main template field",
-              style: Style.getStyle(FontRole.Display3, Style.accent),
+              style: Motif.contentStyle(Sizes.Label, Motif.black),
             ),
-            activeColor: Style.primary,
+            activeColor: Motif.title,
             groupValue: widget.template.getMainField(),
-            onChanged: (value) => setState(() {
-              widget.template.getMainField().main = false;
-              widget.field.main = true;
-            }),
+            onChanged: (widget as TemplateStringField).onMainFieldChanged,
+            // (value) => setState(() {
+            //   widget.template.getMainField().main = false;
+            //   widget.field.main = true;
+            // }),
             value: widget.field,
           ),
         ],

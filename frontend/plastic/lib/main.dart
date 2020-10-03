@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:plastic/model/motif.dart';
 import 'package:plastic/widgets/home_widget.dart';
 
-import 'model/motif.dart';
+import 'model/motif_data.dart';
 
 Future main() async {
   if (kReleaseMode) {
@@ -12,7 +13,7 @@ Future main() async {
     await DotEnv().load('.env_dev');
   }
 
-  await Motif.getMotif();
+  await MotifData.getMotif();
 
   runApp(PlasticApp());
 }
@@ -23,7 +24,7 @@ class PlasticApp extends StatelessWidget {
     return MaterialApp(
       title: 'plastic',
       theme: ThemeData(
-        primaryColor: Motif.activeMotif.colors.title,
+        primaryColor: Motif.title,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       routes: {

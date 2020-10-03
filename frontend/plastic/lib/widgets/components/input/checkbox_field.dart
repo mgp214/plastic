@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
 
 class CheckboxField extends StatelessWidget {
   final FocusNode focusNode;
@@ -24,9 +24,9 @@ class CheckboxField extends StatelessWidget {
   Widget build(BuildContext context) => CheckboxListTile(
         title: Text(
           label ?? "",
-          style: labelStyle ?? Style.getStyle(FontRole.Display3, Style.accent),
+          style: labelStyle ?? Motif.headerStyle(Sizes.Header, Motif.black),
         ),
-        checkColor: checkColor ?? Style.primary,
+        checkColor: checkColor ?? Motif.neutral,
         onChanged: onChanged,
         value: value ?? false,
       );

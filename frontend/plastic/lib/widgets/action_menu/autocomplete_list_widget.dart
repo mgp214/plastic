@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
 
 class AutocompleteListWidget extends StatelessWidget {
   final Map<String, VoidCallback> options;
@@ -18,10 +18,7 @@ class AutocompleteListWidget extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 child: Text(
                   option.key,
-                  style: Style.getStyle(
-                    FontRole.Content,
-                    Style.accent,
-                  ),
+                  style: Motif.contentStyle(Sizes.Content, Motif.black),
                 ),
                 onPressed: option.value,
               ))

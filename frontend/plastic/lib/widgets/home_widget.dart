@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/user.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
+import 'package:plastic/utility/constants.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/account/settings_widget.dart';
 import 'package:plastic/widgets/template/template_picker_widget.dart';
@@ -36,11 +37,12 @@ class HomeState extends State<HomeWidget> {
       (value) {
         if (!value.successful) {
           Flushbar(
+              backgroundColor: Motif.background,
               messageText: Text(
                 value.message,
-                style: Style.getStyle(FontRole.Tooltip, Style.error),
+                style: Motif.contentStyle(Sizes.Notification, Motif.negative),
               ),
-              duration: Style.snackDuration)
+              duration: Constants.snackDuration)
             ..show(context);
           return;
         }
@@ -87,11 +89,11 @@ class HomeState extends State<HomeWidget> {
   Widget build(BuildContext context) {
     if (!_isDoneLoading)
       return Container(
-          color: Style.background,
+          color: Motif.background,
           alignment: Alignment.center,
           child: CircularProgressIndicator());
     return Scaffold(
-      backgroundColor: Style.background,
+      backgroundColor: Motif.background,
       floatingActionButton: ActionMenuWidget(
         onAdd: () => _goToThenReload(
           TemplatePickerWidget(
@@ -101,7 +103,7 @@ class HomeState extends State<HomeWidget> {
         children: <ActionWidget>[
           ActionWidget(
             key: GlobalKey<ActionState>(),
-            color: Style.accent,
+            color: Motif.title,
             icon: Icons.settings,
             onPressed: () => _goToThenReload(SettingsWidget(
               user: user,

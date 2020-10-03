@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plastic/utility/style.dart';
+import 'package:plastic/model/motif.dart';
 
 class ScrollingAlertDialog extends StatelessWidget {
   final String header;
@@ -17,11 +17,10 @@ class ScrollingAlertDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        backgroundColor: Style.background,
+        backgroundColor: Motif.lightBackground,
         title: header == null
             ? null
-            : Text(header,
-                style: Style.getStyle(FontRole.Display3, headerColor)),
+            : Text(header, style: Motif.headerStyle(Sizes.Header, headerColor)),
         content: SingleChildScrollView(
           child: Container(
             height: 200,
@@ -33,10 +32,7 @@ class ScrollingAlertDialog extends StatelessWidget {
           FlatButton(
             child: Text(
               "Okay",
-              style: Style.getStyle(
-                FontRole.Display3,
-                okColor,
-              ),
+              style: Motif.actionStyle(Sizes.Action, okColor),
             ),
             onPressed: () => Navigator.pop(context),
           )

@@ -90,7 +90,7 @@ flutter:
           style: italic
     - family: Asap
       fonts:
-        - asset: assets/fonts/Asap-Regular.ttf
+        - asset: assets/fonts/YourQuotaRegular-z2zl.ttf
         - asset: assets/fonts/Asap-Italic.ttf
           style: italic
   #
