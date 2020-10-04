@@ -3,8 +3,9 @@ enum TemplateChangeType {
   Added,
   NameChanged,
   DefaultValueChanged,
+  MainFieldChanged,
   TypeChanged,
-  Metadata
+  TemplateNameChanged
 }
 
 class TemplateChange {

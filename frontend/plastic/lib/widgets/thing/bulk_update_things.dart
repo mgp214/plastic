@@ -69,7 +69,9 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
           case TemplateChangeType.TypeChanged:
             // TODO: Handle this case.
             break;
-          case TemplateChangeType.Metadata:
+          case TemplateChangeType.TemplateNameChanged:
+          case TemplateChangeType.MainFieldChanged:
+            // No changes needed.
             break;
         }
       }
@@ -186,9 +188,15 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
         case TemplateChangeType.TypeChanged:
           // TODO: Handle this case.
           break;
-        case TemplateChangeType.Metadata:
+        case TemplateChangeType.TemplateNameChanged:
           cardContents = Text(
-            "Template had ${change.fieldName} changed from \"${change.oldValue}\" to \"${change.newValue}\".",
+            "Template had name changed from \"${change.oldValue}\" to \"${change.newValue}\".",
+            style: Motif.contentStyle(Sizes.Label, Motif.black),
+          );
+          break;
+        case TemplateChangeType.MainFieldChanged:
+          cardContents = Text(
+            "Template had its main field changed from \"${change.oldValue}\" to \"${change.newValue}\".",
             style: Motif.contentStyle(Sizes.Label, Motif.black),
           );
           break;
@@ -236,8 +244,9 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: Motif.background,
-      body: ListView(
-        children: _getChangeWidgets(),
-      ));
+        backgroundColor: Motif.background,
+        body: ListView(
+          children: _getChangeWidgets(),
+        ),
+      );
 }

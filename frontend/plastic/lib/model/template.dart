@@ -38,6 +38,7 @@ class Template {
       fields.add(TemplateField(
           name: originalField.name,
           type: originalField.type,
+          main: originalField.main,
           defaultValue: originalField.defaultValue,
           id: originalField.id));
     }
@@ -48,7 +49,7 @@ class Template {
     if (a.name != b.name) {
       changes.add(
         TemplateChange(
-          changeType: TemplateChangeType.Metadata,
+          changeType: TemplateChangeType.TemplateNameChanged,
           fieldName: "name",
           oldValue: a.name,
           newValue: b.name,
@@ -64,11 +65,18 @@ class Template {
         if (aField.name != bField.name) {
           changes.add(TemplateChange(
             changeType: TemplateChangeType.NameChanged,
-            fieldId: aField.id,
-            fieldName: aField.name,
+            fieldName: "main",
             oldValue: aField.name,
             newValue: bField.name,
           ));
+        }
+        if (aField.main != bField.main) {
+          changes.add(TemplateChange(
+              changeType: TemplateChangeType.MainFieldChanged,
+              fieldId: b.getMainField().id,
+              fieldName: b.getMainField().name,
+              oldValue: a.getMainField().name,
+              newValue: b.getMainField().name));
         }
         if (aField.defaultValue != bField.defaultValue) {
           changes.add(TemplateChange(

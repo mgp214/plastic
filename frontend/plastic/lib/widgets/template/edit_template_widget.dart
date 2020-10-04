@@ -216,6 +216,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
                 duration: Constants.snackDuration)
             .show(context);
         (TemplateManager().loadTemplates()).then((x) {
+          Navigator.pop(context);
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
