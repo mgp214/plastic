@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:email_validator/email_validator.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plastic/api/api.dart';
@@ -34,7 +33,7 @@ class LogInState extends State<LogInWidget> {
     if (!_formKey.currentState.validate()) return;
 
     try {
-      var response = await Api.account.login(_email, _password);
+      var response = await Api.account.login(context, _email, _password);
       if (!response.successful) {
         NotificationUtilities.notify(
           context,

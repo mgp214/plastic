@@ -29,6 +29,7 @@ dependencies:
   flushbar: ^1.5.0
   flutter_dotenv: ^2.1.0
   objectid: ^1.1.0
+  get:
 
 
 dev_dependencies:

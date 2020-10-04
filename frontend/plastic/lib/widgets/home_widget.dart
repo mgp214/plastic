@@ -1,13 +1,12 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/model/motif.dart';
-import 'package:plastic/utility/constants.dart';
 import 'package:plastic/utility/notification_utilities.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/account/settings_widget.dart';
+import 'package:plastic/widgets/loading_modal.dart';
 import 'package:plastic/widgets/template/template_picker_widget.dart';
 import 'package:plastic/widgets/thing/view_all_things_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,7 +33,7 @@ class HomeState extends State<HomeWidget> {
 
   Future<void> getAllThings() async {
     if (!await Api.account.hasValidToken()) return;
-    Api.thing.getThingsByUser().then(
+    Api.thing.getThingsByUser(context).then(
       (value) {
         if (!value.successful) {
           NotificationUtilities.notify(
@@ -58,7 +57,7 @@ class HomeState extends State<HomeWidget> {
       _things = List<Thing>();
     });
     getPrefs()
-        .then((val) => TemplateManager().loadTemplates())
+        .then((val) => TemplateManager().loadTemplates(context))
         .then((val) => getAllThings());
   }
 
@@ -87,11 +86,10 @@ class HomeState extends State<HomeWidget> {
   Widget build(BuildContext context) {
     if (!_isDoneLoading)
       return Container(
-          color: Motif.background,
-          alignment: Alignment.center,
-          child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Motif.title),
-          ));
+        color: Motif.background,
+        alignment: Alignment.center,
+        child: Spacer(),
+      );
     return Scaffold(
       backgroundColor: Motif.background,
       floatingActionButton: ActionMenuWidget(

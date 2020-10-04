@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:plastic/api/account_api.dart';
@@ -11,6 +12,7 @@ import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
+import 'package:plastic/widgets/loading_modal.dart';
 
 class TemplateApi {
   static final TemplateApi _singleton = TemplateApi._internal();
@@ -22,11 +24,15 @@ class TemplateApi {
   TemplateApi._internal();
 
   /// Get a single template by id.
-  Future<ApiGetResponse<Template>> getTemplateById(String templateId) async {
+  Future<ApiGetResponse<Template>> getTemplateById(
+      BuildContext context, String templateId) async {
     if (!await AccountApi().hasValidToken())
       return ApiGetResponse<Template>(
           successful: false, message: 'Please log in.');
-
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
     final response = await http.get(
       Api.getRoute(Routes.templateById) + templateId,
       headers: {
@@ -34,6 +40,7 @@ class TemplateApi {
         HttpHeaders.authorizationHeader: AccountApi().authHeader(),
       },
     );
+    Navigator.pop(context);
     if (response.statusCode != 200) {
       throw new HttpException(json.decode(response.body)['error']);
     }
@@ -42,10 +49,15 @@ class TemplateApi {
   }
 
   /// Get all of a User's templates.
-  Future<ApiGetResponse<List<Template>>> getTemplatesByUser() async {
+  Future<ApiGetResponse<List<Template>>> getTemplatesByUser(
+      BuildContext context) async {
     if (!await AccountApi().hasValidToken())
       return ApiGetResponse<List<Template>>(
           successful: false, message: 'Please log in.');
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
     final response = await http.get(
       Api.getRoute(Routes.templatesByUser),
       headers: {
@@ -53,6 +65,7 @@ class TemplateApi {
         HttpHeaders.authorizationHeader: AccountApi().authHeader(),
       },
     );
+    Navigator.pop(context);
     if (response.statusCode != 200) {
       throw new HttpException(json.decode(response.body)['error']);
     }
@@ -64,11 +77,15 @@ class TemplateApi {
         successful: true, message: response.reasonPhrase, getResult: templates);
   }
 
-  Future<ApiPostResponse<List<Thing>>> saveTemplate(
+  Future<ApiPostResponse<List<Thing>>> saveTemplate(BuildContext context,
       Template template, List<Thing> updatedThings) async {
     if (!await AccountApi().hasValidToken())
       return ApiPostResponse<List<Thing>>(
           postResult: null, successful: false, message: 'Please log in.');
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
     final response = await http.post(
       Api.getRoute(Routes.saveTemplate),
       headers: {
@@ -80,7 +97,7 @@ class TemplateApi {
         "updatedThings": updatedThings,
       }),
     );
-
+    Navigator.pop(context);
     List<Thing> affectedThings;
 
     if (response.statusCode == 422) {
@@ -101,10 +118,14 @@ class TemplateApi {
         message: response.reasonPhrase);
   }
 
-  Future<ApiResponse> deleteTemplate(Template template) async {
+  Future<ApiResponse> deleteTemplate(
+      BuildContext context, Template template) async {
     if (!await AccountApi().hasValidToken())
       return ApiResponse(successful: false, message: 'Please log in.');
-
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
     final response = await http.post(
       Api.getRoute(Routes.deleteTemplate),
       headers: {
@@ -113,6 +134,7 @@ class TemplateApi {
       },
       body: json.encode({'id': template.id}),
     );
+    Navigator.pop(context);
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
   }

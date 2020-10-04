@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:plastic/api/account_api.dart';
@@ -8,6 +9,7 @@ import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_get_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/thing.dart';
+import 'package:plastic/widgets/loading_modal.dart';
 
 class ThingApi {
   static final ThingApi _singleton = ThingApi._internal();
@@ -19,12 +21,17 @@ class ThingApi {
   ThingApi._internal();
 
   /// Get all of a User's things.
-  Future<ApiGetResponse<List<Thing>>> getThingsByUser() async {
+  Future<ApiGetResponse<List<Thing>>> getThingsByUser(
+      BuildContext context) async {
     if (!await AccountApi().hasValidToken())
       return ApiGetResponse<List<Thing>>(
           getResult: List<Thing>(),
           successful: false,
           message: 'Please log in.');
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
     final response = await http.get(
       Api.getRoute(Routes.thingsByUser),
       headers: {
@@ -32,6 +39,7 @@ class ThingApi {
         HttpHeaders.authorizationHeader: AccountApi().authHeader(),
       },
     );
+    Navigator.pop(context);
     var things = new List<Thing>();
     if (response.statusCode == 200) {
       json
@@ -45,9 +53,13 @@ class ThingApi {
         message: response.reasonPhrase);
   }
 
-  Future<ApiResponse> saveThing(Thing thing) async {
+  Future<ApiResponse> saveThing(BuildContext context, Thing thing) async {
     if (!await AccountApi().hasValidToken())
       return ApiResponse(successful: false, message: 'Please log in.');
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
     final response = await http.post(
       Api.getRoute(Routes.saveThing),
       headers: {
@@ -56,14 +68,18 @@ class ThingApi {
       },
       body: thing.toJson(),
     );
+    Navigator.pop(context);
     return ApiResponse(
         successful: response.statusCode == 201, message: response.reasonPhrase);
   }
 
-  Future<ApiResponse> deleteThing(Thing thing) async {
+  Future<ApiResponse> deleteThing(BuildContext context, Thing thing) async {
     if (!await AccountApi().hasValidToken())
       return ApiResponse(successful: false, message: 'Please log in.');
-
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
     final response = await http.post(
       Api.getRoute(Routes.deleteThing),
       headers: {
@@ -72,6 +88,7 @@ class ThingApi {
       },
       body: json.encode({'id': thing.id}),
     );
+    Navigator.pop(context);
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
   }

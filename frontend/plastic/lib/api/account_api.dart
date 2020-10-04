@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/api/log_in_response.dart';
+import 'package:plastic/widgets/loading_modal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountApi {
@@ -48,7 +50,12 @@ class AccountApi {
   }
 
   /// Attempts to log in with the given credentials. Returns a token if successful, otherwise throws an exception.
-  Future<LogInResponse> login(String email, String password) async {
+  Future<LogInResponse> login(
+      BuildContext context, String email, String password) async {
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
     final response = await http.post(
       Api.getRoute(Routes.login),
       headers: {HttpHeaders.contentTypeHeader: 'application/json'},
@@ -57,6 +64,7 @@ class AccountApi {
         "password": password,
       }),
     );
+    Navigator.pop(context);
     if (response.statusCode != 200)
       return LogInResponse(successful: false, message: response.reasonPhrase);
 
@@ -68,7 +76,11 @@ class AccountApi {
 
   /// Register a new user
   Future<LogInResponse> register(
-      String email, String password, String name) async {
+      BuildContext context, String email, String password, String name) async {
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
     final response = await http.post(
       Api.getRoute(Routes.register),
       headers: {HttpHeaders.contentTypeHeader: 'application/json'},
@@ -78,6 +90,7 @@ class AccountApi {
         "password": password,
       }),
     );
+    Navigator.pop(context);
     if (response.statusCode != 201) {
       throw new HttpException(json.decode(response.body)['error']);
     }
@@ -108,9 +121,14 @@ class AccountApi {
   }
 
   /// Log out just this token
-  Future<ApiResponse> logout() async {
+  Future<ApiResponse> logout(BuildContext context) async {
     if (!await _fetchToken())
       return ApiResponse(successful: false, message: 'Please log in.');
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
+    Navigator.pop(context);
     await clearPrefs();
     final response = await http.post(
       Api.getRoute(Routes.logout),
@@ -125,10 +143,15 @@ class AccountApi {
   }
 
   /// Log out all tokens
-  Future<ApiResponse> logoutAll() async {
+  Future<ApiResponse> logoutAll(BuildContext context) async {
     if (!await _fetchToken())
       return ApiResponse(successful: false, message: 'Please log in.');
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
     await clearPrefs();
+    Navigator.pop(context);
     final response = await http.post(
       Api.getRoute(Routes.logoutAll),
       headers: {

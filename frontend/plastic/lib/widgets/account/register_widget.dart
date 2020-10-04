@@ -34,7 +34,8 @@ class RegisterState extends State<RegisterWidget> {
     if (!_formKey.currentState.validate()) return;
 
     try {
-      var response = await Api.account.register(_email, _password, _name);
+      var response =
+          await Api.account.register(context, _email, _password, _name);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       preferences.setString("token", response.token);
       preferences.setString("email", response.user.email);

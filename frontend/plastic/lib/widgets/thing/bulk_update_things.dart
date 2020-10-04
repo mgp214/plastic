@@ -1,4 +1,3 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/api/api.dart';
@@ -6,7 +5,6 @@ import 'package:plastic/model/template.dart';
 import 'package:plastic/model/template_change.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/motif.dart';
-import 'package:plastic/utility/constants.dart';
 import 'package:plastic/utility/notification_utilities.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
@@ -79,7 +77,7 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
     }
 
     Api.template
-        .saveTemplate(widget.newTemplate, widget.affectedThings)
+        .saveTemplate(context, widget.newTemplate, widget.affectedThings)
         .then((response) {
       if (response.successful) {
         NotificationUtilities.notify(

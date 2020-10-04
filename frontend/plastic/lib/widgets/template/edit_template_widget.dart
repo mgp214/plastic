@@ -1,4 +1,3 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:objectid/objectid.dart';
@@ -8,7 +7,6 @@ import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/motif.dart';
-import 'package:plastic/utility/constants.dart';
 import 'package:plastic/utility/notification_utilities.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
@@ -212,7 +210,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
           context,
           message: "Template saved.",
         );
-        (TemplateManager().loadTemplates()).then((x) {
+        (TemplateManager().loadTemplates(context)).then((x) {
           Navigator.pop(context);
           Navigator.pushReplacement(
               context,
@@ -273,7 +271,9 @@ class EditTemplateState extends State<EditTemplateWidget> {
   }
 
   void _saveTemplatePressed(BuildContext context) {
-    Api.template.saveTemplate(widget.template, List()).then((response) {
+    Api.template
+        .saveTemplate(context, widget.template, List())
+        .then((response) {
       Navigator.pop(context);
       handleApiResponse(Routes.saveTemplate, response);
     }).catchError((e) {
@@ -312,7 +312,9 @@ class EditTemplateState extends State<EditTemplateWidget> {
                   : "Confirm cancel",
               Motif.negative, () {
             if (widget.template.id != null) {
-              Api.template.deleteTemplate(widget.template).then((value) {
+              Api.template
+                  .deleteTemplate(context, widget.template)
+                  .then((value) {
                 Navigator.popUntil(context, ModalRoute.withName('home'));
                 if (value.successful) {
                   NotificationUtilities.notify(

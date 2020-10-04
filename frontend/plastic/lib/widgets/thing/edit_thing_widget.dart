@@ -1,11 +1,9 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/motif.dart';
-import 'package:plastic/utility/constants.dart';
 import 'package:plastic/utility/notification_utilities.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/input/checkbox_field.dart';
@@ -128,7 +126,7 @@ class EditThingState extends State<EditThingWidget> {
     fieldWidgets.add(
       BorderButton(
         color: Motif.neutral,
-        onPressed: () => Api.thing.saveThing(_thing).then((response) {
+        onPressed: () => Api.thing.saveThing(context, _thing).then((response) {
           if (response.successful) {
             Navigator.popUntil(context, ModalRoute.withName('home'));
             String message;
@@ -156,7 +154,8 @@ class EditThingState extends State<EditThingWidget> {
       fieldWidgets.add(
         BorderButton(
           color: Motif.negative,
-          onPressed: () => Api.thing.deleteThing(_thing).then((response) {
+          onPressed: () =>
+              Api.thing.deleteThing(context, _thing).then((response) {
             if (response.successful) {
               String message =
                   '${widget.thing.getMainField().value} has been deleted.';
