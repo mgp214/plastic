@@ -6,7 +6,6 @@ import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/notification_utilities.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/account/settings_widget.dart';
-import 'package:plastic/widgets/loading_modal.dart';
 import 'package:plastic/widgets/template/template_picker_widget.dart';
 import 'package:plastic/widgets/thing/view_all_things_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -88,15 +87,12 @@ class HomeState extends State<HomeWidget> {
       return Container(
         color: Motif.background,
         alignment: Alignment.center,
-        child: Spacer(),
       );
     return Scaffold(
       backgroundColor: Motif.background,
       floatingActionButton: ActionMenuWidget(
         onAdd: () => _goToThenReload(
-          TemplatePickerWidget(
-            templates: TemplateManager().getAllTemplates(),
-          ),
+          TemplatePickerWidget(),
         ),
         children: <ActionWidget>[
           ActionWidget(

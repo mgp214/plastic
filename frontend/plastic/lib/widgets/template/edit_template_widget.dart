@@ -315,7 +315,10 @@ class EditTemplateState extends State<EditTemplateWidget> {
               Api.template
                   .deleteTemplate(context, widget.template)
                   .then((value) {
-                Navigator.popUntil(context, ModalRoute.withName('home'));
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
                 if (value.successful) {
                   NotificationUtilities.notify(
                     context,

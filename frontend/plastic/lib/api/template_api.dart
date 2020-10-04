@@ -54,10 +54,11 @@ class TemplateApi {
     if (!await AccountApi().hasValidToken())
       return ApiGetResponse<List<Template>>(
           successful: false, message: 'Please log in.');
-    showDialog(
-      context: context,
-      builder: (context) => LoadingModal(),
-    );
+    if (context != null)
+      showDialog(
+        context: context,
+        builder: (context) => LoadingModal(),
+      );
     final response = await http.get(
       Api.getRoute(Routes.templatesByUser),
       headers: {
@@ -65,7 +66,7 @@ class TemplateApi {
         HttpHeaders.authorizationHeader: AccountApi().authHeader(),
       },
     );
-    Navigator.pop(context);
+    if (context != null) Navigator.pop(context);
     if (response.statusCode != 200) {
       throw new HttpException(json.decode(response.body)['error']);
     }
