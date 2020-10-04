@@ -5,6 +5,7 @@ import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/constants.dart';
+import 'package:plastic/utility/notification_utilities.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/account/settings_widget.dart';
 import 'package:plastic/widgets/template/template_picker_widget.dart';
@@ -36,14 +37,11 @@ class HomeState extends State<HomeWidget> {
     Api.thing.getThingsByUser().then(
       (value) {
         if (!value.successful) {
-          Flushbar(
-              backgroundColor: Motif.background,
-              messageText: Text(
-                value.message,
-                style: Motif.contentStyle(Sizes.Notification, Motif.negative),
-              ),
-              duration: Constants.snackDuration)
-            ..show(context);
+          NotificationUtilities.notify(
+            context,
+            message: value.message,
+            color: Motif.negative,
+          );
           return;
         }
         setState(() => {

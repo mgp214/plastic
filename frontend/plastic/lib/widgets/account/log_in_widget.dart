@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/constants.dart';
+import 'package:plastic/utility/notification_utilities.dart';
 import 'package:plastic/widgets/account/register_widget.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,15 +36,11 @@ class LogInState extends State<LogInWidget> {
     try {
       var response = await Api.account.login(_email, _password);
       if (!response.successful) {
-        Flushbar(
-          backgroundColor: Motif.background,
-          flushbarPosition: FlushbarPosition.BOTTOM,
-          messageText: Text(
-            response.message,
-            style: Motif.contentStyle(Sizes.Notification, Motif.negative),
-          ),
-          duration: Constants.snackDuration,
-        )..show(context);
+        NotificationUtilities.notify(
+          context,
+          message: response.message,
+          color: Motif.negative,
+        );
         return;
       }
       SharedPreferences preferences = await SharedPreferences.getInstance();

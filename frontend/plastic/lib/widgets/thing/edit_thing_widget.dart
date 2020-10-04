@@ -6,6 +6,7 @@ import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/constants.dart';
+import 'package:plastic/utility/notification_utilities.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/input/checkbox_field.dart';
 import 'package:plastic/widgets/components/input/double_field.dart';
@@ -136,25 +137,16 @@ class EditThingState extends State<EditThingWidget> {
             } else {
               message = 'your ${widget.template.name} has been updated.';
             }
-            Flushbar(
-              backgroundColor: Motif.background,
-              flushbarPosition: FlushbarPosition.TOP,
-              messageText: Text(
-                message,
-                style: Motif.contentStyle(Sizes.Notification, Motif.neutral),
-              ),
-              duration: Constants.snackDuration,
-            )..show(context);
+            NotificationUtilities.notify(
+              context,
+              message: message,
+            );
           } else {
-            Flushbar(
-              backgroundColor: Motif.background,
-              flushbarPosition: FlushbarPosition.TOP,
-              messageText: Text(
-                response.message,
-                style: Motif.contentStyle(Sizes.Notification, Motif.negative),
-              ),
-              duration: Constants.snackDuration,
-            )..show(context);
+            NotificationUtilities.notify(
+              context,
+              message: response.message,
+              color: Motif.negative,
+            );
           }
         }),
         content: doneString,
@@ -169,25 +161,16 @@ class EditThingState extends State<EditThingWidget> {
               String message =
                   '${widget.thing.getMainField().value} has been deleted.';
               Navigator.popUntil(context, ModalRoute.withName('home'));
-              Flushbar(
-                backgroundColor: Motif.background,
-                flushbarPosition: FlushbarPosition.TOP,
-                messageText: Text(
-                  message,
-                  style: Motif.contentStyle(Sizes.Notification, Motif.neutral),
-                ),
-                duration: Constants.snackDuration,
-              )..show(context);
+              NotificationUtilities.notify(
+                context,
+                message: message,
+              );
             } else {
-              Flushbar(
-                backgroundColor: Motif.background,
-                flushbarPosition: FlushbarPosition.TOP,
-                messageText: Text(
-                  response.message,
-                  style: Motif.contentStyle(Sizes.Notification, Motif.negative),
-                ),
-                duration: Constants.snackDuration,
-              )..show(context);
+              NotificationUtilities.notify(
+                context,
+                message: response.message,
+                color: Motif.negative,
+              );
             }
           }),
           content: "Delete",

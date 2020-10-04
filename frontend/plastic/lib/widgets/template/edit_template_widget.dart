@@ -9,6 +9,7 @@ import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/constants.dart';
+import 'package:plastic/utility/notification_utilities.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
@@ -207,14 +208,10 @@ class EditTemplateState extends State<EditTemplateWidget> {
   void handleApiResponse(Routes route, ApiResponse response) {
     if (route == Routes.saveTemplate) {
       if (response.successful) {
-        Flushbar(
-                backgroundColor: Motif.background,
-                messageText: Text(
-                  "Template saved.",
-                  style: Motif.contentStyle(Sizes.Notification, Motif.neutral),
-                ),
-                duration: Constants.snackDuration)
-            .show(context);
+        NotificationUtilities.notify(
+          context,
+          message: "Template saved.",
+        );
         (TemplateManager().loadTemplates()).then((x) {
           Navigator.pop(context);
           Navigator.pushReplacement(
@@ -230,15 +227,11 @@ class EditTemplateState extends State<EditTemplateWidget> {
         if (affectedThings.length > 0) {
           _handleSaveRejection(affectedThings);
         } else {
-          Flushbar(
-                  backgroundColor: Motif.background,
-                  messageText: Text(
-                    response.message,
-                    style:
-                        Motif.contentStyle(Sizes.Notification, Motif.negative),
-                  ),
-                  duration: Constants.snackDuration)
-              .show(context);
+          NotificationUtilities.notify(
+            context,
+            message: response.message,
+            color: Motif.negative,
+          );
         }
       }
     }
@@ -319,9 +312,23 @@ class EditTemplateState extends State<EditTemplateWidget> {
                   : "Confirm cancel",
               Motif.negative, () {
             if (widget.template.id != null) {
-              Api.template.deleteTemplate(widget.template);
+              Api.template.deleteTemplate(widget.template).then((value) {
+                Navigator.popUntil(context, ModalRoute.withName('home'));
+                if (value.successful) {
+                  NotificationUtilities.notify(
+                    context,
+                    message:
+                        "Template ${widget.template.name} deleted successfully, along with all its things.",
+                  );
+                } else {
+                  NotificationUtilities.notify(
+                    context,
+                    message: value.message,
+                    color: Motif.negative,
+                  );
+                }
+              });
             }
-            Navigator.popUntil(context, ModalRoute.withName('home'));
           }),
         ],
       ),
