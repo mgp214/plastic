@@ -32,6 +32,7 @@ class FieldCard extends StatelessWidget {
                 duration: Constants.snackDuration,
               ).show(context),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   IntrinsicHeight(
                     child: Row(
