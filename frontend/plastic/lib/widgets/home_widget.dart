@@ -91,7 +91,9 @@ class HomeState extends State<HomeWidget> {
       return Container(
           color: Motif.background,
           alignment: Alignment.center,
-          child: CircularProgressIndicator());
+          child: CircularProgressIndicator(
+            valueColor: new AlwaysStoppedAnimation<Color>(Motif.title),
+          ));
     return Scaffold(
       backgroundColor: Motif.background,
       floatingActionButton: ActionMenuWidget(
