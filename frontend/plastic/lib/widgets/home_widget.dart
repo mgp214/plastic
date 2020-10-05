@@ -31,7 +31,10 @@ class HomeState extends State<HomeWidget> {
   }
 
   Future<void> getAllThings() async {
-    if (!await Api.account.hasValidToken()) return;
+    var validTokenResult = await Api.account.hasValidToken();
+    if (validTokenResult != null)
+      NotificationUtilities.notify(context,
+          message: validTokenResult.message, color: Motif.negative);
     Api.thing.getThingsByUser(context).then(
       (value) {
         if (!value.successful) {
@@ -62,7 +65,10 @@ class HomeState extends State<HomeWidget> {
 
   Future<void> getPrefs() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    if (!await Api.account.hasValidToken()) {
+    var validTokenResult = await Api.account.hasValidToken();
+    if (validTokenResult != null) {
+      NotificationUtilities.notify(context,
+          message: validTokenResult.message, color: Motif.negative);
       _goToThenReload(LogInWidget());
       return;
     } else {

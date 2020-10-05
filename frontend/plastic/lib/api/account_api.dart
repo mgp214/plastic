@@ -42,11 +42,25 @@ class AccountApi {
     return token != null;
   }
 
-  Future<bool> hasValidToken() async {
-    if (!await _fetchToken()) return false;
+  Future<ApiResponse> hasValidToken() async {
+    if (!await _fetchToken())
+      return ApiResponse(successful: false, message: "You aren't logged in.");
     if (_tokenCacheExpirationTime > DateTime.now().millisecondsSinceEpoch)
-      return true;
-    return await checkToken(token);
+      return null;
+    var checkTokenResponse = await checkToken(token);
+    return getErrorMessage(checkTokenResponse);
+  }
+
+  ApiResponse getErrorMessage(int code) {
+    switch (code) {
+      case 401:
+        return ApiResponse(
+            successful: false, message: "You're not allowed to do that.");
+      case 408:
+        return Api.timeoutResponse;
+    }
+
+    return null;
   }
 
   /// Attempts to log in with the given credentials. Returns a token if successful, otherwise throws an exception.
@@ -56,17 +70,26 @@ class AccountApi {
       context: context,
       builder: (context) => LoadingModal(),
     );
-    final response = await http.post(
-      Api.getRoute(Routes.login),
-      headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-      body: json.encode({
-        "email": email.trim(),
-        "password": password,
-      }),
-    );
+    final response = await http
+        .post(
+          Api.getRoute(Routes.login),
+          headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+          body: json.encode({
+            "email": email.trim(),
+            "password": password,
+          }),
+        )
+        .timeout(Api.timeout,
+            onTimeout: () => http.Response("Servers not responding", 408));
     Navigator.pop(context);
-    if (response.statusCode != 200)
-      return LogInResponse(successful: false, message: response.reasonPhrase);
+
+    if (response.statusCode == 401)
+      return LogInResponse(
+          successful: false,
+          message: "You entered incorrect information. Try again!");
+    var errorResponse = getErrorMessage(response.statusCode);
+    if (errorResponse != null)
+      return LogInResponse(successful: false, message: errorResponse.message);
 
     var logInResponse = LogInResponse.fromJson(json.decode(response.body),
         successful: true, message: response.reasonPhrase);
@@ -81,37 +104,44 @@ class AccountApi {
       context: context,
       builder: (context) => LoadingModal(),
     );
-    final response = await http.post(
-      Api.getRoute(Routes.register),
-      headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-      body: json.encode({
-        "email": email.trim(),
-        "name": name.trim(),
-        "password": password,
-      }),
-    );
+    final response = await http
+        .post(
+          Api.getRoute(Routes.register),
+          headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+          body: json.encode({
+            "email": email.trim(),
+            "name": name.trim(),
+            "password": password,
+          }),
+        )
+        .timeout(Api.timeout,
+            onTimeout: () => http.Response("Servers not responding", 408));
     Navigator.pop(context);
-    if (response.statusCode != 201) {
-      throw new HttpException(json.decode(response.body)['error']);
-    }
+
+    var errorResponse = getErrorMessage(response.statusCode);
+    if (errorResponse != null)
+      return LogInResponse(successful: false, message: errorResponse.message);
     var logInResponse = new LogInResponse.fromJson(json.decode(response.body));
     _userId = logInResponse.user.id;
     return logInResponse;
   }
 
   /// Check if a given token is valid
-  Future<bool> checkToken(String token) async {
-    if (token == null) return false;
+  Future<int> checkToken(String token) async {
+    if (token == null) return 401;
 
-    final response = await http.post(
-      Api.getRoute(Routes.checkToken),
-      headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-      body: json.encode({"token": token}),
-    );
+    final response = await http
+        .post(
+          Api.getRoute(Routes.checkToken),
+          headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+          body: json.encode({"token": token}),
+        )
+        .timeout(Api.timeout,
+            onTimeout: () => http.Response("Servers not responding", 408));
 
-    var result = response.statusCode == 200 && "true" == response.body;
+    var result = response.statusCode;
 
-    if (!result) {
+    if (result != 200) {
       await clearPrefs();
     } else {
       _tokenCacheExpirationTime =
@@ -136,7 +166,8 @@ class AccountApi {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: authHeader(),
       },
-    );
+    ).timeout(Api.timeout,
+        onTimeout: () => http.Response("Servers not responding", 408));
     token = null;
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
@@ -158,7 +189,8 @@ class AccountApi {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: authHeader(),
       },
-    );
+    ).timeout(Api.timeout,
+        onTimeout: () => http.Response("Servers not responding", 408));
     token = null;
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);

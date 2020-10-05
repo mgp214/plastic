@@ -204,6 +204,11 @@ class EditTemplateState extends State<EditTemplateWidget> {
   }
 
   void handleApiResponse(Routes route, ApiResponse response) {
+    if (response == Api.timeoutResponse) {
+      NotificationUtilities.notify(context,
+          message: response.message, color: Motif.negative);
+      return;
+    }
     if (route == Routes.saveTemplate) {
       if (response.successful) {
         NotificationUtilities.notify(
