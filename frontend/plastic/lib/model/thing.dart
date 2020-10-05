@@ -43,6 +43,36 @@ class Thing {
     );
   }
 
+  Thing.clone(Thing original) {
+    fields = List<ThingField>();
+    userId = original.userId;
+    templateId = original.templateId;
+    id = original.id;
+    name = original.name;
+    for (var originalField in original.fields) {
+      fields.add(ThingField(
+        id: originalField.id,
+        name: originalField.name,
+        value: originalField.value,
+      ));
+    }
+  }
+
+  bool isDifferentFrom(Thing other) {
+    if (name != other.name ||
+        id != other.id ||
+        templateId != other.templateId ||
+        userId != other.userId) return true;
+    for (var field in fields) {
+      var otherField =
+          other.fields.firstWhere((e) => e.id == field.id, orElse: () => null);
+      if (otherField == null ||
+          field.name != otherField.name ||
+          field.value != otherField.value) return true;
+    }
+    return false;
+  }
+
   Thing.fromJson(String jsonString) {
     Map<String, dynamic> json = jsonDecode(jsonString);
     if (json['fields'] != null) {

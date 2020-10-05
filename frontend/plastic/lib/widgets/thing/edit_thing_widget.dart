@@ -6,6 +6,8 @@ import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/notification_utilities.dart';
 import 'package:plastic/utility/template_manager.dart';
+import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
+import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/input/checkbox_field.dart';
 import 'package:plastic/widgets/components/input/double_field.dart';
 import 'package:plastic/widgets/components/input/int_field.dart';
@@ -24,12 +26,14 @@ class EditThingWidget extends StatefulWidget {
 }
 
 class EditThingState extends State<EditThingWidget> {
+  Thing _originalThing;
   Thing _thing;
   Map<String, TextEditingController> fieldControllers;
   Map<String, FocusNode> fieldFocusNodes;
 
   EditThingState(Thing thing) {
     _thing = thing;
+    _originalThing = Thing.clone(thing);
     fieldControllers = Map();
     fieldFocusNodes = Map();
   }
@@ -126,7 +130,8 @@ class EditThingState extends State<EditThingWidget> {
     fieldWidgets.add(
       BorderButton(
         color: Motif.neutral,
-        onPressed: () => Api.thing.saveThing(context, _thing).then((response) {
+        onPressed: () =>
+            Api.thing.saveThing(context, widget.thing).then((response) {
           if (response.successful) {
             Navigator.popUntil(context, ModalRoute.withName('home'));
             String message;
@@ -155,7 +160,7 @@ class EditThingState extends State<EditThingWidget> {
         BorderButton(
           color: Motif.negative,
           onPressed: () =>
-              Api.thing.deleteThing(context, _thing).then((response) {
+              Api.thing.deleteThing(context, widget.thing).then((response) {
             if (response.successful) {
               String message =
                   '${widget.thing.getMainField().value} has been deleted.';
@@ -195,8 +200,28 @@ class EditThingState extends State<EditThingWidget> {
     fieldWidgets.add(
       BorderButton(
         color: Motif.caution,
-        onPressed: () =>
-            Navigator.popUntil(context, ModalRoute.withName('home')),
+        onPressed: () {
+          if (_originalThing.isDifferentFrom(widget.thing)) {
+            showDialog(
+              context: context,
+              builder: (context) => ChoiceActionsDialog(
+                message: "Are you sure you want to discard your changes?",
+                choices: [
+                  DialogTextChoice(
+                      "Yes",
+                      Motif.negative,
+                      () => Navigator.popUntil(
+                          context, ModalRoute.withName('home'))),
+                  DialogTextChoice("No", Motif.black, () {
+                    Navigator.pop(context);
+                  }),
+                ],
+              ),
+            );
+          } else {
+            Navigator.popUntil(context, ModalRoute.withName('home'));
+          }
+        },
         content: cancelString,
       ),
     );

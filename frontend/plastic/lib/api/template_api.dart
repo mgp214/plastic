@@ -30,7 +30,6 @@ class TemplateApi {
     if (validTokenResult != null)
       return ApiGetResponse<Template>(
           message: validTokenResult.message, successful: false);
-    ;
     showDialog(
       context: context,
       builder: (context) => LoadingModal(),
