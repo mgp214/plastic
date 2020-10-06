@@ -15,23 +15,23 @@ import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:plastic/widgets/template/edit_template_page.dart';
 
-class EditThingWidget extends StatefulWidget {
+class EditThingPage extends StatefulWidget {
   final Template template;
   final Thing thing;
 
-  EditThingWidget({this.template, this.thing}) : super();
+  EditThingPage({this.template, this.thing}) : super();
 
   @override
-  State<StatefulWidget> createState() => EditThingState(thing);
+  State<StatefulWidget> createState() => EditThingPageState(thing);
 }
 
-class EditThingState extends State<EditThingWidget> {
+class EditThingPageState extends State<EditThingPage> {
   Thing _originalThing;
   Thing _thing;
   Map<String, TextEditingController> fieldControllers;
   Map<String, FocusNode> fieldFocusNodes;
 
-  EditThingState(Thing thing) {
+  EditThingPageState(Thing thing) {
     _thing = thing;
     _originalThing = Thing.clone(thing);
     fieldControllers = Map();

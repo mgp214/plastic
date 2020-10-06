@@ -6,11 +6,11 @@ import 'package:plastic/widgets/components/splash_list_tile.dart';
 
 import 'edit_thing_page.dart';
 
-class ViewAllThingsWidget extends StatelessWidget {
+class ViewAllThingsPage extends StatelessWidget {
   final List<Thing> things;
   final VoidCallback onRefresh;
 
-  ViewAllThingsWidget({@required this.things, @required this.onRefresh})
+  ViewAllThingsPage({@required this.things, @required this.onRefresh})
       : super();
 
   List<Widget> _getThingWidgets(context) {
