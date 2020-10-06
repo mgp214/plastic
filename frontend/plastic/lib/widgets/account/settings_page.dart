@@ -4,16 +4,16 @@ import 'package:plastic/model/user.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 
-class SettingsWidget extends StatefulWidget {
+class SettingsPage extends StatefulWidget {
   final User user;
 
-  SettingsWidget({@required this.user});
+  SettingsPage({@required this.user});
 
   @override
-  State<StatefulWidget> createState() => SettingsState();
+  State<StatefulWidget> createState() => SettingsPageState();
 }
 
-class SettingsState extends State<SettingsWidget> {
+class SettingsPageState extends State<SettingsPage> {
   void logout() {
     Api.account.logout(context).then((value) => Navigator.pop(context));
   }

@@ -4,7 +4,7 @@ import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
 
-import 'edit_thing_widget.dart';
+import 'edit_thing_page.dart';
 
 class ViewAllThingsWidget extends StatelessWidget {
   final List<Thing> things;
@@ -40,7 +40,7 @@ class ViewAllThingsWidget extends StatelessWidget {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EditThingWidget(
+                  builder: (context) => EditThingPage(
                     template:
                         TemplateManager().getTemplateById(thing.templateId),
                     thing: thing,

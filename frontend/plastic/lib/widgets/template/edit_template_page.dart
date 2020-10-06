@@ -22,15 +22,15 @@ import 'package:plastic/widgets/components/template_fields/template_int_field.da
 import 'package:plastic/widgets/components/template_fields/template_string_field.dart';
 import 'package:plastic/widgets/thing/bulk_update_things.dart';
 
-class EditTemplateWidget extends StatefulWidget {
+class EditTemplatePage extends StatefulWidget {
   final Template template;
-  EditTemplateWidget({this.template}) : super();
+  EditTemplatePage({this.template}) : super();
 
   @override
-  State<StatefulWidget> createState() => EditTemplateState();
+  State<StatefulWidget> createState() => EditTemplatePageState();
 }
 
-class EditTemplateState extends State<EditTemplateWidget> {
+class EditTemplatePageState extends State<EditTemplatePage> {
   Map<String, TextEditingController> _metadataControllers;
   Map<String, FocusNode> _metadataNodes;
   Map<String, Key> _metadataKeys;
@@ -221,7 +221,7 @@ class EditTemplateState extends State<EditTemplateWidget> {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    EditTemplateWidget(template: widget.template),
+                    EditTemplatePage(template: widget.template),
               ));
         });
       } else {

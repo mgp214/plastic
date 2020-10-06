@@ -13,7 +13,7 @@ import 'package:plastic/widgets/components/input/double_field.dart';
 import 'package:plastic/widgets/components/input/int_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
-import 'package:plastic/widgets/template/edit_template_widget.dart';
+import 'package:plastic/widgets/template/edit_template_page.dart';
 
 class EditThingWidget extends StatefulWidget {
   final Template template;
@@ -190,7 +190,7 @@ class EditThingState extends State<EditThingWidget> {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    EditTemplateWidget(template: widget.template),
+                    EditTemplatePage(template: widget.template),
               ));
         },
         content: "Edit ${widget.template.name} template",

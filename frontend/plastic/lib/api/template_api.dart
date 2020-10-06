@@ -12,7 +12,7 @@ import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
-import 'package:plastic/widgets/loading_modal.dart';
+import 'package:plastic/widgets/components/loading_modal.dart';
 
 class TemplateApi {
   static final TemplateApi _singleton = TemplateApi._internal();

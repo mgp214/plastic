@@ -7,20 +7,20 @@ import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
-import 'package:plastic/widgets/template/edit_template_widget.dart';
-import 'package:plastic/widgets/thing/edit_thing_widget.dart';
+import 'package:plastic/widgets/template/edit_template_page.dart';
+import 'package:plastic/widgets/thing/edit_thing_page.dart';
 
-class TemplatePickerWidget extends StatefulWidget {
-  TemplatePickerWidget() : super();
+class TemplatePickerPage extends StatefulWidget {
+  TemplatePickerPage() : super();
 
   @override
-  State<StatefulWidget> createState() => TemplatePickerState();
+  State<StatefulWidget> createState() => TemplatePickerPageState();
 }
 
-class TemplatePickerState extends State<TemplatePickerWidget> {
+class TemplatePickerPageState extends State<TemplatePickerPage> {
   List<Template> _templates;
 
-  TemplatePickerState() {
+  TemplatePickerPageState() {
     _loadTemplatesAndRefresh();
   }
 
@@ -60,7 +60,7 @@ class TemplatePickerState extends State<TemplatePickerWidget> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditThingWidget(
+                      builder: (context) => EditThingPage(
                         template: template,
                         thing: Thing(
                           templateId: template.id,
@@ -87,7 +87,7 @@ class TemplatePickerState extends State<TemplatePickerWidget> {
           onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EditTemplateWidget(
+                  builder: (context) => EditTemplatePage(
                     template: Template(
                         id: ObjectId().hexString,
                         fields: [],

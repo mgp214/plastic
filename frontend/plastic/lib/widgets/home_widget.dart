@@ -5,13 +5,13 @@ import 'package:plastic/model/user.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/notification_utilities.dart';
 import 'package:plastic/utility/template_manager.dart';
-import 'package:plastic/widgets/account/settings_widget.dart';
-import 'package:plastic/widgets/template/template_picker_widget.dart';
-import 'package:plastic/widgets/thing/view_all_things_widget.dart';
+import 'package:plastic/widgets/account/settings_page.dart';
+import 'package:plastic/widgets/template/template_picker_page.dart';
+import 'package:plastic/widgets/thing/view_all_things_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'account/log_in_widget.dart';
-import 'action_menu/action_menu_widget.dart';
-import 'action_menu/action_widget.dart';
+import 'account/log_in_page.dart';
+import 'action_menu/action_menu.dart';
+import 'action_menu/action_item.dart';
 
 class HomeWidget extends StatefulWidget {
   @override
@@ -69,7 +69,7 @@ class HomeState extends State<HomeWidget> {
     if (validTokenResult != null) {
       NotificationUtilities.notify(context,
           message: validTokenResult.message, color: Motif.negative);
-      _goToThenReload(LogInWidget());
+      _goToThenReload(LogInPage());
       return;
     } else {
       setState(() {
@@ -96,23 +96,23 @@ class HomeState extends State<HomeWidget> {
       );
     return Scaffold(
       backgroundColor: Motif.background,
-      floatingActionButton: ActionMenuWidget(
+      floatingActionButton: ActionMenu(
         onAdd: () => _goToThenReload(
-          TemplatePickerWidget(),
+          TemplatePickerPage(),
         ),
-        children: <ActionWidget>[
-          ActionWidget(
-            key: GlobalKey<ActionState>(),
+        children: <ActionItem>[
+          ActionItem(
+            key: GlobalKey<ActionItemState>(),
             color: Motif.title,
             icon: Icons.settings,
-            onPressed: () => _goToThenReload(SettingsWidget(
+            onPressed: () => _goToThenReload(SettingsPage(
               user: user,
             )),
           ),
         ],
       ),
       body: SafeArea(
-        child: ViewAllThingsWidget(
+        child: ViewAllThingsPage(
           things: _things,
           onRefresh: refresh,
         ),

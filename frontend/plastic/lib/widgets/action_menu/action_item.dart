@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-class ActionWidget extends StatefulWidget {
+class ActionItem extends StatefulWidget {
   final IconData icon;
   final Color color;
   final VoidCallback onPressed;
 
-  ActionWidget({
-    GlobalKey<ActionState> key,
+  ActionItem({
+    GlobalKey<ActionItemState> key,
     @required this.icon,
     @required this.color,
     @required this.onPressed,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => ActionState();
+  State<StatefulWidget> createState() => ActionItemState();
 }
 
-class ActionState extends State<ActionWidget>
+class ActionItemState extends State<ActionItem>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Color _currentColor;

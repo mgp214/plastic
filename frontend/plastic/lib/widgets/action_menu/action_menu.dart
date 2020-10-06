@@ -1,28 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
-import 'package:plastic/widgets/action_menu/action_widget.dart';
+import 'package:plastic/widgets/action_menu/action_item.dart';
 
-class ActionMenuWidget extends StatefulWidget {
+class ActionMenu extends StatefulWidget {
   final VoidCallback onAdd;
-  final List<ActionWidget> children;
+  final List<ActionItem> children;
 
-  ActionMenuWidget({@required this.onAdd, @required this.children});
+  ActionMenu({@required this.onAdd, @required this.children});
 
   @override
   State<StatefulWidget> createState() => ActionMenuState();
 }
 
-class ActionMenuState extends State<ActionMenuWidget>
-    with TickerProviderStateMixin {
+class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
   List<Key> actionKeys;
   bool _isExpanded = false;
-  // bool _isQuickAddOpen = false;
   AnimationController _menuController;
-  // AnimationController _quickAddController;
   Animation<Color> _colorAnimation;
   Animation<double> _rotationAnimation;
-  // Animation<Offset> _quickAddAnimation;
-  // FocusNode _quickAddFocus;
 
   void toggleMenu(BuildContext context) {
     _isExpanded = !_isExpanded;
@@ -32,7 +27,7 @@ class ActionMenuState extends State<ActionMenuWidget>
       _menuController.reverse();
 
     for (var key in actionKeys) {
-      var typeCastKey = key as GlobalKey<ActionState>;
+      var typeCastKey = key as GlobalKey<ActionItemState>;
       if (typeCastKey != null) {
         if (_isExpanded) {
           typeCastKey.currentState.display(0, 75);
@@ -42,27 +37,6 @@ class ActionMenuState extends State<ActionMenuWidget>
       }
     }
   }
-
-  // void toggleQuickAdd(BuildContext context) {
-  //   // if the action menu is open, close it first, then await further interaction.
-  //   if (_isExpanded) {
-  //     toggleMenu(context);
-  //     return;
-  //   }
-  //   setState(() {
-  //     _isQuickAddOpen = !_isQuickAddOpen;
-  //   });
-
-  //   if (_isQuickAddOpen) {
-  //     _menuController.forward();
-  //     _quickAddController.forward();
-  //     _quickAddFocus.requestFocus();
-  //   } else {
-  //     _menuController.reverse();
-  //     _quickAddController.reverse();
-  //     FocusScope.of(context).unfocus();
-  //   }
-  // }
 
   void onPressed(BuildContext context) {
     if (_isExpanded) {
@@ -74,11 +48,6 @@ class ActionMenuState extends State<ActionMenuWidget>
   }
 
   void onLongPressed(BuildContext context) {
-    // if quick add is open, close it first, then await further interaction
-    // if (_isQuickAddOpen) {
-    //   toggleQuickAdd(context);
-    //   return;
-    // }
     toggleMenu(context);
   }
 
@@ -86,25 +55,13 @@ class ActionMenuState extends State<ActionMenuWidget>
   void initState() {
     super.initState();
     _isExpanded = false;
-    // _isQuickAddOpen = false;
     _menuController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 200),
     );
-    // _quickAddController = AnimationController(
-    //   vsync: this,
-    //   duration: Duration(milliseconds: 200),
-    // );
     _rotationAnimation = Tween(begin: 0.0, end: 3 / 8).animate(_menuController);
-    // _quickAddAnimation = Tween(begin: Offset(0, 1.5), end: Offset.zero).animate(
-    //   CurvedAnimation(
-    //     curve: Curves.easeOut,
-    //     parent: _quickAddController,
-    //   ),
-    // );
     _colorAnimation = ColorTween(begin: Motif.title, end: Motif.negative)
         .animate(_menuController);
-    // _quickAddFocus = FocusNode();
   }
 
   @override
@@ -144,21 +101,9 @@ class ActionMenuState extends State<ActionMenuWidget>
       ),
     );
 
-    // Widget quickAdd = Positioned(
-    //   bottom: MediaQuery.of(context).viewInsets.bottom + 10,
-    //   left: 5,
-    //   child: SlideTransition(
-    //     position: _quickAddAnimation,
-    //     child: QuickAddWidget(
-    //       focusNode: _quickAddFocus,
-    //     ),
-    //   ),
-    // );
-
     List<Widget> actions = List();
     actions.addAll(widget.children);
     actions.add(main);
-    // actions.add(widget.add);
     actionKeys = widget.children.map((child) => child.key).toList();
 
     return Align(

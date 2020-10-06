@@ -8,7 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/api/log_in_response.dart';
-import 'package:plastic/widgets/loading_modal.dart';
+import 'package:plastic/widgets/components/loading_modal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountApi {

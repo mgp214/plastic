@@ -9,7 +9,7 @@ import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_get_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/thing.dart';
-import 'package:plastic/widgets/loading_modal.dart';
+import 'package:plastic/widgets/components/loading_modal.dart';
 
 class ThingApi {
   static final ThingApi _singleton = ThingApi._internal();
