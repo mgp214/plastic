@@ -142,7 +142,7 @@ class LogInState extends State<LogInWidget> {
                     ),
                   ),
                   BorderButton(
-                    color: Motif.neutral,
+                    color: Motif.title,
                     onPressed: () => logInPressed(),
                     content: "hello",
                   ),
@@ -159,7 +159,7 @@ class LogInState extends State<LogInWidget> {
                       ),
                       Expanded(
                         child: BorderButton(
-                          color: Motif.title,
+                          color: Motif.neutral,
                           content: "register",
                           onPressed: () => Navigator.push(
                               context,
