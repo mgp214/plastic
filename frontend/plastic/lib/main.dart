@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/model/preference_manager.dart';
 import 'package:plastic/widgets/home_widget.dart';
 
 import 'model/motif_data.dart';
@@ -14,6 +15,7 @@ Future main() async {
   }
 
   await MotifData.getMotif();
+  await PreferenceManager().loadPreferences();
 
   runApp(PlasticApp());
 }

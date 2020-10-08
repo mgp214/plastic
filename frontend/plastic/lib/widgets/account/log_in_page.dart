@@ -4,9 +4,12 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/model/api/api_exception.dart';
+import 'package:plastic/model/api/log_in_response.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/model/preference_manager.dart';
 import 'package:plastic/utility/constants.dart';
-import 'package:plastic/utility/notification_utilities.dart';
+import 'package:plastic/utility/notifier.dart';
 import 'package:plastic/widgets/account/register_page.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,23 +38,28 @@ class LogInPageState extends State<LogInPage> {
     try {
       var response = await Api.account.login(context, _email, _password);
       if (!response.successful) {
-        NotificationUtilities.notify(
+        Notifier.notify(
           context,
           message: response.message,
           color: Motif.negative,
         );
         return;
       }
-      SharedPreferences preferences = await SharedPreferences.getInstance();
+      SharedPreferences preferences = PreferenceManager().get();
+      await preferences.reload();
       preferences.setString("token", response.token);
       preferences.setString("email", response.user.email);
       preferences.setString("name", response.user.name);
       preferences.setString("id", response.user.id);
+
       Navigator.popUntil(context, ModalRoute.withName('home'));
+      Navigator.pushReplacementNamed(context, 'home');
     } on HttpException catch (e) {
       setState(() {
         _error = e.message;
       });
+    } on ApiException catch (e) {
+      Notifier.handleApiError(context, e);
     }
   }
 

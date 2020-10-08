@@ -26,15 +26,21 @@ router.post('/users', async (req, res) => {
 router.post('/users/login', async (req, res) => {
 	try {
 		const { email, password } = req.body;
+		if (!email || !password) {
+			res.status(400).statusMessage('incomplete credentials.');
+			res.send();
+			return;
+		}
 		const user = await User.findByCredentials(email, password);
 		if (!user) {
-			return res.status(401)
-				.send({ error: 'Login failed! Check authentication credentials' });
+			res.status(403).statusMessage = 'The credentials you provided were invalid.';
+			res.send();
+			return;
 		}
 		const token = await user.generateAuthToken();
 		res.send({ user, token });
 	} catch (error) {
-		res.status(400).statusMessage = error.toString();
+		res.status(500).statusMessage = error.toString();
 		res.send();
 		console.log(error);
 	}
@@ -42,7 +48,6 @@ router.post('/users/login', async (req, res) => {
 
 // View logged in user profile
 router.get('/users/me', auth, async (req, res) => {
-
 	res.send(req.user);
 });
 

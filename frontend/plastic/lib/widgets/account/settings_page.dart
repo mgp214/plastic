@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/utility/notifier.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -15,11 +17,19 @@ class SettingsPage extends StatefulWidget {
 
 class SettingsPageState extends State<SettingsPage> {
   void logout() {
-    Api.account.logout(context).then((value) => Navigator.pop(context));
+    Api.account
+        .logout(context)
+        .then((value) => Navigator.pop(context))
+        .catchError((e) => Notifier.handleApiError(context, e),
+            test: (e) => e is ApiException);
   }
 
   void logoutAll() {
-    Api.account.logoutAll(context).then((value) => Navigator.pop(context));
+    Api.account
+        .logoutAll(context)
+        .then((value) => Navigator.pop(context))
+        .catchError((e) => Notifier.handleApiError(context, e),
+            test: (e) => e is ApiException);
   }
 
   @override

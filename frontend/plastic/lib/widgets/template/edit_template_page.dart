@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:objectid/objectid.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/motif.dart';
-import 'package:plastic/utility/notification_utilities.dart';
+import 'package:plastic/utility/notifier.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
@@ -204,14 +205,9 @@ class EditTemplatePageState extends State<EditTemplatePage> {
   }
 
   void handleApiResponse(Routes route, ApiResponse response) {
-    if (response == Api.timeoutResponse) {
-      NotificationUtilities.notify(context,
-          message: response.message, color: Motif.negative);
-      return;
-    }
     if (route == Routes.saveTemplate) {
       if (response.successful) {
-        NotificationUtilities.notify(
+        Notifier.notify(
           context,
           message: "Template saved.",
         );
@@ -230,7 +226,7 @@ class EditTemplatePageState extends State<EditTemplatePage> {
         if (affectedThings.length > 0) {
           _handleSaveRejection(affectedThings);
         } else {
-          NotificationUtilities.notify(
+          Notifier.notify(
             context,
             message: response.message,
             color: Motif.negative,
@@ -279,26 +275,30 @@ class EditTemplatePageState extends State<EditTemplatePage> {
     Api.template
         .saveTemplate(context, widget.template, List())
         .then((response) {
-      Navigator.pop(context);
-      handleApiResponse(Routes.saveTemplate, response);
-    }).catchError((e) {
-      showDialog(
-        context: context,
-        builder: (context) => ScrollingAlertDialog(
-          headerColor: Motif.negative,
-          header: "There are problems with this template",
-          okColor: Motif.black,
-          children: e.errors
-              .map<Widget>(
-                (e) => ListTile(
-                  title: Text(e,
-                      style: Motif.contentStyle(Sizes.Content, Motif.black)),
-                ),
-              )
-              .toList(),
-        ),
-      ).then((val) => Navigator.pop(context));
-    });
+          Navigator.pop(context);
+          handleApiResponse(Routes.saveTemplate, response);
+        })
+        .catchError((e) => Notifier.handleApiError(context, e),
+            test: (e) => e is ApiException)
+        .catchError((e) {
+          showDialog(
+            context: context,
+            builder: (context) => ScrollingAlertDialog(
+              headerColor: Motif.negative,
+              header: "There are problems with this template",
+              okColor: Motif.black,
+              children: e.errors
+                  .map<Widget>(
+                    (e) => ListTile(
+                      title: Text(e,
+                          style:
+                              Motif.contentStyle(Sizes.Content, Motif.black)),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ).then((val) => Navigator.pop(context));
+        });
   }
 
   void _deleteTemplatePressed(BuildContext context) {
@@ -325,13 +325,13 @@ class EditTemplatePageState extends State<EditTemplatePage> {
                 Navigator.pop(context);
                 Navigator.pop(context);
                 if (value.successful) {
-                  NotificationUtilities.notify(
+                  Notifier.notify(
                     context,
                     message:
                         "Template ${widget.template.name} deleted successfully, along with all its things.",
                   );
                 } else {
-                  NotificationUtilities.notify(
+                  Notifier.notify(
                     context,
                     message: value.message,
                     color: Motif.negative,

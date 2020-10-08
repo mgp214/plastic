@@ -4,21 +4,6 @@ const Thing = require('../models/Thing');
 const auth = require('../middleware/auth');
 const router = express.Router();
 
-// // Create a new template, or update if it exists already
-// router.post('/templates/create', auth, async (req, res) => {
-
-// 	try {
-// 		const template = new Template(req.body);
-// 		template.userId = req.user._id;
-// 		await template.save();
-// 		res.status(201).send({ template });
-// 	} catch (error) {
-// 		res.status(400).statusMessage = error.toString();
-// 		res.send();
-// 		console.log(error);
-// 	}
-// });
-
 // Get all of a User's templates
 router.get('/templates/all', auth, async (req, res) => {
 	const templates = await Template.findAllByUser(req.user._id);
@@ -68,14 +53,11 @@ router.post('/templates/save', auth, async (req, res) => {
 			res.send({ templateErrors: errors });
 			return;
 		}
-		// const updatedThingsJson = JSON.parse(req.body.updatedThings);
 		const updatedThings = req.body.updatedThings.map(t => new Thing(JSON.parse(t)));
 		template.userId = req.user._id;
 		var affectedThings = await getListOfAffectedThings(template._id);
 		console.log(updatedThings);
 		if (affectedThings) {
-			//TODO: verify each affected thing is included in the updated things provided.
-			// console.log(affectedThings);
 			var updatedThingIds = updatedThings.map(thing => thing._id.toString());
 			if (affectedThings.some(thing => updatedThingIds.indexOf(thing._id.toString()) == -1)) {
 				console.log('request didn\'t include updates for all affected things, returning full list of affected things.');
@@ -92,15 +74,15 @@ router.post('/templates/save', auth, async (req, res) => {
 						{ upsert: true, useFindAndModify: false });
 				}
 				saveTemplate(template);
-				res.status(201).send({ template: template });
+				res.send({ template: template });
 			}
 			return;
 		}
 		console.log('no affected things.');
 		saveTemplate(template);
-		res.status(201).send({ template: template });
+		res.send({ template: template });
 	} catch (error) {
-		res.status(400).statusMessage = error.toString();
+		res.status(500).statusMessage = error.toString();
 		res.send();
 		console.log(error);
 	}
@@ -123,9 +105,9 @@ router.post('/templates/delete', auth, async (req, res) => {
 		console.log('deleting template with id: ' + id.toString());
 		await Template.findOneAndDelete(
 			{ _id: id.toString(), userId: userId });
-		res.status(200).send({ id });
+		res.send({ id });
 	} catch (error) {
-		res.status(400).statusMessage = error.toString();
+		res.status(500).statusMessage = error.toString();
 		res.send();
 		console.log(error);
 	}

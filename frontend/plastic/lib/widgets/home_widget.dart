@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/model/api/api_exception.dart';
+import 'package:plastic/model/api/api_get_response.dart';
+import 'package:plastic/model/api/api_response.dart';
+import 'package:plastic/model/preference_manager.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/model/motif.dart';
-import 'package:plastic/utility/notification_utilities.dart';
+import 'package:plastic/utility/notifier.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/account/settings_page.dart';
 import 'package:plastic/widgets/template/template_picker_page.dart';
 import 'package:plastic/widgets/thing/view_all_things_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'account/log_in_page.dart';
 import 'action_menu/action_menu.dart';
 import 'action_menu/action_item.dart';
 
@@ -31,26 +34,26 @@ class HomeState extends State<HomeWidget> {
   }
 
   Future<void> getAllThings() async {
-    var validTokenResult = await Api.account.hasValidToken();
-    if (validTokenResult != null)
-      NotificationUtilities.notify(context,
-          message: validTokenResult.message, color: Motif.negative);
-    Api.thing.getThingsByUser(context).then(
-      (value) {
-        if (!value.successful) {
-          NotificationUtilities.notify(
-            context,
-            message: value.message,
-            color: Motif.negative,
-          );
-          return;
-        }
-        setState(() => {
-              _isDoneLoading = true,
-              _things = value.getResult,
-            });
-      },
-    );
+    try {
+      var response = await Api.thing.getThingsByUser(context);
+
+      if (!response.successful) {
+        Notifier.notify(
+          context,
+          message: response.message,
+          color: Motif.negative,
+        );
+        return;
+      }
+      setState(() => {
+            _things = response.getResult,
+          });
+    } on ApiException catch (e) {
+      Notifier.handleApiError(context, e);
+    }
+    setState(() => {
+          _isDoneLoading = true,
+        });
   }
 
   Future<void> refresh() async {
@@ -58,27 +61,24 @@ class HomeState extends State<HomeWidget> {
       _isDoneLoading = false;
       _things = List<Thing>();
     });
-    getPrefs()
-        .then((val) => TemplateManager().loadTemplates(context))
-        .then((val) => getAllThings());
+    try {
+      await getPrefs();
+      await TemplateManager().loadTemplates(context);
+      await getAllThings();
+    } on ApiException catch (e) {
+      Notifier.handleApiError(context, e);
+    }
   }
 
   Future<void> getPrefs() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    var validTokenResult = await Api.account.hasValidToken();
-    if (validTokenResult != null) {
-      NotificationUtilities.notify(context,
-          message: validTokenResult.message, color: Motif.negative);
-      _goToThenReload(LogInPage());
-      return;
-    } else {
-      setState(() {
-        user = User(
-            name: preferences.getString("name"),
-            email: preferences.getString("email"),
-            id: preferences.getString("id"));
-      });
-    }
+    SharedPreferences preferences = PreferenceManager().get();
+    preferences.reload();
+    setState(() {
+      user = User(
+          name: preferences.getString("name"),
+          email: preferences.getString("email"),
+          id: preferences.getString("id"));
+    });
   }
 
   @override

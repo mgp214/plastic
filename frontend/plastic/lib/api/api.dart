@@ -2,7 +2,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plastic/api/account_api.dart';
 import 'package:plastic/api/template_api.dart';
 import 'package:plastic/api/thing_api.dart';
-import 'package:plastic/model/api/api_response.dart';
 
 enum Routes {
   register,
@@ -26,9 +25,6 @@ class Api {
   static final ThingApi thing = ThingApi();
   static final TemplateApi template = TemplateApi();
   static final AccountApi account = AccountApi();
-
-  static final ApiResponse timeoutResponse =
-      ApiResponse(successful: false, message: "The server didn't respond.");
 
   static String getRoute(Routes route) {
     String value;

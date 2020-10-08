@@ -89,9 +89,10 @@ class TemplatePickerPageState extends State<TemplatePickerPage> {
                 MaterialPageRoute(
                   builder: (context) => EditTemplatePage(
                     template: Template(
-                        id: ObjectId().hexString,
-                        fields: [],
-                        userId: Api.account.getUserId()),
+                      id: ObjectId().hexString,
+                      fields: [],
+                      userId: Api.account.userId,
+                    ),
                   ),
                 ),
               ).then((value) => _loadTemplatesAndRefresh())),

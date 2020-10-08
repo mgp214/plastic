@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:plastic/api/account_api.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/api/api_get_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/thing.dart';
@@ -23,23 +24,22 @@ class ThingApi {
   /// Get all of a User's things.
   Future<ApiGetResponse<List<Thing>>> getThingsByUser(
       BuildContext context) async {
-    var validTokenResult = await AccountApi().hasValidToken();
-    if (validTokenResult != null)
-      return ApiGetResponse<List<Thing>>(
-          message: validTokenResult.message, successful: false);
     showDialog(
       context: context,
       builder: (context) => LoadingModal(),
     );
+
     final response = await http.get(
       Api.getRoute(Routes.thingsByUser),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: AccountApi().authHeader(),
       },
-    ).timeout(Api.timeout,
-        onTimeout: () => http.Response("Servers not responding", 408));
+    ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
     Navigator.pop(context);
+    ApiException.throwErrorMessage(response.statusCode);
+
     var things = new List<Thing>();
     if (response.statusCode == 200) {
       json
@@ -54,12 +54,11 @@ class ThingApi {
   }
 
   Future<ApiResponse> saveThing(BuildContext context, Thing thing) async {
-    var validTokenResult = await AccountApi().hasValidToken();
-    if (validTokenResult != null) return validTokenResult;
     showDialog(
       context: context,
       builder: (context) => LoadingModal(),
     );
+
     final response = await http
         .post(
           Api.getRoute(Routes.saveThing),
@@ -69,20 +68,21 @@ class ThingApi {
           },
           body: thing.toJson(),
         )
-        .timeout(Api.timeout,
-            onTimeout: () => http.Response("Servers not responding", 408));
+        .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
     Navigator.pop(context);
+    ApiException.throwErrorMessage(response.statusCode);
+
     return ApiResponse(
         successful: response.statusCode == 201, message: response.reasonPhrase);
   }
 
   Future<ApiResponse> deleteThing(BuildContext context, Thing thing) async {
-    var validTokenResult = await AccountApi().hasValidToken();
-    if (validTokenResult != null) return validTokenResult;
     showDialog(
       context: context,
       builder: (context) => LoadingModal(),
     );
+
     final response = await http
         .post(
           Api.getRoute(Routes.deleteThing),
@@ -92,9 +92,11 @@ class ThingApi {
           },
           body: json.encode({'id': thing.id}),
         )
-        .timeout(Api.timeout,
-            onTimeout: () => http.Response("Servers not responding", 408));
+        .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
     Navigator.pop(context);
+    ApiException.throwErrorMessage(response.statusCode);
+
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
   }

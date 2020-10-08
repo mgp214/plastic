@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/constants.dart';
+import 'package:plastic/utility/notifier.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,6 +47,8 @@ class RegisterPageState extends State<RegisterPage> {
       setState(() {
         _error = e.message;
       });
+    } on ApiException catch (e) {
+      Notifier.handleApiError(context, e);
     } catch (e) {
       setState(() {
         _error = e.toString();

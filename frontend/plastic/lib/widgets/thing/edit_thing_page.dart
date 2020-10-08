@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/motif.dart';
-import 'package:plastic/utility/notification_utilities.dart';
+import 'package:plastic/utility/notifier.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
@@ -130,8 +131,9 @@ class EditThingPageState extends State<EditThingPage> {
     fieldWidgets.add(
       BorderButton(
         color: Motif.neutral,
-        onPressed: () =>
-            Api.thing.saveThing(context, widget.thing).then((response) {
+        onPressed: () => Api.thing
+            .saveThing(context, widget.thing)
+            .then((response) {
           if (response.successful) {
             Navigator.popUntil(context, ModalRoute.withName('home'));
             String message;
@@ -140,18 +142,19 @@ class EditThingPageState extends State<EditThingPage> {
             } else {
               message = 'your ${widget.template.name} has been updated.';
             }
-            NotificationUtilities.notify(
+            Notifier.notify(
               context,
               message: message,
             );
           } else {
-            NotificationUtilities.notify(
+            Notifier.notify(
               context,
               message: response.message,
               color: Motif.negative,
             );
           }
-        }),
+        }).catchError((e) => Notifier.handleApiError(context, e),
+                test: (e) => e is ApiException),
         content: doneString,
       ),
     );
@@ -159,24 +162,26 @@ class EditThingPageState extends State<EditThingPage> {
       fieldWidgets.add(
         BorderButton(
           color: Motif.negative,
-          onPressed: () =>
-              Api.thing.deleteThing(context, widget.thing).then((response) {
+          onPressed: () => Api.thing
+              .deleteThing(context, widget.thing)
+              .then((response) {
             if (response.successful) {
               String message =
                   '${widget.thing.getMainField().value} has been deleted.';
               Navigator.popUntil(context, ModalRoute.withName('home'));
-              NotificationUtilities.notify(
+              Notifier.notify(
                 context,
                 message: message,
               );
             } else {
-              NotificationUtilities.notify(
+              Notifier.notify(
                 context,
                 message: response.message,
                 color: Motif.negative,
               );
             }
-          }),
+          }).catchError((e) => Notifier.handleApiError(context, e),
+                  test: (e) => e is ApiException),
           content: "Delete",
         ),
       );

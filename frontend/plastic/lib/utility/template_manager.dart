@@ -14,11 +14,10 @@ class TemplateManager {
   final List<Template> _templates = new List<Template>();
 
   Future<void> loadTemplates(BuildContext context) async {
-    var validTokenResult = await Api.account.hasValidToken();
-    if (validTokenResult != null) return;
-    _templates.clear();
+    var response = await Api.template.getTemplatesByUser(context);
     _templates
-      ..addAll((await Api.template.getTemplatesByUser(context)).getResult);
+      ..clear()
+      ..addAll(response.getResult);
   }
 
   Template getTemplateByName(String fullName) {

@@ -4,10 +4,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/api/log_in_response.dart';
+import 'package:plastic/model/preference_manager.dart';
 import 'package:plastic/widgets/components/loading_modal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,19 +22,22 @@ class AccountApi {
 
   AccountApi._internal();
 
-  final int _tokenCacheTtl = int.parse(DotEnv().env['TOKEN_CACHE_TTL']);
-  int _tokenCacheExpirationTime = 0;
+  // final int _tokenCacheTtl = int.parse(DotEnv().env['TOKEN_CACHE_TTL']);
+  // int _tokenCacheExpirationTime = 0;
   String token;
   String _userId;
 
-  String authHeader() => 'Bearer $token';
+  String authHeader() {
+    _fetchToken();
+    return 'Bearer $token';
+  }
 
-  String getUserId() => _userId;
+  String get userId => _userId;
 
-  Future<bool> _fetchToken() async {
+  bool _fetchToken() {
     if (token == null) {
       try {
-        var preferences = await SharedPreferences.getInstance();
+        var preferences = PreferenceManager().get();
         token = preferences.getString("token");
         _userId = preferences.getString("id");
       } on Exception {
@@ -42,27 +47,6 @@ class AccountApi {
     return token != null;
   }
 
-  Future<ApiResponse> hasValidToken() async {
-    if (!await _fetchToken())
-      return ApiResponse(successful: false, message: "You aren't logged in.");
-    if (_tokenCacheExpirationTime > DateTime.now().millisecondsSinceEpoch)
-      return null;
-    var checkTokenResponse = await checkToken(token);
-    return getErrorMessage(checkTokenResponse);
-  }
-
-  ApiResponse getErrorMessage(int code) {
-    switch (code) {
-      case 401:
-        return ApiResponse(
-            successful: false, message: "You're not allowed to do that.");
-      case 408:
-        return Api.timeoutResponse;
-    }
-
-    return null;
-  }
-
   /// Attempts to log in with the given credentials. Returns a token if successful, otherwise throws an exception.
   Future<LogInResponse> login(
       BuildContext context, String email, String password) async {
@@ -70,6 +54,7 @@ class AccountApi {
       context: context,
       builder: (context) => LoadingModal(),
     );
+
     final response = await http
         .post(
           Api.getRoute(Routes.login),
@@ -79,17 +64,10 @@ class AccountApi {
             "password": password,
           }),
         )
-        .timeout(Api.timeout,
-            onTimeout: () => http.Response("Servers not responding", 408));
-    Navigator.pop(context);
+        .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
-    if (response.statusCode == 401)
-      return LogInResponse(
-          successful: false,
-          message: "You entered incorrect information. Try again!");
-    var errorResponse = getErrorMessage(response.statusCode);
-    if (errorResponse != null)
-      return LogInResponse(successful: false, message: errorResponse.message);
+    Navigator.pop(context);
+    ApiException.throwErrorMessage(response.statusCode);
 
     var logInResponse = LogInResponse.fromJson(json.decode(response.body),
         successful: true, message: response.reasonPhrase);
@@ -104,6 +82,7 @@ class AccountApi {
       context: context,
       builder: (context) => LoadingModal(),
     );
+
     final response = await http
         .post(
           Api.getRoute(Routes.register),
@@ -114,60 +93,34 @@ class AccountApi {
             "password": password,
           }),
         )
-        .timeout(Api.timeout,
-            onTimeout: () => http.Response("Servers not responding", 408));
-    Navigator.pop(context);
+        .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
-    var errorResponse = getErrorMessage(response.statusCode);
-    if (errorResponse != null)
-      return LogInResponse(successful: false, message: errorResponse.message);
+    Navigator.pop(context);
+    ApiException.throwErrorMessage(response.statusCode);
+
     var logInResponse = new LogInResponse.fromJson(json.decode(response.body));
     _userId = logInResponse.user.id;
     return logInResponse;
   }
 
-  /// Check if a given token is valid
-  Future<int> checkToken(String token) async {
-    if (token == null) return 401;
-
-    final response = await http
-        .post(
-          Api.getRoute(Routes.checkToken),
-          headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-          body: json.encode({"token": token}),
-        )
-        .timeout(Api.timeout,
-            onTimeout: () => http.Response("Servers not responding", 408));
-
-    var result = response.statusCode;
-
-    if (result != 200) {
-      await clearPrefs();
-    } else {
-      _tokenCacheExpirationTime =
-          DateTime.now().millisecondsSinceEpoch + _tokenCacheTtl;
-    }
-    return result;
-  }
-
   /// Log out just this token
   Future<ApiResponse> logout(BuildContext context) async {
-    if (!await _fetchToken())
-      return ApiResponse(successful: false, message: 'Please log in.');
     showDialog(
       context: context,
       builder: (context) => LoadingModal(),
     );
-    Navigator.pop(context);
     await clearPrefs();
+
     final response = await http.post(
       Api.getRoute(Routes.logout),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: authHeader(),
       },
-    ).timeout(Api.timeout,
-        onTimeout: () => http.Response("Servers not responding", 408));
+    ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
+    Navigator.pop(context);
+    ApiException.throwErrorMessage(response.statusCode);
     token = null;
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
@@ -175,22 +128,22 @@ class AccountApi {
 
   /// Log out all tokens
   Future<ApiResponse> logoutAll(BuildContext context) async {
-    if (!await _fetchToken())
-      return ApiResponse(successful: false, message: 'Please log in.');
     showDialog(
       context: context,
       builder: (context) => LoadingModal(),
     );
     await clearPrefs();
-    Navigator.pop(context);
+
     final response = await http.post(
       Api.getRoute(Routes.logoutAll),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: authHeader(),
       },
-    ).timeout(Api.timeout,
-        onTimeout: () => http.Response("Servers not responding", 408));
+    ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
+    Navigator.pop(context);
+    ApiException.throwErrorMessage(response.statusCode);
     token = null;
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
@@ -198,9 +151,10 @@ class AccountApi {
 
   /// Clear out any saved user information from persistent storage
   Future<void> clearPrefs() async {
-    var preferences = await SharedPreferences.getInstance();
+    var preferences = PreferenceManager().get();
     for (var key in ["token", "name", "email", 'id']) {
       if (preferences.containsKey(key)) preferences.remove(key);
     }
+    await PreferenceManager().loadPreferences();
   }
 }

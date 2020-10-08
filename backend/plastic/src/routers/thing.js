@@ -48,9 +48,9 @@ router.post('/things/save', auth, async (req, res) => {
 			{ _id: thing._id },
 			thing,
 			{ upsert: true, useFindAndModify: false });
-		res.status(201).send({ thing });
+		res.send({ thing });
 	} catch (error) {
-		res.status(400).statusMessage = error.toString();
+		res.status(500).statusMessage = error.toString();
 		res.send();
 		console.log(error);
 	}
@@ -64,7 +64,7 @@ router.post('/things/delete', auth, async (req, res) => {
 		console.log('deleting thing with id: ' + id);
 		await Thing.findOneAndDelete(
 			{ _id: id.toString(), userId: userId });
-		res.status(200).send({ id });
+		res.send({ id });
 	} catch (error) {
 		res.status(400).statusMessage = error.toString();
 		res.send();

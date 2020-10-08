@@ -5,7 +5,7 @@ import 'package:plastic/model/template.dart';
 import 'package:plastic/model/template_change.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/motif.dart';
-import 'package:plastic/utility/notification_utilities.dart';
+import 'package:plastic/utility/notifier.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
@@ -80,14 +80,14 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
         .saveTemplate(context, widget.newTemplate, widget.affectedThings)
         .then((response) {
       if (response.successful) {
-        NotificationUtilities.notify(
+        Notifier.notify(
           context,
           message: response.message,
         );
         Navigator.popUntil(context, ModalRoute.withName("home"));
       } else {
         Navigator.pop(context);
-        NotificationUtilities.notify(
+        Notifier.notify(
           context,
           message: response.message,
           color: Motif.negative,

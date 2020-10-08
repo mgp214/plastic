@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:plastic/api/account_api.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/api/invalid_api_request_exception.dart';
+import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/api/api_get_response.dart';
 import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
@@ -26,26 +27,22 @@ class TemplateApi {
   /// Get a single template by id.
   Future<ApiGetResponse<Template>> getTemplateById(
       BuildContext context, String templateId) async {
-    var validTokenResult = await AccountApi().hasValidToken();
-    if (validTokenResult != null)
-      return ApiGetResponse<Template>(
-          message: validTokenResult.message, successful: false);
     showDialog(
       context: context,
       builder: (context) => LoadingModal(),
     );
+
     final response = await http.get(
       Api.getRoute(Routes.templateById) + templateId,
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: AccountApi().authHeader(),
       },
-    ).timeout(Api.timeout,
-        onTimeout: () => http.Response("Servers not responding", 408));
+    ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
     Navigator.pop(context);
-    if (response.statusCode != 200) {
-      throw new HttpException(json.decode(response.body)['error']);
-    }
+    ApiException.throwErrorMessage(response.statusCode);
+
     return new ApiGetResponse<Template>(
         getResult: Template.fromJson(json.decode(response.body)));
   }
@@ -53,27 +50,22 @@ class TemplateApi {
   /// Get all of a User's templates.
   Future<ApiGetResponse<List<Template>>> getTemplatesByUser(
       BuildContext context) async {
-    var validTokenResult = await AccountApi().hasValidToken();
-    if (validTokenResult != null)
-      return ApiGetResponse<List<Template>>(
-          message: validTokenResult.message, successful: false);
-    if (context != null)
-      showDialog(
-        context: context,
-        builder: (context) => LoadingModal(),
-      );
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
+
     final response = await http.get(
       Api.getRoute(Routes.templatesByUser),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: AccountApi().authHeader(),
       },
-    ).timeout(Api.timeout,
-        onTimeout: () => http.Response("Servers not responding", 408));
-    if (context != null) Navigator.pop(context);
-    if (response.statusCode != 200) {
-      throw new HttpException(json.decode(response.body)['error']);
-    }
+    ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
+    Navigator.pop(context);
+    ApiException.throwErrorMessage(response.statusCode);
+
     var templates = new List<Template>();
     json
         .decode(response.body)
@@ -84,14 +76,11 @@ class TemplateApi {
 
   Future<ApiPostResponse<List<Thing>>> saveTemplate(BuildContext context,
       Template template, List<Thing> updatedThings) async {
-    var validTokenResult = await AccountApi().hasValidToken();
-    if (validTokenResult != null)
-      return ApiPostResponse<List<Thing>>(
-          message: validTokenResult.message, successful: false);
     showDialog(
       context: context,
       builder: (context) => LoadingModal(),
     );
+
     final response = await http
         .post(
           Api.getRoute(Routes.saveTemplate),
@@ -104,9 +93,11 @@ class TemplateApi {
             "updatedThings": updatedThings,
           }),
         )
-        .timeout(Api.timeout,
-            onTimeout: () => http.Response("Servers not responding", 408));
+        .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
     Navigator.pop(context);
+    ApiException.throwErrorMessage(response.statusCode);
+
     List<Thing> affectedThings;
 
     if (response.statusCode == 422) {
@@ -129,12 +120,11 @@ class TemplateApi {
 
   Future<ApiResponse> deleteTemplate(
       BuildContext context, Template template) async {
-    var validTokenResult = await AccountApi().hasValidToken();
-    if (validTokenResult != null) return validTokenResult;
     showDialog(
       context: context,
       builder: (context) => LoadingModal(),
     );
+
     final response = await http
         .post(
           Api.getRoute(Routes.deleteTemplate),
@@ -144,9 +134,11 @@ class TemplateApi {
           },
           body: json.encode({'id': template.id}),
         )
-        .timeout(Api.timeout,
-            onTimeout: () => http.Response("Servers not responding", 408));
+        .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
     Navigator.pop(context);
+    ApiException.throwErrorMessage(response.statusCode);
+
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
   }
