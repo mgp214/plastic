@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_exception.dart';
-import 'package:plastic/model/api/log_in_response.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/preference_manager.dart';
 import 'package:plastic/utility/constants.dart';

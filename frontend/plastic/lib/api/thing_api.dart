@@ -38,7 +38,8 @@ class ThingApi {
     ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
-    ApiException.throwErrorMessage(response.statusCode);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
 
     var things = new List<Thing>();
     if (response.statusCode == 200) {
@@ -71,7 +72,8 @@ class ThingApi {
         .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
-    ApiException.throwErrorMessage(response.statusCode);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
 
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
@@ -95,7 +97,8 @@ class ThingApi {
         .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
-    ApiException.throwErrorMessage(response.statusCode);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
 
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);

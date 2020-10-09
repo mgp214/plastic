@@ -42,7 +42,8 @@ class TemplateApi {
     ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
-    ApiException.throwErrorMessage(response.statusCode);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
 
     return new ApiGetResponse<Template>(
         getResult: Template.fromJson(json.decode(response.body)));
@@ -65,7 +66,8 @@ class TemplateApi {
     ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
-    ApiException.throwErrorMessage(response.statusCode);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
 
     var templates = new List<Template>();
     json
@@ -97,7 +99,8 @@ class TemplateApi {
         .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
-    ApiException.throwErrorMessage(response.statusCode);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
 
     List<Thing> affectedThings;
 
@@ -142,7 +145,8 @@ class TemplateApi {
         .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
-    ApiException.throwErrorMessage(response.statusCode);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
 
     TemplateManager().needsToReload = true;
     return ApiResponse(

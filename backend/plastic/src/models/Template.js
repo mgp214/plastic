@@ -66,20 +66,22 @@ function validateFieldValue(field, value) {
 	}
 }
 
-templateSchema.pre('save', async function (next) {
-	const template = this;
+templateSchema.statics.validate = async function (template) {
+	// const template = this;
 
 	const existingWithName = await Template.findOne({ 'name': template.name, 'userId': template.userId });
+	var errors = [];
 
 	if (existingWithName && existingWithName._id != template._id) {
-		throw new Error('User already has different template with name [{' + template.name + '}]');
+		errors.push('You already have a template with name "' + template.name + '"');
 	}
-	var errors = [];
+
 	var fields = template.toBSON().fields;
+	if (!this.name) errors.push('Template must have a name.');
 	for (var i = 0; i < fields; i++) {
 		var field = fields[i];
 		if (FIELD_TYPES.indexOf(field.fieldType) == -1) {
-			errors.push('field [' + field.name + '] has an invalid type of [' + field.fieldType + ']');
+			errors.push('field "' + field.name + '" has an unknown type.');
 		}
 	}
 
@@ -90,23 +92,28 @@ templateSchema.pre('save', async function (next) {
 			return;
 		}
 		if (!field.fieldType) {
-			errors.push('field [' + field.name + '] is missing the type attribute');
+			errors.push('field "' + field.name + '" is doesn\'t have a type.');
 			return;
 		}
 		numMains += field.main ? 1 : 0;
 		if (field.main && field.fieldType != 'STRING')
-			errors.push('field [' + field.name + '] is marked as main, but is not of type string');
+			errors.push('field "' + field.name + '" is the main field, but is not a text field.');
 		if (field.default && !validateFieldValue(field, field.default))
-			errors.push('field [' + field.name + '] with type [' + field.fieldType + '] has an invalid default value of [' + field.default + ']');
+			errors.push('field "' + field.name + '" has an invalid default value of "' + field.default + '" for its type.');
 	});
 	if (numMains > 1)
-		errors.push('Template can only have one field with the "main" attribute');
+		errors.push('Template can only have one "main" field.');
 	if (numMains == 0)
-		errors.push('Template must have at least one field with the "main" attribute');
+		errors.push('Template must have a main field.');
 
-	if (errors.length > 0) {
-		throw new Error('Encountered one or more validation errors saving template [' + template.name + ']: '.concat(errors));
-	}
+	if (errors.length > 0)
+		return errors;
+	else
+		return null;
+};
+
+templateSchema.pre('save', async function (next) {
+
 
 	next();
 });

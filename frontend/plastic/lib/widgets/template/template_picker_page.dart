@@ -31,10 +31,12 @@ class TemplatePickerPageState extends State<TemplatePickerPage> {
   }
 
   void _loadTemplatesAndRefresh(BuildContext context) {
-    TemplateManager().loadTemplatesIfNeeded(context).then((value) {
-      _isLoaded = true;
-      setState(() {
-        _templates = TemplateManager().getAllTemplates();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      TemplateManager().loadTemplatesIfNeeded(context).then((value) {
+        _isLoaded = true;
+        setState(() {
+          _templates = TemplateManager().getAllTemplates();
+        });
       });
     });
   }

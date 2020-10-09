@@ -4,14 +4,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/api/log_in_response.dart';
 import 'package:plastic/model/preference_manager.dart';
 import 'package:plastic/widgets/components/loading_modal.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountApi {
   static final AccountApi _singleton = AccountApi._internal();
@@ -67,7 +65,8 @@ class AccountApi {
         .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
-    ApiException.throwErrorMessage(response.statusCode);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
 
     var logInResponse = LogInResponse.fromJson(json.decode(response.body),
         successful: true, message: response.reasonPhrase);
@@ -96,7 +95,8 @@ class AccountApi {
         .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
-    ApiException.throwErrorMessage(response.statusCode);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
 
     var logInResponse = new LogInResponse.fromJson(json.decode(response.body));
     _userId = logInResponse.user.id;
@@ -120,7 +120,9 @@ class AccountApi {
     ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
-    ApiException.throwErrorMessage(response.statusCode);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
+
     token = null;
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
@@ -143,7 +145,9 @@ class AccountApi {
     ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
-    ApiException.throwErrorMessage(response.statusCode);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
+
     token = null;
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);

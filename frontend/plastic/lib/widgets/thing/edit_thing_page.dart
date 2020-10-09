@@ -28,12 +28,10 @@ class EditThingPage extends StatefulWidget {
 
 class EditThingPageState extends State<EditThingPage> {
   Thing _originalThing;
-  Thing _thing;
   Map<String, TextEditingController> fieldControllers;
   Map<String, FocusNode> fieldFocusNodes;
 
   EditThingPageState(Thing thing) {
-    _thing = thing;
     _originalThing = Thing.clone(thing);
     fieldControllers = Map();
     fieldFocusNodes = Map();

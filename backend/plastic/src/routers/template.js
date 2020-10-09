@@ -29,25 +29,26 @@ async function saveTemplate(template) {
 		{ upsert: true, useFindAndModify: false });
 }
 
-function validateTemplate(template) {
-	const fields = template.toBSON().fields;
-	var hasMainField = false;
-	const errors = [];
-	for (var field of fields) {
-		if (field.main) hasMainField = true;
-	}
-	if (!hasMainField) errors.push('Template must a text field marked as main.');
-	if (template.name == null || template.name.length < 1) errors.push('Template must have a name');
-	//TODO: validate template name is unique per user
+// function validateTemplate(template) {
+// 	return template.validate();
+// 	// const fields = template.toBSON().fields;
+// 	// var hasMainField = false;
+// 	// const errors = [];
+// 	// for (var field of fields) {
+// 	// 	if (field.main) hasMainField = true;
+// 	// }
+// 	// if (!hasMainField) errors.push('Template must a text field marked as main.');
+// 	// if (template.name == null || template.name.length < 1) errors.push('Template must have a name');
+// 	// //TODO: validate template name is unique per user
 
-	return errors;
-}
+// 	// return errors;
+// }
 
 // Create a new template, or update if it exists already
 router.post('/templates/save', auth, async (req, res) => {
 	try {
 		const template = new Template(JSON.parse(req.body.template));
-		const errors = validateTemplate(template);
+		const errors = await Template.validate(template);
 		if (errors.length != 0) {
 			res.status(422).statusMessage = 'Invalid template';
 			res.send({ templateErrors: errors });

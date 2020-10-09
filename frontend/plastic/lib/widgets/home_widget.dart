@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_exception.dart';
-import 'package:plastic/model/api/api_get_response.dart';
-import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/preference_manager.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/user.dart';
