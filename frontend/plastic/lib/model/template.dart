@@ -66,6 +66,7 @@ class Template {
           changes.add(TemplateChange(
             changeType: TemplateChangeType.NameChanged,
             fieldName: "main",
+            fieldId: aField.id,
             oldValue: aField.name,
             newValue: bField.name,
           ));

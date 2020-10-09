@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/api/api.dart';
+import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/template_change.dart';
 import 'package:plastic/model/thing.dart';
@@ -80,11 +81,20 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
         .saveTemplate(context, widget.newTemplate, widget.affectedThings)
         .then((response) {
       if (response.successful) {
+        Navigator.pop(context);
+        Navigator.pop(context);
+        Navigator.pop(context);
+        Navigator.pop(context);
+        var thingPhrase = widget.affectedThings.length == 1
+            ? 'and the thing that belongs to it has'
+            : widget.affectedThings.length != 0
+                ? 'and the ${widget.affectedThings.length} things that belong to it have'
+                : 'has';
         Notifier.notify(
           context,
-          message: response.message,
+          message:
+              'Template "${widget.newTemplate.name}" $thingPhrase been updated.',
         );
-        Navigator.popUntil(context, ModalRoute.withName("home"));
       } else {
         Navigator.pop(context);
         Notifier.notify(
@@ -93,7 +103,8 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
           color: Motif.negative,
         );
       }
-    });
+    }).catchError((e) => Notifier.handleApiError(context, e),
+            test: (e) => e is ApiException);
   }
 
   List<Widget> _getChangeWidgets() {
@@ -208,7 +219,7 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
     }
 
     widgets.add(BorderButton(
-      color: Motif.black,
+      color: Motif.neutral,
       content: "Done",
       onPressed: () {
         showDialog(
