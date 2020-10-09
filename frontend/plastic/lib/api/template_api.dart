@@ -13,6 +13,7 @@ import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
+import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/loading_modal.dart';
 
 class TemplateApi {
@@ -107,14 +108,18 @@ class TemplateApi {
             .map<Thing>((thing) => Thing.fromJsonMap(thing))
             .toList();
       } else {
-        return Future.error(InvalidApiRequestException(
-            body["templateErrors"].map<String>((i) => i.toString()).toList()));
+        return Future.error(
+          InvalidApiRequestException(
+            body["templateErrors"].map<String>((i) => i.toString()).toList(),
+          ),
+        );
       }
     }
 
+    TemplateManager().needsToReload = true;
     return ApiPostResponse<List<Thing>>(
         postResult: affectedThings,
-        successful: response.statusCode == 201,
+        successful: response.statusCode == 200,
         message: response.reasonPhrase);
   }
 
@@ -139,6 +144,7 @@ class TemplateApi {
     Navigator.pop(context);
     ApiException.throwErrorMessage(response.statusCode);
 
+    TemplateManager().needsToReload = true;
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
   }

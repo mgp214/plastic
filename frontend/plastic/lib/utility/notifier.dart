@@ -12,7 +12,7 @@ class Notifier {
   static Future<dynamic> notify(BuildContext context,
           {String message, Color color}) =>
       Flushbar(
-        backgroundColor: Motif.background,
+        backgroundColor: Motif.lightBackground,
         flushbarPosition: FlushbarPosition.TOP,
         messageText: Text(
           message,

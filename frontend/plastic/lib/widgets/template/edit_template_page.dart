@@ -207,19 +207,18 @@ class EditTemplatePageState extends State<EditTemplatePage> {
   void handleApiResponse(Routes route, ApiResponse response) {
     if (route == Routes.saveTemplate) {
       if (response.successful) {
+        TemplateManager().needsToReload = true;
+        Navigator.pop(context);
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditTemplatePage(template: widget.template),
+            ));
         Notifier.notify(
           context,
           message: "Template saved.",
+          color: Motif.black,
         );
-        (TemplateManager().loadTemplates(context)).then((x) {
-          Navigator.pop(context);
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    EditTemplatePage(template: widget.template),
-              ));
-        });
       } else {
         var affectedThings =
             (response as ApiPostResponse<List<Thing>>).postResult;

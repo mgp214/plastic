@@ -9,7 +9,11 @@ class TemplateManager {
     return _singleton;
   }
 
-  TemplateManager._internal();
+  bool needsToReload;
+
+  TemplateManager._internal() {
+    needsToReload = true;
+  }
 
   final List<Template> _templates = new List<Template>();
 
@@ -39,7 +43,10 @@ class TemplateManager {
   }
 
   Future<void> loadTemplatesIfNeeded(BuildContext context) async {
-    if (_templates.length == 0) await loadTemplates(context);
+    if (needsToReload) {
+      await loadTemplates(context);
+      needsToReload = false;
+    }
   }
 
   bool hasTemplates() => _templates.length > 0;
