@@ -74,7 +74,7 @@ class ThingApi {
     ApiException.throwErrorMessage(response.statusCode);
 
     return ApiResponse(
-        successful: response.statusCode == 201, message: response.reasonPhrase);
+        successful: response.statusCode == 200, message: response.reasonPhrase);
   }
 
   Future<ApiResponse> deleteThing(BuildContext context, Thing thing) async {
