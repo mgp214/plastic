@@ -30,7 +30,7 @@ class RegisterPageState extends State<RegisterPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  Future<void> registerPressed(context) async {
+  Future<void> registerPressed() async {
     FocusScope.of(context).unfocus();
     _autoValidate = true;
     if (!_formKey.currentState.validate()) return;
@@ -186,7 +186,7 @@ class RegisterPageState extends State<RegisterPage> {
                       obscureText: true,
                       autocorrect: false,
                       style: Motif.contentStyle(Sizes.Content, Motif.black),
-                      onFieldSubmitted: (value) => registerPressed(context),
+                      onFieldSubmitted: (value) => registerPressed(),
                       enableSuggestions: true,
                       decoration: InputDecoration(
                         fillColor: Motif.lightBackground,
@@ -221,7 +221,7 @@ class RegisterPageState extends State<RegisterPage> {
                         child: BorderButton(
                           content: "sign me up",
                           color: Motif.neutral,
-                          onPressed: () => registerPressed(context),
+                          onPressed: () => registerPressed(),
                         ),
                       ),
                     ],

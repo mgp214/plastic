@@ -64,7 +64,6 @@ class TemplateApi {
         HttpHeaders.authorizationHeader: AccountApi().authHeader(),
       },
     ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
-
     Navigator.pop(context);
     var error = ApiException.throwErrorMessage(response.statusCode);
     if (error != null) return Future.error(error);

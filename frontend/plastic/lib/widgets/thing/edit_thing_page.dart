@@ -106,7 +106,7 @@ class EditThingPageState extends State<EditThingPage> {
     return Text("couldn't figure out what type of field this is.");
   }
 
-  List<Widget> _getFields(context) {
+  List<Widget> _getFields() {
     var fieldWidgets = new List<Widget>();
     var template = TemplateManager().getTemplateById(widget.thing.templateId);
     if (template == null) return fieldWidgets;
@@ -235,7 +235,7 @@ class EditThingPageState extends State<EditThingPage> {
   Widget build(BuildContext context) => Material(
         color: Motif.background,
         child: ListView(
-          children: _getFields(context),
+          children: _getFields(),
         ),
       );
 }

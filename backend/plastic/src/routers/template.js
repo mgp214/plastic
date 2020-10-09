@@ -29,27 +29,24 @@ async function saveTemplate(template) {
 		{ upsert: true, useFindAndModify: false });
 }
 
-// function validateTemplate(template) {
-// 	return template.validate();
-// 	// const fields = template.toBSON().fields;
-// 	// var hasMainField = false;
-// 	// const errors = [];
-// 	// for (var field of fields) {
-// 	// 	if (field.main) hasMainField = true;
-// 	// }
-// 	// if (!hasMainField) errors.push('Template must a text field marked as main.');
-// 	// if (template.name == null || template.name.length < 1) errors.push('Template must have a name');
-// 	// //TODO: validate template name is unique per user
-
-// 	// return errors;
-// }
+async function saveThings(userId, things) {
+	for (var i = 0; i < things.length; i++) {
+		var thing = things[i];
+		thing.userId = userId;
+		console.log('saving thing ' + thing._id.toString());
+		await Thing.findOneAndUpdate(
+			{ _id: thing._id },
+			thing,
+			{ upsert: true, useFindAndModify: false });
+	}
+}
 
 // Create a new template, or update if it exists already
 router.post('/templates/save', auth, async (req, res) => {
 	try {
 		const template = new Template(JSON.parse(req.body.template));
 		const errors = await Template.validate(template);
-		if (errors.length != 0) {
+		if (errors) {
 			res.status(422).statusMessage = 'Invalid template';
 			res.send({ templateErrors: errors });
 			return;
@@ -65,15 +62,7 @@ router.post('/templates/save', auth, async (req, res) => {
 				res.status(422).send(JSON.stringify({ affectedThings: affectedThings }));
 			} else {
 				console.log('request includes updates for all affected things. performing updates');
-				for (var i = 0; i < updatedThings.length; i++) {
-					var thing = updatedThings[i];
-					thing.userId = req.user._id;
-					console.log('saving thing ' + thing._id.toString());
-					await Thing.findOneAndUpdate(
-						{ _id: thing._id },
-						thing,
-						{ upsert: true, useFindAndModify: false });
-				}
+				saveThings(req.user._id, updatedThings);
 				saveTemplate(template);
 				res.send({ template: template });
 			}

@@ -72,7 +72,7 @@ templateSchema.statics.validate = async function (template) {
 	const existingWithName = await Template.findOne({ 'name': template.name, 'userId': template.userId });
 	var errors = [];
 
-	if (existingWithName && existingWithName._id != template._id) {
+	if (existingWithName && existingWithName._id.toString() != template._id.toString()) {
 		errors.push('You already have a template with name "' + template.name + '"');
 	}
 

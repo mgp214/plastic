@@ -50,7 +50,7 @@ class EditTemplatePageState extends State<EditTemplatePage> {
     super.initState();
   }
 
-  Widget _getAddFieldOptions(context) {
+  Widget _getAddFieldOptions() {
     var options = List<Widget>();
 
     options = FieldType.values
@@ -85,9 +85,10 @@ class EditTemplatePageState extends State<EditTemplatePage> {
     );
   }
 
-  void _onAddNewFieldPressed(BuildContext context) {
+  void _onAddNewFieldPressed() {
     Navigator.pop(context);
-    showModalBottomSheet(context: context, builder: _getAddFieldOptions);
+    showModalBottomSheet(
+        context: context, builder: (context) => _getAddFieldOptions());
   }
 
   void _createNewField(FieldType fieldType) {
@@ -209,11 +210,6 @@ class EditTemplatePageState extends State<EditTemplatePage> {
       if (response.successful) {
         TemplateManager().needsToReload = true;
         Navigator.pop(context);
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => EditTemplatePage(template: widget.template),
-            ));
         Notifier.notify(
           context,
           message: "Template saved.",
@@ -270,7 +266,7 @@ class EditTemplatePageState extends State<EditTemplatePage> {
     );
   }
 
-  void _saveTemplatePressed(BuildContext context) {
+  void _saveTemplatePressed() {
     Api.template
         .saveTemplate(context, widget.template, List())
         .then((response) {
@@ -300,7 +296,7 @@ class EditTemplatePageState extends State<EditTemplatePage> {
         });
   }
 
-  void _deleteTemplatePressed(BuildContext context) {
+  void _deleteTemplatePressed() {
     var templateAlreadyExists =
         TemplateManager().doesTemplateExist(widget.template.id);
     showDialog(
@@ -351,7 +347,7 @@ class EditTemplatePageState extends State<EditTemplatePage> {
     );
   }
 
-  Future<bool> _onTryPop(BuildContext context) {
+  Future<bool> _onTryPop() {
     if (Template.diff(_originalTemplate, widget.template).length == 0)
       return Future.value(true);
     return showDialog(
@@ -388,16 +384,16 @@ class EditTemplatePageState extends State<EditTemplatePage> {
                   message: null,
                   choices: [
                     DialogTextIconChoice("Add a new field", Icons.add,
-                        Motif.black, () => _onAddNewFieldPressed(context)),
+                        Motif.black, () => _onAddNewFieldPressed()),
                     DialogTextIconChoice("Save template", Icons.save,
-                        Motif.black, () => _saveTemplatePressed(context)),
+                        Motif.black, () => _saveTemplatePressed()),
                     DialogTextIconChoice(
                         TemplateManager().doesTemplateExist(widget.template.id)
                             ? "Delete"
                             : "Discard",
                         Icons.cancel,
                         Motif.negative,
-                        () => _deleteTemplatePressed(context)),
+                        () => _deleteTemplatePressed()),
                   ],
                 ),
               );
@@ -410,6 +406,6 @@ class EditTemplatePageState extends State<EditTemplatePage> {
             ],
           ),
         ),
-        onWillPop: () => _onTryPop(context),
+        onWillPop: () => _onTryPop(),
       );
 }

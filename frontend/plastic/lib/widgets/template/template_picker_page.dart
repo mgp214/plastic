@@ -30,7 +30,7 @@ class TemplatePickerPageState extends State<TemplatePickerPage> {
     super.initState();
   }
 
-  void _loadTemplatesAndRefresh(BuildContext context) {
+  void _loadTemplatesAndRefresh() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       TemplateManager().loadTemplatesIfNeeded(context).then((value) {
         _isLoaded = true;
@@ -44,14 +44,12 @@ class TemplatePickerPageState extends State<TemplatePickerPage> {
   @override
   Widget build(BuildContext context) => Material(
         color: Motif.background,
-        child: _getTemplateListView(context),
+        child: _getTemplateListView(),
       );
 
-  Widget _getTemplateListView(BuildContext context) {
+  Widget _getTemplateListView() {
     if (!_isLoaded) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _loadTemplatesAndRefresh(context);
-      });
+      _loadTemplatesAndRefresh();
       return Container();
     }
     List children = _templates
@@ -75,7 +73,7 @@ class TemplatePickerPageState extends State<TemplatePickerPage> {
                         ),
                       ),
                     ),
-                  ).then((value) => _loadTemplatesAndRefresh(context));
+                  ).then((value) => _loadTemplatesAndRefresh());
                 },
                 child: Text(template.name,
                     style: Motif.contentStyle(
@@ -103,7 +101,7 @@ class TemplatePickerPageState extends State<TemplatePickerPage> {
             ),
           ),
         ).then(
-          (value) => _loadTemplatesAndRefresh(context),
+          (value) => _loadTemplatesAndRefresh(),
         ),
       ),
     );

@@ -38,7 +38,7 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
     }
   }
 
-  void onPressed(BuildContext context) {
+  void onPressed() {
     if (_isExpanded) {
       toggleMenu(context);
       return;
@@ -47,7 +47,7 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
     // toggleQuickAdd(context);
   }
 
-  void onLongPressed(BuildContext context) {
+  void onLongPressed() {
     toggleMenu(context);
   }
 
@@ -89,13 +89,13 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              onPressed: () => onPressed(context),
-              onLongPress: () => onLongPressed(context),
+              onPressed: () => onPressed(),
+              onLongPress: () => onLongPressed(),
               shape:
                   CircleBorder(side: BorderSide(color: Motif.title, width: 3)),
             ),
-            onVerticalDragStart: (details) => onLongPressed(context),
-            onHorizontalDragStart: (details) => onLongPressed(context),
+            onVerticalDragStart: (details) => onLongPressed(),
+            onHorizontalDragStart: (details) => onLongPressed(),
           ),
         ),
       ),
