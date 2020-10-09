@@ -38,6 +38,10 @@ class TemplateManager {
     );
   }
 
+  bool doesTemplateExist(String templateId) {
+    return _templates.indexWhere((t) => t.id == templateId) != -1;
+  }
+
   List<Template> getAllTemplates() {
     return _templates.toList();
   }

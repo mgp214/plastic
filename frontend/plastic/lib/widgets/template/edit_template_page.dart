@@ -301,21 +301,23 @@ class EditTemplatePageState extends State<EditTemplatePage> {
   }
 
   void _deleteTemplatePressed(BuildContext context) {
+    var templateAlreadyExists =
+        TemplateManager().doesTemplateExist(widget.template.id);
     showDialog(
       context: context,
       builder: (context) => ChoiceActionsDialog(
-        message: widget.template.id != null
+        message: templateAlreadyExists
             ? "Delete existing template?"
             : "Discard new template?",
         choices: [
           DialogTextChoice(
               "Stay here", Motif.black, () => Navigator.pop(context)),
           DialogTextChoice(
-              widget.template.id != null
+              templateAlreadyExists
                   ? "Delete ${widget.template.name} PERMANENTLY!"
                   : "Confirm cancel",
               Motif.negative, () {
-            if (widget.template.id != null) {
+            if (templateAlreadyExists) {
               Api.template
                   .deleteTemplate(context, widget.template)
                   .then((value) {
@@ -337,6 +339,11 @@ class EditTemplatePageState extends State<EditTemplatePage> {
                   );
                 }
               });
+            } else {
+              Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
             }
           }),
         ],
@@ -385,7 +392,9 @@ class EditTemplatePageState extends State<EditTemplatePage> {
                     DialogTextIconChoice("Save template", Icons.save,
                         Motif.black, () => _saveTemplatePressed(context)),
                     DialogTextIconChoice(
-                        widget.template.id != null ? "Delete" : "Discard",
+                        TemplateManager().doesTemplateExist(widget.template.id)
+                            ? "Delete"
+                            : "Discard",
                         Icons.cancel,
                         Motif.negative,
                         () => _deleteTemplatePressed(context)),
