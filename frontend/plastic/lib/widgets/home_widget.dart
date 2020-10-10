@@ -5,6 +5,8 @@ import 'package:plastic/model/preference_manager.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/user.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/model/view/view.dart';
+import 'package:plastic/model/view/view_frame.dart';
 import 'package:plastic/utility/notifier.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/account/settings_page.dart';
@@ -112,7 +114,8 @@ class HomeState extends State<HomeWidget> {
             key: GlobalKey<ActionItemState>(),
             color: Motif.title,
             icon: Icons.view_compact,
-            onPressed: () => _goToThenReload(EditViewPage()),
+            onPressed: () => _goToThenReload(EditViewPage(
+                view: View(root: ViewFrame(layout: FrameLayout.VERTICAL)))),
           ),
         ],
       ),
