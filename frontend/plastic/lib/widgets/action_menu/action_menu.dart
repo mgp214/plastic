@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/widgets/action_menu/action_item.dart';
+import 'package:vector_math/vector_math.dart';
+import 'dart:math';
 
 class ActionMenu extends StatefulWidget {
   final VoidCallback onAdd;
@@ -18,6 +20,7 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
   AnimationController _menuController;
   Animation<Color> _colorAnimation;
   Animation<double> _rotationAnimation;
+  Map<Key, Vector2> positions;
 
   void toggleMenu(BuildContext context) {
     _isExpanded = !_isExpanded;
@@ -30,7 +33,8 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
       var typeCastKey = key as GlobalKey<ActionItemState>;
       if (typeCastKey != null) {
         if (_isExpanded) {
-          typeCastKey.currentState.display(0, 75);
+          // typeCastKey.currentState.display(0, 75);
+          typeCastKey.currentState.display(positions[key].x, positions[key].y);
         } else {
           typeCastKey.currentState.hide();
         }
@@ -51,6 +55,16 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
     toggleMenu(context);
   }
 
+  void calculatePositions() {
+    positions = Map();
+    var radius = 75.0;
+    for (var i = 0; i < actionKeys.length; i++) {
+      var key = actionKeys[i];
+      var t = Matrix2.rotation(i * (-pi / 2) / (actionKeys.length - 1));
+      positions[key] = t.transform(Vector2(0, radius));
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -62,6 +76,8 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
     _rotationAnimation = Tween(begin: 0.0, end: 3 / 8).animate(_menuController);
     _colorAnimation = ColorTween(begin: Motif.title, end: Motif.negative)
         .animate(_menuController);
+    actionKeys = widget.children.map((child) => child.key).toList();
+    calculatePositions();
   }
 
   @override
@@ -76,7 +92,7 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
           height: 50,
           child: GestureDetector(
             child: FlatButton(
-              color: Colors.transparent,
+              color: Color.fromARGB(0, 0, 0, 0),
               padding: EdgeInsets.all(5),
               child: RotationTransition(
                 turns: _rotationAnimation,
@@ -104,7 +120,6 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
     List<Widget> actions = List();
     actions.addAll(widget.children);
     actions.add(main);
-    actionKeys = widget.children.map((child) => child.key).toList();
 
     return Align(
       alignment: Alignment.bottomRight,
