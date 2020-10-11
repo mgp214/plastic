@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:plastic/model/view/frame.dart';
 import 'package:plastic/model/view/view_widget.dart';
-
-enum FrameLayout { VERTICAL, HORIZONTAL }
 
 class ViewFrame extends ViewWidget {
   FrameLayout layout;
   List<ViewWidget> children;
 
-  ViewFrame({@required this.layout, this.children}) {
+  ViewFrame({ViewFrame parent, @required this.layout, this.children})
+      : super(parent) {
     if (children == null) children = List();
   }
 }

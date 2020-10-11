@@ -1,7 +1,8 @@
-import 'dart:math';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/model/view/frame.dart';
 import 'package:plastic/model/view/view.dart';
 import 'package:plastic/model/view/view_frame.dart';
 import 'package:plastic/model/view/view_widget.dart';
@@ -17,7 +18,7 @@ class EditViewPage extends StatefulWidget {
 }
 
 class EditViewPageState extends State<EditViewPage> {
-  Random random = Random();
+  // Random random = Random();
 
   Widget _getViewWidgetWidget(ViewWidget viewWidget) {
     if (viewWidget is ViewFrame) {
@@ -79,8 +80,7 @@ class EditViewPageState extends State<EditViewPage> {
     if (frame.layout == FrameLayout.VERTICAL) {
       laidOutChildren = Container(
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, random.nextInt(255), random.nextInt(255),
-              random.nextInt(255)),
+          color: Colors.purple,
         ),
         child: Column(
           children: childrenWidgets,
@@ -94,8 +94,7 @@ class EditViewPageState extends State<EditViewPage> {
     } else {
       laidOutChildren = Container(
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, random.nextInt(255), random.nextInt(255),
-              random.nextInt(255)),
+          color: Colors.purple,
         ),
         child: Row(
           children: childrenWidgets,
@@ -121,20 +120,63 @@ class EditViewPageState extends State<EditViewPage> {
         ),
       );
 
+  Widget _getHorizontalSplitWidget(Color background) => Card(
+        color: background,
+        child: Padding(
+          padding: EdgeInsets.all(5),
+          child: Icon(
+            Icons.border_horizontal,
+            color: Motif.title,
+            size: Constants.iconSize,
+          ),
+        ),
+      );
+
+  Widget _getVerticalSplitWidget(Color background) => Card(
+        color: background,
+        child: Padding(
+          padding: EdgeInsets.all(5),
+          child: Icon(
+            Icons.border_vertical,
+            color: Motif.title,
+            size: Constants.iconSize,
+          ),
+        ),
+      );
+
   @override
   Widget build(BuildContext context) => WillPopScope(
         child: Scaffold(
-            floatingActionButton: Draggable(
-              feedback: _getAddWidget(Colors.transparent),
-              child: _getAddWidget(Motif.lightBackground),
-              data: ViewFrame(layout: null),
-            ),
-            backgroundColor: Motif.background,
-            body: ViewFrameCard(
-              frame: widget.view.root,
-            )
-            // body: _getFrameWidget(widget.view.root),
-            ),
+          backgroundColor: Motif.background,
+          body: Stack(
+            children: [
+              ViewFrameCard(
+                frame: widget.view.root,
+              ),
+              Positioned(
+                bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
+                right: 10,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Draggable(
+                      feedback: _getHorizontalSplitWidget(Colors.transparent),
+                      child: _getHorizontalSplitWidget(Motif.lightBackground),
+                      data: FrameLayout.HORIZONTAL as dynamic,
+                      onDragCompleted: () => setState(() {}),
+                    ),
+                    Draggable(
+                      feedback: _getVerticalSplitWidget(Colors.transparent),
+                      child: _getVerticalSplitWidget(Motif.lightBackground),
+                      data: FrameLayout.VERTICAL as dynamic,
+                      onDragCompleted: () => setState(() {}),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
         onWillPop: () {
           return Future.value(true);
         },

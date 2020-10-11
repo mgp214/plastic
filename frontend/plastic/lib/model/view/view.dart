@@ -1,7 +1,7 @@
-import 'package:plastic/model/view/view_frame.dart';
+import 'package:plastic/model/view/frame.dart';
 
 class View {
-  final ViewFrame root;
+  final Frame root;
 
   View({this.root});
 }
