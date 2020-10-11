@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/action_menu/action_item.dart';
 import 'package:vector_math/vector_math.dart';
 import 'dart:math';
@@ -101,7 +102,7 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
                   builder: (context, child) => Icon(
                     Icons.add,
                     color: _colorAnimation.value,
-                    size: 40,
+                    size: Constants.iconSize,
                   ),
                 ),
               ),

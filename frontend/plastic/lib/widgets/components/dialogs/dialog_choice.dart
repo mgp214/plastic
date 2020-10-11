@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/utility/constants.dart';
 
 abstract class DialogChoice {
   final Color color;
@@ -40,6 +41,7 @@ class DialogTextIconChoice extends DialogChoice {
             Icon(
               icon,
               color: color,
+              size: Constants.iconSize,
             ),
             Text(text, style: Motif.actionStyle(Sizes.Action, color)),
           ],

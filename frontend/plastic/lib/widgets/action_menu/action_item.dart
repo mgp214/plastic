@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:plastic/utility/constants.dart';
 
 class ActionItem extends StatefulWidget {
   final IconData icon;
@@ -101,7 +102,7 @@ class ActionItemState extends State<ActionItem>
                   child: Icon(
                     widget.icon,
                     color: _currentColor,
-                    size: 40,
+                    size: Constants.iconSize,
                   ),
                   onPressed: widget.onPressed,
                   shape: CircleBorder(

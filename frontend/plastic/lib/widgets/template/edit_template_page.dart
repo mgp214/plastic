@@ -8,6 +8,7 @@ import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/utility/constants.dart';
 import 'package:plastic/utility/notifier.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
@@ -376,6 +377,7 @@ class EditTemplatePageState extends State<EditTemplatePage> {
             child: Icon(
               Icons.menu,
               color: Motif.title,
+              size: Constants.iconSize,
             ),
             onPressed: () {
               showDialog(

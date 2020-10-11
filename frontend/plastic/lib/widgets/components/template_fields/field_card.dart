@@ -50,6 +50,7 @@ class FieldCard extends StatelessWidget {
                         ),
                         Icon(
                           Icons.reorder,
+                          size: Constants.secondaryIconSize,
                           color: Motif.neutral,
                         ),
                       ],
@@ -64,6 +65,7 @@ class FieldCard extends StatelessWidget {
               child: IconButton(
                 icon: Icon(
                   Icons.delete,
+                  size: Constants.secondaryIconSize,
                 ),
                 color: Motif.negative,
                 onPressed: () {
