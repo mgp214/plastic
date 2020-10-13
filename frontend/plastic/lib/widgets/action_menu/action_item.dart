@@ -73,8 +73,10 @@ class ActionItemState extends State<ActionItem>
     _origin = Offset(0, 0);
     targetOffset = Offset(0, 0);
     _currentColor = Colors.transparent;
-    _controller =
-        AnimationController(duration: Duration(milliseconds: 200), vsync: this);
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 200),
+    );
     _animation =
         Tween<Offset>(begin: _origin, end: _origin).animate(CurvedAnimation(
       curve: Curves.easeInOut,

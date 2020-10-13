@@ -1,16 +1,21 @@
 import 'dart:developer';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/frame.dart';
-import 'package:plastic/model/view/view_frame.dart';
-import 'package:plastic/model/view/view_widget.dart';
 import 'package:plastic/utility/constants.dart';
+import 'package:plastic/utility/layout_utils.dart';
+
+enum Edge { Left, Right, Top, Bottom }
 
 class ViewFrameCard extends StatefulWidget {
   final Frame frame;
+  final VoidCallback rebuildLayout;
 
-  const ViewFrameCard({Key key, @required this.frame}) : super(key: key);
+  const ViewFrameCard(
+      {Key key, @required this.frame, @required this.rebuildLayout})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => ViewFrameCardState();
@@ -30,6 +35,8 @@ class ViewFrameCard extends StatefulWidget {
 }
 
 class ViewFrameCardState extends State<ViewFrameCard> {
+  Edge _activeEdge;
+
   Widget _getCard() => Card(
         color: Colors.transparent,
         shape: RoundedRectangleBorder(
@@ -45,89 +52,204 @@ class ViewFrameCardState extends State<ViewFrameCard> {
         ),
       );
 
-  void onAcceptDrag(dynamic value) {
-    if (value is ViewWidget) {
-    } else if (value == FrameLayout.VERTICAL) {
+  void onAcceptDrag(DragTargetDetails<dynamic> value) {
+    var edge = _getEdge(value.offset);
+    if (value.data is Frame) {
+      var frame = value.data as Frame;
+      var index = widget.frame.parent?.childFrames?.indexOf(widget.frame);
+      if (index == null) {
+        widget.frame.childFrames.add(frame);
+        frame.parent = widget.frame;
+        widget.rebuildLayout();
+        return;
+      }
+      if (edge == Edge.Right || edge == Edge.Bottom) index++;
+      switch (edge) {
+        case Edge.Left:
+        case Edge.Right:
+          if (widget.frame.parent.layout == FrameLayout.HORIZONTAL) {
+            widget.frame.parent.childFrames.insert(index, frame);
+            frame.parent.childFrames.remove(frame);
+            frame.parent = widget.frame.parent;
+          } else {
+            var proxy = Frame(
+                parent: widget.frame.parent, layout: FrameLayout.HORIZONTAL);
+            widget.frame.parent.childFrames.insert(index, proxy);
+            frame.parent.childFrames.remove(frame);
+            frame.parent = widget.frame.parent;
+            proxy.childFrames.add(frame);
+          }
+          break;
+        case Edge.Top:
+        case Edge.Bottom:
+          if (widget.frame.parent.layout == FrameLayout.VERTICAL) {
+            widget.frame.parent.childFrames.insert(index, frame);
+            frame.parent.childFrames.remove(frame);
+            frame.parent = widget.frame.parent;
+          } else {
+            var proxy = Frame(
+                parent: widget.frame.parent, layout: FrameLayout.VERTICAL);
+            widget.frame.parent.childFrames.insert(index, proxy);
+            frame.parent.childFrames.remove(frame);
+            frame.parent = widget.frame.parent;
+            proxy.childFrames.add(frame);
+          }
+          break;
+      }
+    } else {
       if (widget.frame.layout == FrameLayout.VERTICAL) {
-        if (widget.frame.parent != null) {
-          setState(() {
-            var insertIndex =
-                widget.frame.parent.childFrames.indexOf(widget.frame);
-            widget.frame.parent.childFrames.insert(
-              insertIndex,
-              Frame(
-                parent: widget.frame.parent,
-                layout: FrameLayout.VERTICAL,
-              ),
-            );
-          });
+        if (edge == Edge.Top || edge == Edge.Bottom) {
+          Frame parent;
+          if (widget.frame.parent == null) {
+            parent = widget.frame;
+          } else {
+            parent = widget.frame.parent;
+          }
+          var insertIndex = parent.childFrames.indexOf(widget.frame);
+
+          insertIndex += edge == Edge.Bottom ? 1 : 0;
+          parent.childFrames.insert(
+            insertIndex,
+            Frame(
+              parent: parent,
+              layout: FrameLayout.HORIZONTAL,
+            ),
+          );
+        } else {
+          var proxyFrame =
+              Frame(parent: widget.frame, layout: FrameLayout.HORIZONTAL);
+          widget.frame.childFrames.add(proxyFrame);
+          var newWidget1 =
+              Frame(parent: proxyFrame, layout: FrameLayout.VERTICAL);
+          var newWidget2 =
+              Frame(parent: proxyFrame, layout: FrameLayout.VERTICAL);
+          proxyFrame.childFrames.add(newWidget1);
+          proxyFrame.childFrames.add(newWidget2);
         }
       } else {
-        setState(() {
-          widget.frame.childFrames.add(
-            Frame(
-              parent: widget.frame,
-              layout: FrameLayout.VERTICAL,
-            ),
-          );
-          widget.frame.childFrames.add(
-            Frame(
-              parent: widget.frame,
-              layout: FrameLayout.VERTICAL,
-            ),
-          );
-        });
-      }
-    } else if (value == FrameLayout.HORIZONTAL) {
-      if (widget.frame.layout == FrameLayout.HORIZONTAL) {
-        setState(() {
+        if (edge == Edge.Left || edge == Edge.Right) {
           var insertIndex =
               widget.frame.parent.childFrames.indexOf(widget.frame);
+          insertIndex += edge == Edge.Right ? 1 : 0;
           widget.frame.parent.childFrames.insert(
             insertIndex,
             Frame(
               parent: widget.frame.parent,
-              layout: FrameLayout.HORIZONTAL,
+              layout: FrameLayout.VERTICAL,
             ),
           );
-        });
-      } else {
-        setState(() {
-          widget.frame.childFrames.add(
-            Frame(
-              parent: widget.frame,
-              layout: FrameLayout.HORIZONTAL,
-            ),
-          );
-          widget.frame.childFrames.add(
-            Frame(
-              parent: widget.frame,
-              layout: FrameLayout.HORIZONTAL,
-            ),
-          );
-        });
+        } else {
+          var proxyFrame =
+              Frame(parent: widget.frame, layout: FrameLayout.VERTICAL);
+          widget.frame.childFrames.add(proxyFrame);
+          var newWidget1 =
+              Frame(parent: proxyFrame, layout: FrameLayout.HORIZONTAL);
+          var newWidget2 =
+              Frame(parent: proxyFrame, layout: FrameLayout.HORIZONTAL);
+          proxyFrame.childFrames.add(newWidget1);
+          proxyFrame.childFrames.add(newWidget2);
+        }
       }
     }
+    widget.rebuildLayout();
+  }
 
-    // setState(() {
-    //   widget.frame.children.add(value);
-    //   value.layout = widget.frame.layout == FrameLayout.VERTICAL
-    //       ? FrameLayout.HORIZONTAL
-    //       : FrameLayout.VERTICAL;
-    // });
+  Edge _getEdge(Offset offset) {
+    var bounds = LayoutUtils.globalPaintBounds(context);
+    var size = Size(bounds.right - bounds.left, bounds.bottom - bounds.top);
+    // log('bounds: ${bounds.toString()}');
+    // log('size: $size');
+    var center = Offset(
+      bounds.left + size.width / 2,
+      bounds.top + size.height / 2,
+    );
+    var relOffset = Offset(
+      (offset.dx - center.dx) / size.width,
+      (offset.dy - center.dy) / size.height,
+    );
+    log('offset: ${offset.toString()}');
+    log('center: ${center.toString()}');
+    log('relOff: ${relOffset.toString()}');
+    if (relOffset.dx < 0 && relOffset.dx.abs() > relOffset.dy.abs()) {
+      return Edge.Left;
+    } else if (relOffset.dx > 0 && relOffset.dx.abs() > relOffset.dy.abs()) {
+      return Edge.Right;
+    } else if (relOffset.dy < 0 && relOffset.dy.abs() > relOffset.dx.abs()) {
+      return Edge.Top;
+    } else {
+      return Edge.Bottom;
+    }
+  }
+
+  void _onDragMove(DragTargetDetails<dynamic> details) {
+    setState(() {
+      _activeEdge = _getEdge(details.offset);
+    });
+  }
+
+  Widget _getDropIndicator(BoxConstraints constraints, Color color) {
+    Widget dropIndicator;
+    switch (_activeEdge) {
+      case Edge.Left:
+        dropIndicator = Positioned(
+          left: 0,
+          top: 0,
+          bottom: 0,
+          right: constraints.maxWidth / 2,
+          child: Placeholder(
+            color: color,
+          ),
+        );
+        break;
+      case Edge.Right:
+        dropIndicator = Positioned(
+          right: 0,
+          top: 0,
+          bottom: 0,
+          left: constraints.maxWidth / 2,
+          child: Placeholder(
+            color: color,
+          ),
+        );
+        break;
+      case Edge.Top:
+        dropIndicator = Positioned(
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: constraints.maxHeight / 2,
+          child: Placeholder(
+            color: color,
+          ),
+        );
+        break;
+      case Edge.Bottom:
+        dropIndicator = Positioned(
+          left: 0,
+          bottom: 0,
+          right: 0,
+          top: constraints.maxHeight / 2,
+          child: Placeholder(
+            color: color,
+          ),
+        );
+        break;
+      default:
+        dropIndicator = Container();
+    }
+    return dropIndicator;
   }
 
   @override
   Widget build(BuildContext context) {
     Widget dragTargetChild;
-    // if (frame is ViewFrame) {
-    // var selfAsFrame = frame as ViewFrame;
 
     var children = widget.frame.childFrames
         .map<Widget>(
           (c) => Expanded(
             child: ViewFrameCard(
               frame: c,
+              rebuildLayout: widget.rebuildLayout,
             ),
           ),
         )
@@ -135,9 +257,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     if (children.length == 0)
       children.add(
         Expanded(
-          child: Placeholder(
-            color: Colors.blue,
-          ),
+          child: Placeholder(color: widget.frame.color),
         ),
       );
 
@@ -154,25 +274,49 @@ class ViewFrameCardState extends State<ViewFrameCard> {
         children: children,
       );
     }
-    // } else {
-    //   dragTargetChild = Placeholder(
-    //     color: Colors.red,
-    //   );
-    // }
     if (widget.frame.childFrames.length == 0) {
-      return DragTarget(
-        builder: (context, candidateList, rejectedData) {
-          if (candidateList.length > 0) {
-            return Placeholder(
-              color: Colors.red,
-            );
-          }
-          return dragTargetChild;
-        },
-        onWillAccept: (dynamic value) {
-          return true;
-        },
-        onAccept: (value) => onAcceptDrag(value),
+      return LayoutBuilder(
+        builder: (context, constraints) => Draggable(
+          child: Card(
+            color: Motif.lightBackground,
+            child: DragTarget(
+              builder: (context, candidateList, rejectedData) {
+                if (candidateList.length > 0) {
+                  return Stack(
+                    children: [
+                      dragTargetChild,
+                      _getDropIndicator(
+                          constraints, candidateList[0]?.color ?? Colors.green),
+                    ],
+                  );
+                }
+                return dragTargetChild;
+              },
+              onWillAccept: (dynamic value) {
+                return value != widget.frame;
+              },
+              onAcceptWithDetails: (value) => onAcceptDrag(value),
+              onMove: _onDragMove,
+            ),
+          ),
+          feedback: Transform.translate(
+            offset: Offset(
+              -constraints.maxWidth / 2,
+              -constraints.maxHeight / 2,
+            ),
+            child: Container(
+              alignment: Alignment.center,
+              width: constraints.maxWidth,
+              height: constraints.maxHeight,
+              child: Placeholder(
+                color: widget.frame.color,
+              ),
+            ),
+          ),
+          feedbackOffset: Offset.zero,
+          data: widget.frame as dynamic,
+          dragAnchor: DragAnchor.pointer,
+        ),
       );
     } else {
       return dragTargetChild;

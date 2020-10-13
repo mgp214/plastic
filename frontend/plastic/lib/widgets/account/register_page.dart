@@ -21,8 +21,6 @@ class RegisterPageState extends State<RegisterPage> {
   String _name = '';
   String _error = '';
 
-  bool _autoValidate = false;
-
   TextEditingController emailController = TextEditingController();
   TextEditingController password1Controller = TextEditingController();
   TextEditingController password2Controller = TextEditingController();
@@ -32,7 +30,6 @@ class RegisterPageState extends State<RegisterPage> {
 
   Future<void> registerPressed() async {
     FocusScope.of(context).unfocus();
-    _autoValidate = true;
     if (!_formKey.currentState.validate()) return;
 
     try {
@@ -65,7 +62,7 @@ class RegisterPageState extends State<RegisterPage> {
           child: Padding(
             padding: EdgeInsets.all(10),
             child: Form(
-              autovalidate: _autoValidate,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -22,7 +22,6 @@ class LogInPageState extends State<LogInPage> {
   String _email = '';
   String _password = '';
   String _error = '';
-  bool _autoValidate = false;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -31,7 +30,6 @@ class LogInPageState extends State<LogInPage> {
 
   Future<void> logInPressed() async {
     FocusScope.of(context).unfocus();
-    _autoValidate = true;
     if (!_formKey.currentState.validate()) return;
 
     try {
@@ -71,7 +69,7 @@ class LogInPageState extends State<LogInPage> {
           child: Padding(
             padding: EdgeInsets.all(10),
             child: Form(
-              autovalidate: _autoValidate,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
