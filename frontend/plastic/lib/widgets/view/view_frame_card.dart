@@ -4,10 +4,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/frame.dart';
-import 'package:plastic/utility/constants.dart';
 import 'package:plastic/utility/layout_utils.dart';
 
 enum Edge { Left, Right, Top, Bottom }
+FrameLayout edgeDirection(Edge edge) =>
+    (edge == Edge.Left || edge == Edge.Right)
+        ? FrameLayout.HORIZONTAL
+        : FrameLayout.VERTICAL;
 
 class ViewFrameCard extends StatefulWidget {
   final Frame frame;
@@ -19,368 +22,112 @@ class ViewFrameCard extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => ViewFrameCardState();
-
-  // Widget build(BuildContext context) => Draggable(
-  //       feedback: _getCard(),
-  //       child: DragTarget(
-  //         builder: (context, candidateData, rejectedData) => Container(
-  //           constraints: BoxConstraints.expand(),
-  //           alignment: Alignment.center,
-  //           width: double.maxFinite,
-  //           height: double.maxFinite,
-  //           child: _getCard(),
-  //         ),
-  //       ),
-  //     );
 }
 
 class ViewFrameCardState extends State<ViewFrameCard> {
   Edge _activeEdge;
 
-  Widget _getCard() => Card(
-        color: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Constants.borderRadius),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(5),
-          child: Icon(
-            Icons.add,
-            color: Motif.title,
-            size: Constants.iconSize,
-          ),
+  void _insertProxyFrame(
+      Frame parent, int index, Frame child, bool afterExisting) {
+    FrameLayout proxyLayout = opposite(parent.layout);
+
+    var proxyFrame = Frame(parent: parent, layout: proxyLayout);
+    proxyFrame.widget = null;
+
+    proxyFrame.childFrames.add(child);
+
+    var existing = Frame(
+      layout: parent.layout,
+      widget: parent.childFrames[index].widget,
+      parent: proxyFrame,
+    );
+    if (afterExisting) {
+      proxyFrame.childFrames.add(existing);
+    } else {
+      proxyFrame.childFrames.insert(0, existing);
+    }
+
+    parent.widget = null;
+
+    child.parent?.childFrames?.remove(child);
+    child.parent = proxyFrame;
+    child.layout = parent.layout;
+
+    parent.childFrames[index] = proxyFrame;
+  }
+
+  void _insertFrameAtRoot(Frame root, Frame insertee, Edge edge) {
+    if (root.childFrames.length == 0) {
+      root.childFrames.add(
+        Frame(
+          layout: opposite(root.layout),
+          widget: root.widget,
+          parent: root,
         ),
       );
+      root.widget = null;
+    }
+    insertee.parent = root;
+    switch (edge) {
+      case Edge.Left:
+        root.layout = FrameLayout.HORIZONTAL;
+        root.childFrames.insert(0, insertee);
+        break;
+      case Edge.Right:
+        root.layout = FrameLayout.HORIZONTAL;
+        root.childFrames.add(insertee);
+        break;
+      case Edge.Top:
+        root.layout = FrameLayout.VERTICAL;
+        root.childFrames.insert(0, insertee);
+        break;
+      case Edge.Bottom:
+        root.layout = FrameLayout.VERTICAL;
+        root.childFrames.add(insertee);
+        break;
+    }
+  }
 
   void _insertFrame(Frame insertee, Edge edge) {
-    Frame parent;
+    insertee = insertee ?? Frame();
+
     if (widget.frame.parent == null) {
-      parent = widget.frame;
-    } else {
-      parent = widget.frame.parent;
+      _insertFrameAtRoot(widget.frame, insertee, edge);
+      return;
     }
-    if (parent.layout == FrameLayout.VERTICAL) {
-      if (edge == Edge.Top || edge == Edge.Bottom) {
-        var insertIndex = parent.childFrames.indexOf(widget.frame);
-        if (parent == widget.frame) insertIndex = 0;
-        insertIndex += edge == Edge.Bottom ? 1 : 0;
 
-        if (parent.childFrames.length == 0) {
-          parent.widget = null;
-          parent.childFrames.add(
-            Frame(
-              parent: parent,
-              layout: FrameLayout.HORIZONTAL,
-              widget: widget.frame.widget,
-            ),
-          );
-          widget.frame.widget = null;
-        }
-        insertee?.layout = FrameLayout.HORIZONTAL;
-        // insertee?.parent?.childFrames?.remove(insertee);
-        parent.childFrames.insert(
-          insertIndex,
-          insertee ??
-              Frame(
-                parent: parent,
-                layout: FrameLayout.HORIZONTAL,
-              ),
-        );
-      } else {
-        if (widget.frame == parent) {
-          parent.layout = FrameLayout.HORIZONTAL;
-          parent.childFrames.add(Frame(
-            layout: FrameLayout.VERTICAL,
-            parent: parent,
-            widget: widget.frame.widget,
-          ));
-          widget.frame.widget = null;
-          insertee?.layout = FrameLayout.VERTICAL;
-          // insertee?.parent?.childFrames?.remove(insertee);
-          parent.childFrames.add(insertee ??
-              Frame(
-                layout: FrameLayout.VERTICAL,
-                parent: parent,
-              ));
-        } else {
-          var proxyFrame =
-              Frame(parent: parent, layout: FrameLayout.HORIZONTAL);
-          proxyFrame.widget = null;
-          var index = parent.childFrames.indexOf(widget.frame);
-          parent.childFrames[index] = proxyFrame;
-          proxyFrame.childFrames.add(Frame(
-            parent: proxyFrame,
-            layout: widget.frame.layout,
-            // childFrames: widget.frame.childFrames,
-            widget: widget.frame.widget,
-          ));
-          widget.frame.widget = null;
-          insertee?.layout = FrameLayout.VERTICAL;
-          // insertee?.parent?.childFrames?.remove(insertee);
-          proxyFrame.childFrames.insert(
-              edge == Edge.Right ? 1 : 0,
-              insertee ??
-                  Frame(
-                    parent: proxyFrame,
-                    layout: FrameLayout.VERTICAL,
-                  ));
-        }
-      }
+    var index = widget.frame.parent.childFrames.indexOf(widget.frame);
+    bool after = (edge == Edge.Left || edge == Edge.Top);
+
+    if (edgeDirection(edge) == widget.frame.parent.layout) {
+      log('newly inserted frame added with the grain');
+      insertee.layout = opposite(widget.frame.parent.layout);
+      index += after ? 0 : 1;
+      insertee.parent = widget.frame.parent;
+      if (index == widget.frame.parent.childFrames.length)
+        widget.frame.parent.childFrames.add(insertee);
+      else
+        widget.frame.parent.childFrames.insert(index, insertee);
     } else {
-      if (edge == Edge.Left || edge == Edge.Right) {
-        var insertIndex = parent.childFrames.indexOf(widget.frame);
-        if (parent == widget.frame) insertIndex = 0;
-        insertIndex += edge == Edge.Right ? 1 : 0;
-
-        if (parent.childFrames.length == 0) {
-          parent.widget = null;
-          parent.childFrames.add(
-            Frame(
-              parent: parent,
-              layout: FrameLayout.VERTICAL,
-              widget: widget.frame.widget,
-            ),
-          );
-          widget.frame.widget = null;
-        }
-        insertee?.layout = FrameLayout.VERTICAL;
-        // insertee?.parent?.childFrames?.remove(insertee);
-        parent.childFrames.insert(
-          insertIndex,
-          insertee ??
-              Frame(
-                parent: parent,
-                layout: FrameLayout.VERTICAL,
-              ),
-        );
-      } else {
-        if (widget.frame == parent) {
-          parent.layout = FrameLayout.VERTICAL;
-          parent.childFrames.add(Frame(
-            layout: FrameLayout.HORIZONTAL,
-            parent: parent,
-            widget: widget.frame.widget,
-          ));
-          widget.frame.widget = null;
-          // insertee?.parent?.childFrames?.remove(insertee);
-          parent.childFrames.add(insertee ??
-              Frame(
-                layout: FrameLayout.HORIZONTAL,
-                parent: parent,
-              ));
-        } else {
-          var proxyFrame = Frame(parent: parent, layout: FrameLayout.VERTICAL);
-          proxyFrame.widget = null;
-          var index = parent.childFrames.indexOf(widget.frame);
-          parent.childFrames[index] = proxyFrame;
-          proxyFrame.childFrames.add(Frame(
-            parent: proxyFrame,
-            layout: widget.frame.layout,
-            // childFrames: widget.frame.childFrames,
-            widget: widget.frame.widget,
-          ));
-          widget.frame.widget = null;
-          insertee?.layout = FrameLayout.HORIZONTAL;
-          insertee?.parent?.childFrames?.remove(insertee);
-          proxyFrame.childFrames.insert(
-              edge == Edge.Bottom ? 1 : 0,
-              insertee ??
-                  Frame(
-                    parent: proxyFrame,
-                    layout: FrameLayout.HORIZONTAL,
-                  ));
-        }
-      }
+      log('newly inserted frame requires proxy');
+      _insertProxyFrame(widget.frame.parent, index, insertee, after);
     }
   }
 
   void onAcceptDrag(DragTargetDetails<dynamic> value) {
     var edge = _getEdge(value.offset);
-    // if (value.data is Frame) {
-    //   _insertFrame(value.data, widget.frame, edge);
-    // } else {
-    //   _insertFrame(null, widget.frame, edge);
-    // }
-    if (value.data is Frame) {
-      var valueAsFrame = value.data as Frame;
-      // var parent = valueAsFrame.parent;
-      // if (parent.childFrames.length <= 1) {
-      //   parent.parent?.childFrames?.remove(parent);
-      // }
-      // valueAsFrame.parent.childFrames
-      //     .removeWhere((f) => f.widget == valueAsFrame.widget);
-      valueAsFrame.trimFromTree(valueAsFrame);
-    }
 
+    widget.frame.trimFromTree(value.data);
     _insertFrame(value.data, edge);
-    // if (value.data is Frame) {
-    //   var frame = value.data as Frame;
-    //   var index = widget.frame.parent?.childFrames?.indexOf(widget.frame);
-    //   if (index == null) {
-    //     widget.frame.childFrames.add(frame);
-    //     frame.parent = widget.frame;
-    //     widget.rebuildLayout();
-    //     return;
-    //   }
-    //   if (edge == Edge.Right || edge == Edge.Bottom) index++;
-    //   switch (edge) {
-    //     case Edge.Left:
-    //     case Edge.Right:
-    //       if (widget.frame.parent.layout == FrameLayout.HORIZONTAL) {
-    //         widget.frame.parent.childFrames.insert(index, frame);
-    //         frame.parent.childFrames.remove(frame);
-    //         frame.parent = widget.frame.parent;
-    //       } else {
-    //         var proxy = Frame(
-    //             parent: widget.frame.parent, layout: FrameLayout.HORIZONTAL);
-    //         widget.frame.parent.childFrames.insert(index, proxy);
-    //         frame.parent.childFrames.remove(frame);
-    //         frame.parent = widget.frame.parent;
-    //         proxy.childFrames.add(frame);
-    //       }
-    //       break;
-    //     case Edge.Top:
-    //     case Edge.Bottom:
-    //       if (widget.frame.parent.layout == FrameLayout.VERTICAL) {
-    //         widget.frame.parent.childFrames.insert(index, frame);
-    //         frame.parent.childFrames.remove(frame);
-    //         frame.parent = widget.frame.parent;
-    //       } else {
-    //         var proxy = Frame(
-    //             parent: widget.frame.parent, layout: FrameLayout.VERTICAL);
-    //         widget.frame.parent.childFrames.insert(index, proxy);
-    //         frame.parent.childFrames.remove(frame);
-    //         frame.parent = widget.frame.parent;
-    //         proxy.childFrames.add(frame);
-    //       }
-    //       break;
-    //   }
-    // } else {
-    //   Frame parent;
-    //   if (widget.frame.parent == null) {
-    //     parent = widget.frame;
-    //   } else {
-    //     parent = widget.frame.parent;
-    //   }
-    //   if (parent.layout == FrameLayout.VERTICAL) {
-    //     if (edge == Edge.Top || edge == Edge.Bottom) {
-    //       var insertIndex = parent.childFrames.indexOf(widget.frame);
-    //       insertIndex += edge == Edge.Bottom ? 1 : 0;
-    //       if (widget.frame == parent) insertIndex = 0;
+    log('AFTER DRAG ACCEPT:');
+    log(widget.frame.root.prettyPrint());
 
-    //       if (parent.childFrames.length == 0) {
-    //         parent.childFrames.insert(
-    //           insertIndex,
-    //           Frame(
-    //             parent: parent,
-    //             layout: FrameLayout.HORIZONTAL,
-    //             widget: widget.frame.widget,
-    //           ),
-    //         );
-    //         widget.frame.widget = null;
-    //       }
-    //       parent.childFrames.insert(
-    //         insertIndex,
-    //         Frame(
-    //           parent: parent,
-    //           layout: FrameLayout.HORIZONTAL,
-    //         ),
-    //       );
-    //     } else {
-    //       if (widget.frame == parent) {
-    //         parent.layout = FrameLayout.HORIZONTAL;
-    //         parent.childFrames.add(Frame(
-    //           layout: FrameLayout.VERTICAL,
-    //           parent: parent,
-    //           widget: widget.frame.widget,
-    //         ));
-    //         widget.frame.widget = null;
-    //         parent.childFrames.add(Frame(
-    //           layout: FrameLayout.VERTICAL,
-    //           parent: parent,
-    //         ));
-    //       } else {
-    //         var proxyFrame =
-    //             Frame(parent: parent, layout: FrameLayout.HORIZONTAL);
-    //         var index = parent.childFrames.indexOf(widget.frame);
-    //         parent.childFrames[index] = proxyFrame;
-    //         var newFrame =
-    //             Frame(parent: proxyFrame, layout: FrameLayout.VERTICAL);
-    //         proxyFrame.childFrames.add(Frame(
-    //           parent: proxyFrame,
-    //           layout: widget.frame.layout,
-    //           childFrames: widget.frame.childFrames,
-    //           widget: widget.frame.widget,
-    //         ));
-    //         widget.frame.widget = null;
-    //         proxyFrame.childFrames.insert(edge == Edge.Right ? 1 : 0, newFrame);
-    //       }
-    //     }
-    //   } else {
-    //     if (edge == Edge.Left || edge == Edge.Right) {
-    //       var insertIndex = parent.childFrames.indexOf(widget.frame);
-    //       insertIndex += edge == Edge.Right ? 1 : 0;
-    //       if (widget.frame == parent) insertIndex = 0;
-
-    //       if (parent.childFrames.length == 0) {
-    //         parent.childFrames.insert(
-    //           insertIndex,
-    //           Frame(
-    //             parent: parent,
-    //             layout: FrameLayout.VERTICAL,
-    //             widget: widget.frame.widget,
-    //           ),
-    //         );
-    //         widget.frame.widget = null;
-    //       }
-    //       parent.childFrames.insert(
-    //         insertIndex,
-    //         Frame(
-    //           parent: parent,
-    //           layout: FrameLayout.VERTICAL,
-    //         ),
-    //       );
-    //     } else {
-    //       if (widget.frame == parent) {
-    //         parent.layout = FrameLayout.VERTICAL;
-    //         parent.childFrames.add(Frame(
-    //           layout: FrameLayout.HORIZONTAL,
-    //           parent: parent,
-    //           widget: widget.frame.widget,
-    //         ));
-    //         widget.frame.widget = null;
-    //         parent.childFrames.add(Frame(
-    //           layout: FrameLayout.HORIZONTAL,
-    //           parent: parent,
-    //         ));
-    //       } else {
-    //         var proxyFrame =
-    //             Frame(parent: parent, layout: FrameLayout.VERTICAL);
-    //         var index = parent.childFrames.indexOf(widget.frame);
-    //         parent.childFrames[index] = proxyFrame;
-    //         var newFrame =
-    //             Frame(parent: proxyFrame, layout: FrameLayout.HORIZONTAL);
-    //         proxyFrame.childFrames.add(Frame(
-    //           parent: proxyFrame,
-    //           layout: widget.frame.layout,
-    //           childFrames: widget.frame.childFrames,
-    //           widget: widget.frame.widget,
-    //         ));
-    //         widget.frame.widget = null;
-    //         proxyFrame.childFrames
-    //             .insert(edge == Edge.Bottom ? 1 : 0, newFrame);
-    //       }
-    //     }
-    //   }
-    // }
     widget.rebuildLayout();
   }
 
   Edge _getEdge(Offset offset) {
     var bounds = LayoutUtils.globalPaintBounds(context);
     var size = Size(bounds.right - bounds.left, bounds.bottom - bounds.top);
-    // log('bounds: ${bounds.toString()}');
-    // log('size: $size');
     var center = Offset(
       bounds.left + size.width / 2,
       bounds.top + size.height / 2,

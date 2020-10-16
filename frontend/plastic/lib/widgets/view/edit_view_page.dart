@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
-import 'package:plastic/model/view/frame.dart';
 import 'package:plastic/model/view/view.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/view/view_frame_card.dart';
@@ -14,30 +13,6 @@ class EditViewPage extends StatefulWidget {
 }
 
 class EditViewPageState extends State<EditViewPage> {
-  Widget _getHorizontalSplitWidget(Color background) => Card(
-        color: background,
-        child: Padding(
-          padding: EdgeInsets.all(5),
-          child: Icon(
-            Icons.border_horizontal,
-            color: Motif.title,
-            size: Constants.iconSize,
-          ),
-        ),
-      );
-
-  Widget _getVerticalSplitWidget(Color background) => Card(
-        color: background,
-        child: Padding(
-          padding: EdgeInsets.all(5),
-          child: Icon(
-            Icons.border_vertical,
-            color: Motif.title,
-            size: Constants.iconSize,
-          ),
-        ),
-      );
-
   Widget _getAddFrame(Color background) => Card(
         color: background,
         child: Padding(
@@ -72,18 +47,6 @@ class EditViewPageState extends State<EditViewPage> {
                       data: null as dynamic,
                       onDragCompleted: () => setState(() {}),
                     ),
-                    // Draggable(
-                    //   feedback: _getHorizontalSplitWidget(Colors.transparent),
-                    //   child: _getHorizontalSplitWidget(Motif.lightBackground),
-                    //   data: FrameLayout.HORIZONTAL as dynamic,
-                    //   onDragCompleted: () => setState(() {}),
-                    // ),
-                    // Draggable(
-                    //   feedback: _getVerticalSplitWidget(Colors.transparent),
-                    //   child: _getVerticalSplitWidget(Motif.lightBackground),
-                    //   data: FrameLayout.VERTICAL as dynamic,
-                    //   onDragCompleted: () => setState(() {}),
-                    // ),
                   ],
                 ),
               )
