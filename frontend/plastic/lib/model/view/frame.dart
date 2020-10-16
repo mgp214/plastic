@@ -90,11 +90,12 @@ class Frame {
         ),
       );
 
+      map['parent'] = frame.parent?.id;
+      map['widget'] = frame.widget?.id;
+
       for (var entry in entries) {
         map[entry.key] = entry.value;
       }
-
-      if (map.keys.length == 0) map['widget'] = frame.widget.id;
 
       return map;
     }

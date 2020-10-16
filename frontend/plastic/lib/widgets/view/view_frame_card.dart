@@ -29,6 +29,11 @@ class ViewFrameCardState extends State<ViewFrameCard> {
 
   void _insertProxyFrame(
       Frame parent, int index, Frame child, bool afterExisting) {
+    log('inserting proxy in frame $parent at index $index.');
+    if (afterExisting) {
+      log('proxy will have child $child inserted after old content ${widget.frame}');
+    }
+
     FrameLayout proxyLayout = opposite(parent.layout);
 
     var proxyFrame = Frame(parent: parent, layout: proxyLayout);
@@ -38,7 +43,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
 
     var existing = Frame(
       layout: parent.layout,
-      widget: parent.childFrames[index].widget,
+      widget: widget.frame.widget,
       parent: proxyFrame,
     );
     if (afterExisting) {
@@ -100,7 +105,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     bool after = (edge == Edge.Left || edge == Edge.Top);
 
     if (edgeDirection(edge) == widget.frame.parent.layout) {
-      log('newly inserted frame added with the grain');
+      log('newly inserted frame $insertee added to ${widget.frame} with the grain');
       insertee.layout = opposite(widget.frame.parent.layout);
       index += after ? 0 : 1;
       insertee.parent = widget.frame.parent;
@@ -109,7 +114,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
       else
         widget.frame.parent.childFrames.insert(index, insertee);
     } else {
-      log('newly inserted frame requires proxy');
+      log('newly inserted frame $insertee added to ${widget.frame} requires proxy');
       _insertProxyFrame(widget.frame.parent, index, insertee, after);
     }
   }
