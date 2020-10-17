@@ -21,6 +21,20 @@ class Frame {
   FrameLayout layout;
   String id;
 
+  static Frame copy(Frame source) {
+    var copy = Frame(
+        widget: source.widget, layout: source.layout, parent: source.parent);
+    for (var child in source.childFrames) {
+      var childCopy = Frame.copy(child);
+      copy.childFrames.add(childCopy);
+      childCopy.parent = copy;
+    }
+    return copy;
+  }
+
+  bool get isRoot =>
+      this == root || (parent == root && parent.childFrames.length == 1);
+
   Frame({this.parent, this.childFrames, this.widget, this.layout}) {
     if (childFrames == null) childFrames = List();
     if (widget == null) widget = ViewWidget();

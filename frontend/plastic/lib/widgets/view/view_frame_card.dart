@@ -14,10 +14,14 @@ FrameLayout edgeDirection(Edge edge) =>
 
 class ViewFrameCard extends StatefulWidget {
   final Frame frame;
-  final VoidCallback rebuildLayout;
+  final Function(bool) rebuildLayout;
+  final Function(Frame) resetLayout;
 
   const ViewFrameCard(
-      {Key key, @required this.frame, @required this.rebuildLayout})
+      {Key key,
+      @required this.frame,
+      @required this.rebuildLayout,
+      @required this.resetLayout})
       : super(key: key);
 
   @override
@@ -26,6 +30,7 @@ class ViewFrameCard extends StatefulWidget {
 
 class ViewFrameCardState extends State<ViewFrameCard> {
   Edge _activeEdge;
+  Frame _rootCopy;
 
   void _insertProxyFrame(
       Frame parent, int index, Frame child, bool afterExisting) {
@@ -127,7 +132,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     log('AFTER DRAG ACCEPT:');
     log(widget.frame.root.prettyPrint());
 
-    widget.rebuildLayout();
+    widget.rebuildLayout(false);
   }
 
   Edge _getEdge(Offset offset) {
@@ -221,6 +226,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
             child: ViewFrameCard(
               frame: c,
               rebuildLayout: widget.rebuildLayout,
+              resetLayout: widget.resetLayout,
             ),
           ),
         )
@@ -259,6 +265,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     if (widget.frame.childFrames.length == 0) {
       return LayoutBuilder(
         builder: (context, constraints) => Draggable(
+          maxSimultaneousDrags: widget.frame.isRoot ? 0 : 1,
           child: Card(
             color: Motif.lightBackground,
             child: DragTarget(
@@ -297,6 +304,14 @@ class ViewFrameCardState extends State<ViewFrameCard> {
           ),
           feedbackOffset: Offset.zero,
           data: widget.frame as dynamic,
+          onDragStarted: () {
+            _rootCopy = Frame.copy(widget.frame.root);
+            widget.frame.trimFromTree(widget.frame);
+            widget.rebuildLayout(true);
+          },
+          onDraggableCanceled: (v, o) {
+            widget.resetLayout(_rootCopy);
+          },
           dragAnchor: DragAnchor.pointer,
         ),
       );

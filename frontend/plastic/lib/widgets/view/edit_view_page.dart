@@ -13,6 +13,14 @@ class EditViewPage extends StatefulWidget {
 }
 
 class EditViewPageState extends State<EditViewPage> {
+  bool _isDragging;
+
+  @override
+  initState() {
+    _isDragging = false;
+    super.initState();
+  }
+
   Widget _getAddFrame(Color background) => Card(
         color: background,
         child: Padding(
@@ -25,6 +33,36 @@ class EditViewPageState extends State<EditViewPage> {
         ),
       );
 
+  Widget _getPositionedAction() {
+    if (_isDragging == false)
+      return Draggable(
+        feedback: _getAddFrame(Colors.transparent),
+        child: _getAddFrame(Motif.background),
+        data: null as dynamic,
+        onDragCompleted: () => setState(() {}),
+        onDragStarted: () => setState(() {
+          _isDragging = true;
+        }),
+      );
+    return DragTarget(
+      builder: (context, candidateData, rejectedData) => Card(
+        color: Motif.background,
+        child: Padding(
+          padding: EdgeInsets.all(5),
+          child: Icon(
+            Icons.delete,
+            color: Motif.title,
+            size: Constants.iconSize,
+          ),
+        ),
+      ),
+      onWillAccept: (candidate) => true,
+      onAccept: (candidate) => setState(() {
+        _isDragging = false;
+      }),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => WillPopScope(
         child: Scaffold(
@@ -33,22 +71,24 @@ class EditViewPageState extends State<EditViewPage> {
             children: [
               ViewFrameCard(
                 frame: widget.view.root,
-                rebuildLayout: () => setState(() {}),
+                rebuildLayout: (isDragging) => setState(() {
+                  _isDragging = isDragging;
+                }),
+                resetLayout: (f) => setState(() {
+                  _isDragging = false;
+                  widget.view.root = f;
+                }),
               ),
               Positioned(
                 bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
                 right: 10,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Draggable(
-                      feedback: _getAddFrame(Colors.transparent),
-                      child: _getAddFrame(Motif.background),
-                      data: null as dynamic,
-                      onDragCompleted: () => setState(() {}),
-                    ),
-                  ],
-                ),
+                child: _getPositionedAction(),
+                // Draggable(
+                //   feedback: _getAddFrame(Colors.transparent),
+                //   child: _getAddFrame(Motif.background),
+                //   data: null as dynamic,
+                //   onDragCompleted: () => setState(() {}),
+                // ),
               )
             ],
           ),
