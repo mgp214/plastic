@@ -39,7 +39,12 @@ class EditViewPageState extends State<EditViewPage> {
         feedback: _getAddFrame(Colors.transparent),
         child: _getAddFrame(Motif.background),
         data: null as dynamic,
-        onDragCompleted: () => setState(() {}),
+        onDragCompleted: () => setState(() {
+          _isDragging = false;
+        }),
+        onDraggableCanceled: (v, o) => setState(() {
+          _isDragging = false;
+        }),
         onDragStarted: () => setState(() {
           _isDragging = true;
         }),

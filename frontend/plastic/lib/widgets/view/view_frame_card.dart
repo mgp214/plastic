@@ -264,7 +264,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     }
     if (widget.frame.childFrames.length == 0) {
       return LayoutBuilder(
-        builder: (context, constraints) => Draggable(
+        builder: (context, constraints) => LongPressDraggable(
           maxSimultaneousDrags: widget.frame.isRoot ? 0 : 1,
           child: Card(
             color: Motif.lightBackground,
