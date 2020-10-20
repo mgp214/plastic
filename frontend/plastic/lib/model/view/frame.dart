@@ -55,9 +55,15 @@ class Frame {
     id = Uuid().v4().toString().substring(0, 4);
   }
 
+  void addFlex(double flex) {
+    this.flex += flex;
+    if (this.flex < 0.1) this.flex = 0.1;
+  }
+
   void normalizeFlex() {
     if (this == root) return;
     var parentFlexSum = 0.00;
+
     // parent.childFrames.forEach((f) => log('pre: ${f.flex}'));
     parent.childFrames.forEach((f) => parentFlexSum += f.flex);
     parent.childFrames.forEach(
