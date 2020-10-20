@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:plastic/model/view/view_widget.dart';
 import 'package:uuid/uuid.dart';
 
@@ -13,17 +14,24 @@ FrameLayout opposite(FrameLayout layout) => layout == FrameLayout.VERTICAL
     : FrameLayout.VERTICAL;
 
 class Frame {
+  static final flexResolution = 100000;
+  static final scaleSensitivity = 0.5;
   static final math.Random random = math.Random();
   Frame parent;
 
   List<Frame> childFrames;
   ViewWidget widget;
   FrameLayout layout;
+  double flex;
   String id;
 
   static Frame copy(Frame source) {
     var copy = Frame(
-        widget: source.widget, layout: source.layout, parent: source.parent);
+      widget: source.widget,
+      layout: source.layout,
+      parent: source.parent,
+      flex: source.flex,
+    );
     for (var child in source.childFrames) {
       var childCopy = Frame.copy(child);
       copy.childFrames.add(childCopy);
@@ -35,10 +43,47 @@ class Frame {
   bool get isRoot =>
       this == root || (parent == root && parent.childFrames.length == 1);
 
-  Frame({this.parent, this.childFrames, this.widget, this.layout}) {
+  Frame({
+    this.parent,
+    this.childFrames,
+    this.widget,
+    this.layout,
+    this.flex = 1,
+  }) {
     if (childFrames == null) childFrames = List();
     if (widget == null) widget = ViewWidget();
     id = Uuid().v4().toString().substring(0, 4);
+  }
+
+  void normalizeFlex() {
+    if (this == root) return;
+    var parentFlexSum = 0.00;
+    // parent.childFrames.forEach((f) => log('pre: ${f.flex}'));
+    parent.childFrames.forEach((f) => parentFlexSum += f.flex);
+    parent.childFrames.forEach(
+        (f) => f.flex = f.flex / parentFlexSum * parent.childFrames.length);
+    // parent.childFrames.forEach((f) => log('post: ${f.flex}'));
+
+    if (parent.parent != null) {
+      var grandparentFlexSum = 0.00;
+      // parent.parent.childFrames.forEach((f) => log('pre: ${f.flex}'));
+      parent.parent.childFrames.forEach((f) => grandparentFlexSum += f.flex);
+      parent.parent.childFrames.forEach((f) => f.flex =
+          f.flex / grandparentFlexSum * parent.parent.childFrames.length);
+      // parent.parent.childFrames.forEach((f) => log('post: ${f.flex}'));
+    }
+  }
+
+  void adjustScale(Offset scale) {
+    log(scale.distance.toString());
+    if (this == root) return;
+    if (parent.layout == FrameLayout.HORIZONTAL) {
+      flex += (scaleSensitivity * scale.dx);
+      parent.flex += (scaleSensitivity * scale.dy);
+    } else {
+      flex += (scaleSensitivity * scale.dy);
+      parent.flex += (scaleSensitivity * scale.dx);
+    }
   }
 
   void trimFromTree(Frame frame) {

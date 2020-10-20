@@ -88,12 +88,6 @@ class EditViewPageState extends State<EditViewPage> {
                 bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
                 right: 10,
                 child: _getPositionedAction(),
-                // Draggable(
-                //   feedback: _getAddFrame(Colors.transparent),
-                //   child: _getAddFrame(Motif.background),
-                //   data: null as dynamic,
-                //   onDragCompleted: () => setState(() {}),
-                // ),
               )
             ],
           ),

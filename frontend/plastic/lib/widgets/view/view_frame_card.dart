@@ -1,10 +1,12 @@
 import 'dart:developer';
 
+import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/frame.dart';
 import 'package:plastic/utility/layout_utils.dart';
+import 'package:plastic/widgets/view/frame_resize_handle.dart';
 
 enum Edge { Left, Right, Top, Bottom }
 FrameLayout edgeDirection(Edge edge) =>
@@ -31,6 +33,8 @@ class ViewFrameCard extends StatefulWidget {
 class ViewFrameCardState extends State<ViewFrameCard> {
   Edge _activeEdge;
   Frame _rootCopy;
+  Offset _previousScale;
+  double _initialScale;
 
   void _insertProxyFrame(
       Frame parent, int index, Frame child, bool afterExisting) {
@@ -163,6 +167,14 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     });
   }
 
+  double _getLength() {
+    var length = widget.frame.layout == FrameLayout.HORIZONTAL
+        ? context.size.width
+        : context.size.height;
+    length -= (widget.frame.childFrames.length - 1) * 21;
+    return length;
+  }
+
   Widget _getDropIndicator(BoxConstraints constraints, Color color) {
     Widget dropIndicator;
     switch (_activeEdge) {
@@ -220,17 +232,31 @@ class ViewFrameCardState extends State<ViewFrameCard> {
   Widget build(BuildContext context) {
     Widget dragTargetChild;
 
-    var children = widget.frame.childFrames
-        .map<Widget>(
-          (c) => Expanded(
-            child: ViewFrameCard(
-              frame: c,
-              rebuildLayout: widget.rebuildLayout,
-              resetLayout: widget.resetLayout,
-            ),
+    var children = List<Widget>();
+    for (var i = 0; i < widget.frame.childFrames.length; i++) {
+      if (i > 0) {
+        children.add(
+          FrameResizeHandle(
+            before: widget.frame.childFrames[i - 1],
+            after: widget.frame.childFrames[i],
+            rebuildLayout: () => widget.rebuildLayout(false),
+            parentLayout: widget.frame.layout,
+            getParentLength: _getLength,
           ),
-        )
-        .toList();
+        );
+      }
+      var child = widget.frame.childFrames[i];
+      children.add(
+        Expanded(
+          flex: (child.flex * Frame.flexResolution).round(),
+          child: ViewFrameCard(
+            frame: child,
+            rebuildLayout: widget.rebuildLayout,
+            resetLayout: widget.resetLayout,
+          ),
+        ),
+      );
+    }
     if (children.length == 0)
       children.add(
         Expanded(
@@ -262,6 +288,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
         children: children,
       );
     }
+
     if (widget.frame.childFrames.length == 0) {
       return LayoutBuilder(
         builder: (context, constraints) => LongPressDraggable(
