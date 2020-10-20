@@ -42,11 +42,15 @@ class FrameResizeHandle extends StatelessWidget {
         var parentLength = getParentLength();
         var siblings = before.parent.childFrames.length;
         if (parentLayout == FrameLayout.HORIZONTAL) {
-          before.flex += siblings * updateDetails.delta.dx / parentLength;
-          after.flex -= siblings * updateDetails.delta.dx / parentLength;
+          if (after.flex > siblings * updateDetails.delta.dx / parentLength) {
+            before.flex += siblings * updateDetails.delta.dx / parentLength;
+            after.flex -= siblings * updateDetails.delta.dx / parentLength;
+          }
         } else {
-          before.flex += siblings * updateDetails.delta.dy / parentLength;
-          after.flex -= siblings * updateDetails.delta.dy / parentLength;
+          if (after.flex > siblings * updateDetails.delta.dy / parentLength) {
+            before.flex += siblings * updateDetails.delta.dy / parentLength;
+            after.flex -= siblings * updateDetails.delta.dy / parentLength;
+          }
         }
         before.normalizeFlex();
         rebuildLayout();
