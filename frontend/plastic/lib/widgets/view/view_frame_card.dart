@@ -46,6 +46,8 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     FrameLayout proxyLayout = opposite(parent.layout);
 
     var proxyFrame = Frame(parent: parent, layout: proxyLayout);
+    proxyFrame.flex = widget.frame.flex;
+    widget.frame.flex = 1;
     proxyFrame.widget = null;
 
     proxyFrame.childFrames.add(child);
@@ -118,6 +120,9 @@ class ViewFrameCardState extends State<ViewFrameCard> {
       insertee.layout = opposite(widget.frame.parent.layout);
       index += after ? 0 : 1;
       insertee.parent = widget.frame.parent;
+      var splitFlex = widget.frame.flex / 2;
+      widget.frame.flex = splitFlex;
+      insertee.flex = splitFlex;
       if (index == widget.frame.parent.childFrames.length)
         widget.frame.parent.childFrames.add(insertee);
       else
