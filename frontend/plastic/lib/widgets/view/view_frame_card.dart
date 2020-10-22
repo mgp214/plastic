@@ -15,6 +15,7 @@ FrameLayout edgeDirection(Edge edge) =>
         : FrameLayout.VERTICAL;
 
 class ViewFrameCard extends StatefulWidget {
+  final bool isLocked;
   final Frame frame;
   final Function(bool) rebuildLayout;
   final Function(Frame) resetLayout;
@@ -23,7 +24,8 @@ class ViewFrameCard extends StatefulWidget {
       {Key key,
       @required this.frame,
       @required this.rebuildLayout,
-      @required this.resetLayout})
+      @required this.resetLayout,
+      @required this.isLocked})
       : super(key: key);
 
   @override
@@ -33,8 +35,6 @@ class ViewFrameCard extends StatefulWidget {
 class ViewFrameCardState extends State<ViewFrameCard> {
   Edge _activeEdge;
   Frame _rootCopy;
-  Offset _previousScale;
-  double _initialScale;
 
   void _insertProxyFrame(
       Frame parent, int index, Frame child, bool afterExisting) {
@@ -239,7 +239,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
 
     var children = List<Widget>();
     for (var i = 0; i < widget.frame.childFrames.length; i++) {
-      if (i > 0) {
+      if (!widget.isLocked && i > 0) {
         children.add(
           FrameResizeHandle(
             before: widget.frame.childFrames[i - 1],
@@ -258,6 +258,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
             frame: child,
             rebuildLayout: widget.rebuildLayout,
             resetLayout: widget.resetLayout,
+            isLocked: widget.isLocked,
           ),
         ),
       );
@@ -297,7 +298,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     if (widget.frame.childFrames.length == 0) {
       return LayoutBuilder(
         builder: (context, constraints) => LongPressDraggable(
-          maxSimultaneousDrags: widget.frame.isRoot ? 0 : 1,
+          maxSimultaneousDrags: widget.frame.isRoot || widget.isLocked ? 0 : 1,
           child: Card(
             color: Motif.lightBackground,
             child: DragTarget(
