@@ -9,6 +9,7 @@ import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/api/api_get_response.dart';
 import 'package:plastic/model/api/api_response.dart';
+import 'package:plastic/model/api/thing_condition.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/widgets/components/loading_modal.dart';
 
@@ -102,5 +103,38 @@ class ThingApi {
 
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
+  }
+
+  Future<ApiResponse> getFilteredThings(
+      BuildContext context, List<ThingCondition> conditions) async {
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
+
+    //TODO: implement conditional thing api endpoint interaction stuff.
+    final response = await http.get(
+      Api.getRoute(Routes.thingsByUser),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: AccountApi().authHeader(),
+      },
+    ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
+    Navigator.pop(context);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
+
+    var things = new List<Thing>();
+    if (response.statusCode == 200) {
+      json
+          .decode(response.body)
+          .forEach((v) => things.add(new Thing.fromJsonMap(v)));
+    }
+
+    return ApiGetResponse<List<Thing>>(
+        getResult: things,
+        successful: response.statusCode == 200,
+        message: response.reasonPhrase);
   }
 }

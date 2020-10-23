@@ -266,7 +266,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     if (children.length == 0)
       children.add(
         Expanded(
-          child: ViewWidgetProvider.getEditWidget(context, widget.frame.widget),
+          child: ViewWidgetProvider.getEditWidget(context, widget),
         ),
       );
 
