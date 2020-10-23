@@ -17,12 +17,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'action_menu/action_menu.dart';
 import 'action_menu/action_item.dart';
 
-class HomeWidget extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => HomeState();
+  State<StatefulWidget> createState() => HomePageState();
 }
 
-class HomeState extends State<HomeWidget> {
+class HomePageState extends State<HomePage> {
   User user;
   bool _isDoneLoading = false;
   List<Thing> _things;

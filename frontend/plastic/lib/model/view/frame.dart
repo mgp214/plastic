@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:plastic/model/view/view_widget.dart';
+import 'package:plastic/model/view/view_widgets/view_widget.dart';
 import 'package:uuid/uuid.dart';
 
 enum FrameLayout { VERTICAL, HORIZONTAL }
@@ -51,7 +51,7 @@ class Frame {
     this.flex = 1,
   }) {
     if (childFrames == null) childFrames = List();
-    if (widget == null) widget = ViewWidget();
+    // if (widget == null) widget = ViewWidget();
     id = Uuid().v4().toString().substring(0, 4);
   }
 
@@ -105,10 +105,10 @@ class Frame {
     }
 
     var tree = getChildren(root);
-    log('BEFORE');
-    log(root.prettyPrint());
+    // log('BEFORE');
+    // log(root.prettyPrint());
 
-    log('removing all frames with widget matching this one: ${frame.widget.id}');
+    // log('removing all frames with widget matching this one: ${frame.widget.id}');
 
     for (var f in tree) {
       if (f.widget == frame.widget) {
@@ -141,35 +141,35 @@ class Frame {
       }
     }
     log('AFTER');
-    log(root.prettyPrint());
+    // log(root.prettyPrint());
   }
 
-  Map<String, dynamic> tree() {
-    Map getMap(Frame frame) {
-      var map = Map<String, dynamic>();
+  // Map<String, dynamic> tree() {
+  //   Map getMap(Frame frame) {
+  //     var map = Map<String, dynamic>();
 
-      var entries = frame.childFrames.map(
-        (c) => MapEntry<String, dynamic>(
-          c.toString(),
-          getMap(c),
-        ),
-      );
+  //     var entries = frame.childFrames.map(
+  //       (c) => MapEntry<String, dynamic>(
+  //         c.toString(),
+  //         getMap(c),
+  //       ),
+  //     );
 
-      map['parent'] = frame.parent?.id;
-      map['widget'] = frame.widget?.id;
+  //     map['parent'] = frame.parent?.id;
+  //     map['widget'] = frame.widget?.id;
 
-      for (var entry in entries) {
-        map[entry.key] = entry.value;
-      }
+  //     for (var entry in entries) {
+  //       map[entry.key] = entry.value;
+  //     }
 
-      return map;
-    }
+  //     return map;
+  //   }
 
-    var thisMap = Map<String, dynamic>();
-    thisMap[toString()] = getMap(root);
+  //   var thisMap = Map<String, dynamic>();
+  //   thisMap[toString()] = getMap(root);
 
-    return thisMap;
-  }
+  //   return thisMap;
+  // }
 
   Frame get root {
     var root = this;
@@ -182,8 +182,8 @@ class Frame {
   @override
   String toString() => (layout == FrameLayout.HORIZONTAL ? 'H-' : 'V-') + id;
 
-  String prettyPrint() {
-    var encoder = JsonEncoder.withIndent('  ');
-    return encoder.convert(tree());
-  }
+  // String prettyPrint() {
+  //   var encoder = JsonEncoder.withIndent('  ');
+  //   return encoder.convert(tree());
+  // }
 }

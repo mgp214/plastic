@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/preference_manager.dart';
-import 'package:plastic/widgets/home_widget.dart';
+import 'package:plastic/widgets/home_page.dart';
 
 import 'model/motif_data.dart';
 
@@ -30,7 +30,7 @@ class PlasticApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       routes: {
-        'home': (context) => HomeWidget(),
+        'home': (context) => HomePage(),
       },
       initialRoute: 'home',
     );

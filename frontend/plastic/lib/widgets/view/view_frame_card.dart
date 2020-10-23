@@ -1,12 +1,12 @@
 import 'dart:developer';
 
-import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/frame.dart';
 import 'package:plastic/utility/layout_utils.dart';
 import 'package:plastic/widgets/view/frame_resize_handle.dart';
+import 'package:plastic/widgets/view/view_widget_provider.dart';
 
 enum Edge { Left, Right, Top, Bottom }
 FrameLayout edgeDirection(Edge edge) =>
@@ -116,7 +116,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     bool after = (edge == Edge.Left || edge == Edge.Top);
 
     if (edgeDirection(edge) == widget.frame.parent.layout) {
-      log('newly inserted frame $insertee added to ${widget.frame} with the grain');
+      // log('newly inserted frame $insertee added to ${widget.frame} with the grain');
       insertee.layout = opposite(widget.frame.parent.layout);
       index += after ? 0 : 1;
       insertee.parent = widget.frame.parent;
@@ -128,7 +128,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
       else
         widget.frame.parent.childFrames.insert(index, insertee);
     } else {
-      log('newly inserted frame $insertee added to ${widget.frame} requires proxy');
+      // log('newly inserted frame $insertee added to ${widget.frame} requires proxy');
       _insertProxyFrame(widget.frame.parent, index, insertee, after);
     }
   }
@@ -138,8 +138,8 @@ class ViewFrameCardState extends State<ViewFrameCard> {
 
     widget.frame.trimFromTree(value.data);
     _insertFrame(value.data, edge);
-    log('AFTER DRAG ACCEPT:');
-    log(widget.frame.root.prettyPrint());
+    // log('AFTER DRAG ACCEPT:');
+    // log(widget.frame.root.prettyPrint());
 
     widget.rebuildLayout(false);
   }
@@ -266,18 +266,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     if (children.length == 0)
       children.add(
         Expanded(
-          child: Stack(
-            children: [
-              Placeholder(color: widget.frame.widget.color),
-              Center(
-                child: Text(
-                  (widget.frame.layout == FrameLayout.VERTICAL ? 'V' : 'H') +
-                      '-${widget.frame.widget.id}',
-                  style: Motif.contentStyle(Sizes.Content, Motif.black),
-                ),
-              ),
-            ],
-          ),
+          child: ViewWidgetProvider.getEditWidget(context, widget.frame.widget),
         ),
       );
 
@@ -330,9 +319,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
               alignment: Alignment.center,
               width: constraints.maxWidth,
               height: constraints.maxHeight,
-              child: Placeholder(
-                color: widget.frame.widget.color,
-              ),
+              child: ViewWidgetProvider.getDisplayWidget(widget.frame.widget),
             ),
           ),
           feedbackOffset: Offset.zero,
