@@ -84,4 +84,46 @@ router.get('/things/bytemplate', auth, async (req, res) => {
 	res.send(things);
 });
 
+function getFindParams(condition) {
+	if (condition['type'] == 'operation') {
+		var operands = [];
+		for (var i = 0; i < condition['operands'].length; i++) {
+			operands.push(getFindParams(condition['operands'][i]));
+		}
+		switch (condition['operator']) {
+			case 'OPERATOR.AND':
+				return { $and: operands };
+			case 'OPERATOR.NOT':
+				return { $not: operands };
+			case 'OPERATOR.OR':
+				return { $or: operands };
+		}
+	}
+	if (condition['type'] == 'template') {
+		return { templateId: condition['value'] };
+	}
+}
+
+router.post('/things/matching', auth, async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const condition = req.body.condition;
+		console.log('finding thing with condition: ' + JSON.stringify(condition));
+		const findParams = getFindParams(condition);
+		const findParamsWithUser = {
+			$and: [
+				findParams,
+				{ userId: userId }
+			]
+		};
+		console.log('processed condition into find params: ' + JSON.stringify(findParamsWithUser));
+		const things = await Thing.find(findParamsWithUser);
+		res.send(things);
+	} catch (error) {
+		res.status(400).statusMessage = error.toString();
+		res.send();
+		console.log(error);
+	}
+});
+
 module.exports = router;

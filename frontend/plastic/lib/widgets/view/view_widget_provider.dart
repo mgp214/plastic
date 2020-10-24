@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
-import 'package:plastic/model/view/frame.dart';
 import 'package:plastic/model/view/view_widgets/view_widget.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
@@ -125,10 +124,6 @@ class ViewWidgetProvider {
             Navigator.pop(context);
           },
         ),
-        // Text(
-        //   "This is where all the options and parameters you can change for this particular type of widget show up!",
-        //   style: Motif.contentStyle(Sizes.Content, Motif.black),
-        // ),
       ],
     );
   }

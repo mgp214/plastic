@@ -9,7 +9,7 @@ import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/api/api_get_response.dart';
 import 'package:plastic/model/api/api_response.dart';
-import 'package:plastic/model/api/thing_condition.dart';
+import 'package:plastic/model/view/conditions/thing_condition.dart';
 import 'package:plastic/model/thing.dart';
 import 'package:plastic/widgets/components/loading_modal.dart';
 
@@ -105,7 +105,7 @@ class ThingApi {
         successful: response.statusCode == 200, message: response.reasonPhrase);
   }
 
-  Future<ApiResponse> getFilteredThings(
+  Future<ApiResponse> getThingsMatching(
       BuildContext context, List<ThingCondition> conditions) async {
     showDialog(
       context: context,
@@ -114,7 +114,7 @@ class ThingApi {
 
     //TODO: implement conditional thing api endpoint interaction stuff.
     final response = await http.get(
-      Api.getRoute(Routes.thingsByUser),
+      Api.getRoute(Routes.thingsMatching),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader: AccountApi().authHeader(),
