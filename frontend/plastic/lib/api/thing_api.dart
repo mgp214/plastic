@@ -106,20 +106,23 @@ class ThingApi {
   }
 
   Future<ApiResponse> getThingsMatching(
-      BuildContext context, List<ThingCondition> conditions) async {
+      BuildContext context, ThingCondition condition) async {
     showDialog(
       context: context,
       builder: (context) => LoadingModal(),
     );
 
     //TODO: implement conditional thing api endpoint interaction stuff.
-    final response = await http.get(
-      Api.getRoute(Routes.thingsMatching),
-      headers: {
-        HttpHeaders.contentTypeHeader: 'application/json',
-        HttpHeaders.authorizationHeader: AccountApi().authHeader(),
-      },
-    ).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+    final response = await http
+        .post(
+          Api.getRoute(Routes.thingsMatching),
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json',
+            HttpHeaders.authorizationHeader: AccountApi().authHeader(),
+          },
+          body: jsonEncode(condition.toJson()),
+        )
+        .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
     Navigator.pop(context);
     var error = ApiException.throwErrorMessage(response.statusCode);

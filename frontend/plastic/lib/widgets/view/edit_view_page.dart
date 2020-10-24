@@ -1,5 +1,12 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:plastic/api/api.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/model/template.dart';
+import 'package:plastic/model/view/conditions/condition_operator.dart';
+import 'package:plastic/model/view/conditions/template_condition.dart';
 import 'package:plastic/model/view/view.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
@@ -22,6 +29,17 @@ class EditViewPageState extends State<EditViewPage> {
   initState() {
     _isDragging = false;
     _isLocked = false;
+    var and = ConditionOperator(operation: OPERATOR.AND, operands: []);
+    var not = ConditionOperator(operation: OPERATOR.NOT, operands: []);
+
+    var template = TemplateCondition(
+        Template(fields: [], userId: null, id: "5f7a2f85af88286786692154"));
+    var or = ConditionOperator(operation: OPERATOR.OR, operands: [template]);
+    log(jsonEncode(template.toJson()));
+    //TODO: call getThingsMatching API here
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      var response = Api.thing.getThingsMatching(context, or);
+    });
     super.initState();
   }
 

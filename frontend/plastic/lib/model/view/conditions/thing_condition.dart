@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 abstract class ThingCondition {
-  String toJson();
+  Map<String, dynamic> toJson();
 
   @override
   String toString() {
     var encoder = JsonEncoder.withIndent('  ');
-    return encoder.convert(jsonDecode(this.toJson()));
+    return encoder.convert(this.toJson());
   }
 }

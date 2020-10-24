@@ -107,7 +107,7 @@ function getFindParams(condition) {
 router.post('/things/matching', auth, async (req, res) => {
 	try {
 		const userId = req.user._id;
-		const condition = req.body.condition;
+		const condition = req.body;
 		console.log('finding thing with condition: ' + JSON.stringify(condition));
 		const findParams = getFindParams(condition);
 		const findParamsWithUser = {
