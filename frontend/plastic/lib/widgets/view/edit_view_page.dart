@@ -36,7 +36,7 @@ class EditViewPageState extends State<EditViewPage> {
         Template(fields: [], userId: null, id: "5f7a2f85af88286786692154"));
     var or = ConditionOperator(operation: OPERATOR.OR, operands: [template]);
     log(jsonEncode(template.toJson()));
-    //TODO: call getThingsMatching API here
+    //TODO: REMOVE THIS
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       var response = Api.thing.getThingsMatching(context, or);
     });

@@ -112,7 +112,6 @@ class ThingApi {
       builder: (context) => LoadingModal(),
     );
 
-    //TODO: implement conditional thing api endpoint interaction stuff.
     final response = await http
         .post(
           Api.getRoute(Routes.thingsMatching),
