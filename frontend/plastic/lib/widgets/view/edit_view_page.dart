@@ -33,7 +33,8 @@ class EditViewPageState extends State<EditViewPage> {
     var not = ConditionOperator(operation: OPERATOR.NOT, operands: []);
 
     var template = TemplateCondition(
-        Template(fields: [], userId: null, id: "5f7a2f85af88286786692154"));
+        template:
+            Template(fields: [], userId: null, id: "5f7a2f85af88286786692154"));
     var or = ConditionOperator(operation: OPERATOR.OR, operands: [template]);
     log(jsonEncode(template.toJson()));
     //TODO: REMOVE THIS

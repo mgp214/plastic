@@ -3,4 +3,6 @@ import 'package:plastic/model/view/view_widgets/view_widget.dart';
 
 class CountWidget extends ViewWidget {
   ThingCondition countCondition;
+
+  CountWidget({this.countCondition}) {}
 }

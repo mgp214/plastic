@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/model/view/view_widgets/count_widget.dart';
 import 'package:plastic/model/view/view_widgets/view_widget.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
+import 'package:plastic/widgets/view/condition/condition_builder.dart';
 import 'package:plastic/widgets/view/view_frame_card.dart';
+import 'package:plastic/widgets/view/widgets/count_widget_widget.dart';
 
 class ViewWidgetProvider {
   static VoidCallback _getAddWidgetFunction(
@@ -36,11 +39,14 @@ class ViewWidgetProvider {
             _getAddWidgetFunction(
               context,
               frameCard,
-              ViewWidget(),
+              CountWidget(),
             )),
       ];
 
   static Widget _getEditWidgetInternal(ViewWidget viewWidget) {
+    if (viewWidget is CountWidget) {
+      return CountWidgetWidget(countWidget: viewWidget);
+    }
     return Stack(
       children: [
         Placeholder(
@@ -100,31 +106,53 @@ class ViewWidgetProvider {
     );
   }
 
-  static Widget getEditConsole(BuildContext context, ViewFrameCard frameCard) {
-    return Column(
-      children: [
-        SplashListTile(
-          color: Motif.negative,
-          child: Row(
-            children: [
-              Icon(
-                Icons.delete,
-                color: Motif.negative,
-                size: Constants.iconSize,
-              ),
-              Text(
-                "Delete",
-                style: Motif.contentStyle(Sizes.Content, Motif.negative),
-              ),
-            ],
-          ),
-          onTap: () {
-            frameCard.frame.widget = null;
-            frameCard.rebuildLayout(false);
-            Navigator.pop(context);
+  static List<Widget> _getEditConsoleInternal(
+      BuildContext context, ViewFrameCard frameCard) {
+    var list = List<Widget>();
+    if (frameCard.frame.widget is CountWidget) {
+      var countWidget = frameCard.frame.widget as CountWidget;
+      list.add(SplashListTile(
+        color: Motif.title,
+        onTap: () {},
+        child: ConditionBuilder(
+          condition: countWidget.countCondition,
+          rebuildView: frameCard.rebuildLayout,
+          conditionUpdate: (condition) {
+            countWidget.countCondition = condition;
           },
         ),
-      ],
+      ));
+    }
+    return list;
+  }
+
+  static Widget getEditConsole(BuildContext context, ViewFrameCard frameCard) {
+    var children = _getEditConsoleInternal(context, frameCard);
+    children.add(
+      SplashListTile(
+        color: Motif.title,
+        child: Row(
+          children: [
+            Icon(
+              Icons.delete,
+              color: Motif.negative,
+              size: Constants.iconSize,
+            ),
+            Text(
+              "Delete",
+              style: Motif.contentStyle(Sizes.Content, Motif.negative),
+            ),
+          ],
+        ),
+        onTap: () {
+          frameCard.frame.widget = null;
+          frameCard.rebuildLayout(false);
+          Navigator.pop(context);
+        },
+      ),
+    );
+    return Column(
+      children: children,
     );
   }
 

@@ -8,6 +8,7 @@ import 'package:plastic/api/account_api.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_exception.dart';
 import 'package:plastic/model/api/api_get_response.dart';
+import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/api/api_response.dart';
 import 'package:plastic/model/view/conditions/thing_condition.dart';
 import 'package:plastic/model/thing.dart';
@@ -107,10 +108,10 @@ class ThingApi {
 
   Future<ApiResponse> getThingsMatching(
       BuildContext context, ThingCondition condition) async {
-    showDialog(
-      context: context,
-      builder: (context) => LoadingModal(),
-    );
+    // showDialog(
+    //   context: context,
+    //   builder: (context) => LoadingModal(),
+    // );
 
     final response = await http
         .post(
@@ -123,7 +124,7 @@ class ThingApi {
         )
         .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
-    Navigator.pop(context);
+    // Navigator.pop(context);
     var error = ApiException.throwErrorMessage(response.statusCode);
     if (error != null) return Future.error(error);
 
@@ -134,8 +135,8 @@ class ThingApi {
           .forEach((v) => things.add(new Thing.fromJsonMap(v)));
     }
 
-    return ApiGetResponse<List<Thing>>(
-        getResult: things,
+    return ApiPostResponse<List<Thing>>(
+        postResult: things,
         successful: response.statusCode == 200,
         message: response.reasonPhrase);
   }
