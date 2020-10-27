@@ -5,6 +5,7 @@ import 'package:plastic/model/view/view_widgets/view_widget.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
+import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
 import 'package:plastic/widgets/view/condition/condition_builder.dart';
 import 'package:plastic/widgets/view/view_frame_card.dart';
@@ -113,19 +114,31 @@ class ViewWidgetProvider {
     var list = List<Widget>();
     if (frameCard.frame.widget is CountWidget) {
       var countWidget = frameCard.frame.widget as CountWidget;
-      list.add(SplashListTile(
-        color: Motif.title,
-        onTap: () {},
-        child: ConditionBuilder(
-          condition: countWidget.countCondition,
-          rebuildView: (condition) {
-            frameCard.frame.widget.getData();
-          },
-          conditionUpdate: (condition) {
-            countWidget.countCondition = condition;
-          },
+      list.add(
+        SplashListTile(
+          color: Motif.title,
+          onTap: () {},
+          child: BorderButton(
+            color: Motif.black,
+            content: "Edit count condition",
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ConditionBuilder(
+                  condition: countWidget.countCondition,
+                  conditionUpdate: (condition) {
+                    countWidget.countCondition = condition;
+                    countWidget.getData();
+                  },
+                ),
+              ),
+            ).then((result) {
+              countWidget.countCondition = result;
+              countWidget.getData();
+            }),
+          ),
         ),
-      ));
+      );
     }
     return list;
   }

@@ -105,16 +105,16 @@ class MotifData {
 
     MotifData motifData;
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    // if (!preferences.containsKey(FONTS_KEY) ||
-    //     !preferences.containsKey(SIZE_KEY) ||
-    //     !preferences.containsKey(COLOR_KEY)) {
-    // no valid motif stored in prefs, get the default motif and save it to prefs.
-    motifData = getDefault();
-    motifData.saveToPreferences();
-    activeMotif = motifData;
-    _setMotifValues(motifData);
-    return motifData;
-    // }
+    if (!preferences.containsKey(FONTS_KEY) ||
+        !preferences.containsKey(SIZE_KEY) ||
+        !preferences.containsKey(COLOR_KEY)) {
+      // no valid motif stored in prefs, get the default motif and save it to prefs.
+      motifData = getDefault();
+      motifData.saveToPreferences();
+      activeMotif = motifData;
+      _setMotifValues(motifData);
+      return motifData;
+    }
 
     // motif is present in prefs but is not loaded. load it and cache.
 
