@@ -296,8 +296,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
                   return Stack(
                     children: [
                       dragTargetChild,
-                      _getDropIndicator(constraints,
-                          candidateList[0]?.widget?.color ?? Colors.green),
+                      _getDropIndicator(constraints, Colors.green),
                     ],
                   );
                 }

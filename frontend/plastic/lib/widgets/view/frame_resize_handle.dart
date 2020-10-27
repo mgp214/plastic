@@ -55,7 +55,6 @@ class FrameResizeHandle extends StatelessWidget {
 
         before.normalizeFlex();
         rebuildLayout();
-        log(updateDetails.toString());
       },
     );
   }

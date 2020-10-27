@@ -15,6 +15,8 @@ class ViewWidgetProvider {
       BuildContext context, ViewFrameCard frameCard, ViewWidget viewWidget) {
     return () {
       frameCard.frame.widget = viewWidget;
+      viewWidget.triggerRebuild = () => frameCard.rebuildLayout(false);
+      viewWidget.getData();
       Navigator.pop(context);
       frameCard.rebuildLayout(false);
     };
@@ -30,7 +32,7 @@ class ViewWidgetProvider {
             _getAddWidgetFunction(
               context,
               frameCard,
-              ViewWidget(),
+              CountWidget(),
             )),
         DialogTextIconChoice(
             "Thing Count",
@@ -116,7 +118,9 @@ class ViewWidgetProvider {
         onTap: () {},
         child: ConditionBuilder(
           condition: countWidget.countCondition,
-          rebuildView: frameCard.rebuildLayout,
+          rebuildView: (condition) {
+            frameCard.frame.widget.getData();
+          },
           conditionUpdate: (condition) {
             countWidget.countCondition = condition;
           },

@@ -120,7 +120,7 @@ class ThingApi {
             HttpHeaders.contentTypeHeader: 'application/json',
             HttpHeaders.authorizationHeader: AccountApi().authHeader(),
           },
-          body: jsonEncode(condition.toJson()),
+          body: jsonEncode(condition?.toJson()),
         )
         .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
