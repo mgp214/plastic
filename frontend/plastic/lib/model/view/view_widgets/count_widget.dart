@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_post_response.dart';
 import 'package:plastic/model/thing.dart';
+import 'package:plastic/model/view/conditions/condition_operator.dart';
 import 'package:plastic/model/view/conditions/thing_condition.dart';
 import 'package:plastic/model/view/view_widgets/view_widget.dart';
 
@@ -10,7 +11,10 @@ class CountWidget extends ViewWidget {
   int count;
 
   CountWidget({this.countCondition, VoidCallback triggerRebuild})
-      : super(triggerRebuild);
+      : super(triggerRebuild) {
+    if (countCondition == null)
+      countCondition = ConditionOperator(operation: OPERATOR.AND, operands: []);
+  }
 
   @override
   Future<void> getData() async {
