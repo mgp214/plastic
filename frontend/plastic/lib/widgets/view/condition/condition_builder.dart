@@ -33,58 +33,56 @@ class ConditionBuilderState extends State<ConditionBuilder> {
     super.initState();
   }
 
-  Widget _getAddOperationButton() => Container(
-        decoration:
-            BoxDecoration(shape: BoxShape.circle, color: Motif.background),
+  Widget _getAddChild(IconData icon, Color color) => Container(
+        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         child: Padding(
           padding: EdgeInsets.all(5),
           child: Icon(
-            Icons.create_new_folder_outlined,
+            icon,
             color: Motif.title,
             size: Constants.iconSize,
           ),
         ),
       );
 
-  Widget _getAddConditionButton() => Container(
-        decoration:
-            BoxDecoration(shape: BoxShape.circle, color: Motif.background),
-        child: Padding(
-          padding: EdgeInsets.all(5),
-          child: Icon(
-            Icons.rule,
-            color: Motif.title,
-            size: Constants.iconSize,
+  Widget _getAddConditionButton() => Draggable(
+        feedback: _getAddChild(
+          Icons.rule,
+          Color.fromARGB(
+            128,
+            Motif.background.red,
+            Motif.background.green,
+            Motif.background.blue,
           ),
         ),
+        dragAnchor: DragAnchor.child,
+        child: _getAddChild(Icons.rule, Motif.background),
+        data: null,
       );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(children: [
-        Column(
-          children: [
-            ThingConditionWidget(
-              condition: condition ??
-                  ConditionOperator(operation: OPERATOR.AND, operands: []),
-            )
-          ],
-        ),
-        Positioned(
-          bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
-          right: 10,
-          child: Row(
+      body: SafeArea(
+        child: Stack(children: [
+          Column(
             children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                child: _getAddOperationButton(),
+              ThingConditionWidget(
+                condition: condition,
               ),
-              _getAddConditionButton(),
             ],
           ),
-        )
-      ]),
+          Positioned(
+            bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
+            right: 10,
+            child: Row(
+              children: [
+                _getAddConditionButton(),
+              ],
+            ),
+          )
+        ]),
+      ),
     );
   }
 }

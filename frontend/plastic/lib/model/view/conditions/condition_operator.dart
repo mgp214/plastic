@@ -4,7 +4,7 @@ import 'package:plastic/model/view/conditions/thing_condition.dart';
 enum OPERATOR { AND, OR, NOT }
 
 class ConditionOperator extends ThingCondition {
-  final OPERATOR operation;
+  OPERATOR operation;
   final List<ThingCondition> operands;
 
   ConditionOperator({@required this.operation, @required this.operands});
@@ -29,4 +29,16 @@ class ConditionOperator extends ThingCondition {
             .map((m) => ThingCondition.fromJsonAgnostic(m))
             .toList(),
       );
+
+  static String getFriendlyString(OPERATOR operation) {
+    switch (operation) {
+      case OPERATOR.AND:
+        return "All of these things";
+      case OPERATOR.OR:
+        return "Any of these things";
+      case OPERATOR.NOT:
+        return "None of these things";
+    }
+    return "Error!";
+  }
 }
