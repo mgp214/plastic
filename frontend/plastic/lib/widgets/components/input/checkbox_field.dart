@@ -26,8 +26,9 @@ class CheckboxField extends StatelessWidget {
           label ?? "",
           style: labelStyle ?? Motif.headerStyle(Sizes.Label, Motif.black),
         ),
-        checkColor: checkColor ?? Motif.neutral,
+        checkColor: checkColor ?? Motif.title,
         onChanged: onChanged,
+        activeColor: Motif.background,
         value: value ?? false,
       );
 }

@@ -93,15 +93,13 @@ class ViewWidgetProvider {
             icon: Icon(
               Icons.settings,
               size: Constants.iconSize,
-              color: Motif.black,
+              color: Motif.title,
             ),
             onPressed: () => showDialog(
                 context: context,
-                builder: (context) => SimpleDialog(
-                      contentPadding: EdgeInsets.all(15),
-                      children: [
-                        getEditConsole(context, frameCard),
-                      ],
+                builder: (context) => ChoiceActionsDialog(
+                      message: null,
+                      choices: getEditParameters(context, frameCard),
                     )),
           ),
         )
@@ -109,68 +107,51 @@ class ViewWidgetProvider {
     );
   }
 
-  static List<Widget> _getEditConsoleInternal(
+  static List<DialogChoice> _getEditParametersInternal(
       BuildContext context, ViewFrameCard frameCard) {
-    var list = List<Widget>();
+    var list = List<DialogChoice>();
     if (frameCard.frame.widget is CountWidget) {
       var countWidget = frameCard.frame.widget as CountWidget;
       list.add(
-        SplashListTile(
-          color: Motif.title,
-          onTap: () {},
-          child: BorderButton(
-            color: Motif.black,
-            content: "Edit count condition",
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ConditionBuilder(
-                  condition: countWidget.countCondition,
-                  conditionUpdate: (condition) {
-                    countWidget.countCondition = condition;
-                    countWidget.getData();
-                  },
-                ),
+        DialogTextChoice(
+          "Edit count condition",
+          Motif.black,
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConditionBuilder(
+                condition: countWidget.countCondition,
+                conditionUpdate: (condition) {
+                  countWidget.countCondition = condition;
+                  countWidget.getData();
+                },
               ),
-            ).then((result) {
-              countWidget.countCondition = result;
-              countWidget.getData();
-            }),
-          ),
+            ),
+          ).then((result) {
+            countWidget.getData();
+          }),
         ),
       );
     }
     return list;
   }
 
-  static Widget getEditConsole(BuildContext context, ViewFrameCard frameCard) {
-    var children = _getEditConsoleInternal(context, frameCard);
+  static List<DialogChoice> getEditParameters(
+      BuildContext context, ViewFrameCard frameCard) {
+    var children = _getEditParametersInternal(context, frameCard);
     children.add(
-      SplashListTile(
-        color: Motif.title,
-        child: Row(
-          children: [
-            Icon(
-              Icons.delete,
-              color: Motif.negative,
-              size: Constants.iconSize,
-            ),
-            Text(
-              "Delete",
-              style: Motif.contentStyle(Sizes.Content, Motif.negative),
-            ),
-          ],
-        ),
-        onTap: () {
+      DialogTextIconChoice(
+        "Delete",
+        Icons.delete,
+        Motif.negative,
+        () {
           frameCard.frame.widget = null;
           frameCard.rebuildLayout(false);
           Navigator.pop(context);
         },
       ),
     );
-    return Column(
-      children: children,
-    );
+    return children;
   }
 
   static Widget getDisplayWidget(ViewWidget viewWidget) {

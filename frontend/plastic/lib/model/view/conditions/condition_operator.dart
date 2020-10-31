@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:plastic/model/view/conditions/thing_condition.dart';
 
 enum OPERATOR { AND, OR, NOT }
@@ -40,5 +41,20 @@ class ConditionOperator extends ThingCondition {
         return "None of these things";
     }
     return "Error!";
+  }
+
+  static const Color AND_COLOR = Colors.green;
+  static const Color OR_COLOR = Colors.blue;
+  static const Color NOT_COLOR = Colors.red;
+
+  static Color getColor(OPERATOR operation) {
+    switch (operation) {
+      case OPERATOR.AND:
+        return AND_COLOR;
+      case OPERATOR.OR:
+        return OR_COLOR;
+      default:
+        return NOT_COLOR;
+    }
   }
 }
