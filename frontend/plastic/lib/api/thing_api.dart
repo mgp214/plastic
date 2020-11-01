@@ -113,6 +113,10 @@ class ThingApi {
     //   builder: (context) => LoadingModal(),
     // );
 
+    if (condition.isEmpty()) {
+      return Future.error(ApiException(message: "Condition is invalid"));
+    }
+
     final response = await http
         .post(
           Api.getRoute(Routes.thingsMatching),

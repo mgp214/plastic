@@ -94,7 +94,7 @@ function getFindParams(condition) {
 			case 'OPERATOR.AND':
 				return { $and: operands };
 			case 'OPERATOR.NOT':
-				return { $not: operands };
+				return { $nor: operands };
 			case 'OPERATOR.OR':
 				return { $or: operands };
 		}

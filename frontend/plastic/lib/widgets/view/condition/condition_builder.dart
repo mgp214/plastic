@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/conditions/thing_condition.dart';
@@ -22,10 +20,12 @@ class ConditionBuilder extends StatefulWidget {
 
 class ConditionBuilderState extends State<ConditionBuilder> {
   ThingCondition condition;
+  bool _isDragging;
 
   @override
   void initState() {
     condition = widget.condition;
+    _isDragging = false;
     super.initState();
   }
 
@@ -41,7 +41,9 @@ class ConditionBuilderState extends State<ConditionBuilder> {
         ),
       );
 
-  Widget _getAddConditionButton() => Draggable(
+  Widget _getPositionedAction() {
+    if (_isDragging == false)
+      return Draggable(
         feedback: _getAddChild(
           Icons.rule,
           Color.fromARGB(
@@ -53,8 +55,33 @@ class ConditionBuilderState extends State<ConditionBuilder> {
         ),
         dragAnchor: DragAnchor.child,
         child: _getAddChild(Icons.rule, Motif.background),
+        onDragStarted: () => setState(() {
+          _isDragging = true;
+        }),
+        onDragEnd: (dd) => setState(() {
+          _isDragging = false;
+        }),
         data: null as dynamic,
       );
+    return DragTarget(
+      builder: (context, candidateData, rejectedData) => Container(
+        decoration:
+            BoxDecoration(shape: BoxShape.circle, color: Motif.background),
+        child: Padding(
+          padding: EdgeInsets.all(5),
+          child: Icon(
+            Icons.delete,
+            color: Motif.title,
+            size: Constants.iconSize,
+          ),
+        ),
+      ),
+      onWillAccept: (candidate) => true,
+      onAccept: (candidate) => setState(() {
+        _isDragging = false;
+      }),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => WillPopScope(
@@ -69,6 +96,13 @@ class ConditionBuilderState extends State<ConditionBuilder> {
                 children: [
                   ThingConditionWidget(
                     condition: condition,
+                    rebuildLayout: (isDragging) => setState(() {
+                      _isDragging = isDragging;
+                    }),
+                    resetLayout: (c) => setState(() {
+                      _isDragging = false;
+                      condition = c;
+                    }),
                   ),
                 ],
               ),
@@ -77,7 +111,7 @@ class ConditionBuilderState extends State<ConditionBuilder> {
                 right: 10,
                 child: Row(
                   children: [
-                    _getAddConditionButton(),
+                    _getPositionedAction(),
                   ],
                 ),
               )

@@ -23,4 +23,10 @@ class TemplateCondition extends ThingCondition {
             .map((t) => TemplateManager().getTemplateById(t))
             .toList(),
       );
+
+  @override
+  bool isEmpty() => false;
+
+  @override
+  ThingCondition copy() => TemplateCondition(templates: List.of(templates));
 }

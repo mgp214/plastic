@@ -10,31 +10,23 @@ import 'package:plastic/widgets/components/input/checkbox_field.dart';
 
 class ThingConditionWidget extends StatefulWidget {
   final ThingCondition condition;
+  final Function(bool) rebuildLayout;
+  final Function(ThingCondition) resetLayout;
 
-  const ThingConditionWidget({Key key, @required this.condition})
+  const ThingConditionWidget(
+      {Key key,
+      @required this.condition,
+      @required this.rebuildLayout,
+      @required this.resetLayout})
       : super(key: key);
 
   @override
   State<StatefulWidget> createState() => ThingConditionWidgetState();
-
-  // TODO: replace this old json thingCondition editor
-  // TextField(
-  //   controller: _controller,
-  //   onChanged: (newValue) {
-  //     try {
-  //       var newCondition = ThingCondition.fromJsonString(newValue);
-  //       if (newCondition != null) {
-  //         widget.conditionUpdate(newCondition);
-  //       }
-  //     } catch (error) {
-  //       // widget.condition = null;
-  //     }
-  //     widget.rebuildView(false);
-  //   },
-  // );
 }
 
 class ThingConditionWidgetState extends State<ThingConditionWidget> {
+  ThingCondition _rootCopy;
+
   Map<String, ThingCondition> _availableConditions = {
     "Group (all / any / none)":
         ConditionOperator(operation: OPERATOR.AND, operands: []),
@@ -45,8 +37,10 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
     return _availableConditions.entries
         .map<DialogTextChoice>(
             (entry) => DialogTextChoice(entry.key, Motif.black, () {
+                  var newWidget = entry.value.copy();
+                  newWidget.parent = parent;
                   setState(() {
-                    parent.operands.add(entry.value);
+                    parent.operands.add(newWidget);
                   });
                   Navigator.pop(context);
                 }))
@@ -63,6 +57,8 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
       for (var operand in conditionAsOperator.operands) {
         children.add(ThingConditionWidget(
           condition: operand,
+          resetLayout: widget.resetLayout,
+          rebuildLayout: widget.rebuildLayout,
         ));
       }
       if (children.length == 0)
@@ -76,13 +72,15 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         onAccept: (data) {
           if (data == null) {
             showDialog(
-                context: context,
-                builder: (context) => getWidgetPicker(widget.condition));
+                    context: context,
+                    builder: (context) => getWidgetPicker(widget.condition))
+                .then((val) => widget.rebuildLayout(false));
           }
           if (data is ThingCondition) {
-            setState(() {
-              (widget.condition as ConditionOperator).operands.add(data);
-            });
+            (widget.condition as ConditionOperator).operands.add(data);
+            data.parent?.operands?.remove(data);
+            data.parent = widget.condition;
+            widget.rebuildLayout(false);
           }
         },
         builder: (context, candidateList, rejectedData) {
@@ -175,18 +173,36 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
           ));
         }
 
-        return Column(
-          children: children,
+        return Card(
+          child: Column(
+            children: children,
+          ),
         );
       }
     }
+    return Placeholder();
   }
 
   @override
   Widget build(BuildContext context) => Expanded(
         child: Draggable(
+          maxSimultaneousDrags: widget.condition.parent == null ? 0 : 1,
           child: _getDraggable(),
-          feedback: _getDraggable(),
+          feedback: Placeholder(
+            fallbackHeight: 50,
+            fallbackWidth: 50,
+          ),
+          dragAnchor: DragAnchor.child,
+          feedbackOffset: Offset.zero,
+          onDragStarted: () {
+            _rootCopy = widget.condition.root.copy();
+            widget.condition.trimFromTree();
+            widget.rebuildLayout(true);
+          },
+          onDraggableCanceled: (v, o) {
+            widget.resetLayout(_rootCopy);
+          },
+          data: widget.condition as dynamic,
         ),
       );
 }

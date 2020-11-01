@@ -5,8 +5,6 @@ import 'package:plastic/model/view/view_widgets/view_widget.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
-import 'package:plastic/widgets/components/input/border_button.dart';
-import 'package:plastic/widgets/components/splash_list_tile.dart';
 import 'package:plastic/widgets/view/condition/condition_builder.dart';
 import 'package:plastic/widgets/view/view_frame_card.dart';
 import 'package:plastic/widgets/view/widgets/count_widget_widget.dart';

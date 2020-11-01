@@ -5,6 +5,8 @@ import 'package:plastic/model/view/conditions/template_condition.dart';
 
 abstract class ThingCondition {
   Map<String, dynamic> toJson();
+  bool isEmpty();
+  ConditionOperator parent;
 
   @override
   String toString() {
@@ -32,4 +34,20 @@ abstract class ThingCondition {
     Map<String, dynamic> json = jsonDecode(jsonString);
     return fromJsonAgnostic(json);
   }
+
+  ThingCondition get root {
+    ThingCondition root = this;
+    while (root?.parent != null) {
+      root = root.parent;
+    }
+    return root;
+  }
+
+  void trimFromTree() {
+    if (root == this) return;
+    parent.operands.remove(this);
+    this.parent = null;
+  }
+
+  ThingCondition copy();
 }
