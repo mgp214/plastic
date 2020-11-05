@@ -68,4 +68,19 @@ class ConditionOperator extends ThingCondition {
     }
     return copy;
   }
+
+  @override
+  ThingCondition clean() {
+    for (var i = 0; i < operands.length;) {
+      var cleanedOperand = operands[i].clean();
+      if (cleanedOperand == null) {
+        operands.removeAt(i);
+        continue;
+      }
+      operands[i] = cleanedOperand;
+      i++;
+    }
+    if (operands.length == 0) return null;
+    return this;
+  }
 }

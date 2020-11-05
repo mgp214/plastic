@@ -29,4 +29,7 @@ class TemplateCondition extends ThingCondition {
 
   @override
   ThingCondition copy() => TemplateCondition(templates: List.of(templates));
+
+  @override
+  ThingCondition clean() => this;
 }

@@ -120,7 +120,7 @@ class ViewWidgetProvider {
               builder: (context) => ConditionBuilder(
                 condition: countWidget.countCondition,
                 conditionUpdate: (condition) {
-                  countWidget.countCondition = condition;
+                  countWidget.countCondition = condition.clean();
                   countWidget.getData();
                 },
               ),

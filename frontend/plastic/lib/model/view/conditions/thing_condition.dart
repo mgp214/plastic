@@ -50,4 +50,6 @@ abstract class ThingCondition {
   }
 
   ThingCondition copy();
+
+  ThingCondition clean();
 }
