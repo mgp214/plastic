@@ -29,6 +29,7 @@ class CountWidget extends ViewWidget {
       }
     } on ApiException catch (e) {
       count = e.message;
+      triggerRebuild();
     }
   }
 }

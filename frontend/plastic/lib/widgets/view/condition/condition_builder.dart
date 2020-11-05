@@ -86,7 +86,7 @@ class ConditionBuilderState extends State<ConditionBuilder> {
   @override
   Widget build(BuildContext context) => WillPopScope(
         onWillPop: () {
-          widget.conditionUpdate(condition);
+          widget.conditionUpdate(condition.clean());
           return Future.value(true);
         },
         child: Scaffold(

@@ -114,7 +114,7 @@ class ThingApi {
     // );
 
     if (condition.isEmpty()) {
-      return Future.error(ApiException(message: "Condition is invalid"));
+      return Future.error(ApiException(message: "Unset condition"));
     }
 
     final response = await http

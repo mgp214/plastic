@@ -80,7 +80,7 @@ class ConditionOperator extends ThingCondition {
       operands[i] = cleanedOperand;
       i++;
     }
-    if (operands.length == 0) return null;
+    if (operands.length == 0 && parent != null) return null;
     return this;
   }
 }
