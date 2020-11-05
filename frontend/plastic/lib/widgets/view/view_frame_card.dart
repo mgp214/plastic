@@ -318,7 +318,9 @@ class ViewFrameCardState extends State<ViewFrameCard> {
               alignment: Alignment.center,
               width: constraints.maxWidth,
               height: constraints.maxHeight,
-              child: ViewWidgetProvider.getDisplayWidget(widget.frame.widget),
+              child: Placeholder(
+                color: Colors.green,
+              ),
             ),
           ),
           feedbackOffset: Offset.zero,
