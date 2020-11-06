@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/view_widgets/count_widget.dart';
+import 'package:plastic/model/view/view_widgets/empty_widget.dart';
 import 'package:plastic/model/view/view_widgets/view_widget.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
@@ -65,7 +66,7 @@ class ViewWidgetProvider {
 
   static Widget getEditWidget(BuildContext context, ViewFrameCard frameCard) {
     var viewWidget = frameCard.frame.widget;
-    if (viewWidget == null)
+    if (viewWidget is EmptyWidget)
       return Center(
           child: IconButton(
         icon: Icon(

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:plastic/model/view/view_widgets/empty_widget.dart';
 import 'package:plastic/model/view/view_widgets/view_widget.dart';
 import 'package:uuid/uuid.dart';
 
@@ -50,7 +51,7 @@ class Frame {
     this.flex = 1,
   }) {
     if (childFrames == null) childFrames = List();
-    // if (widget == null) widget = ViewWidget();
+    if (widget == null) widget = EmptyWidget();
     id = Uuid().v4().toString().substring(0, 4);
   }
 
