@@ -141,7 +141,7 @@ class ViewWidgetProvider {
         Icons.delete,
         Motif.negative,
         () {
-          frameCard.frame.widget = null;
+          frameCard.frame.widget = EmptyWidget();
           frameCard.rebuildLayout(false);
           Navigator.pop(context);
         },

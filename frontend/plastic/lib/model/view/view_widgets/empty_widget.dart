@@ -4,5 +4,5 @@ class EmptyWidget extends ViewWidget {
   EmptyWidget() : super(() {});
 
   @override
-  Future<void> getData() {}
+  Future<void> getData() => Future.value(null);
 }

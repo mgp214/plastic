@@ -16,8 +16,7 @@ class TemplateCondition extends ThingCondition {
     return map;
   }
 
-  @override
-  static ThingCondition fromJson(Map<String, dynamic> json) =>
+  static TemplateCondition fromJson(Map<String, dynamic> json) =>
       TemplateCondition(
         templates: (json['value'] as List<String>)
             .map((t) => TemplateManager().getTemplateById(t))

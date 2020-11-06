@@ -24,8 +24,7 @@ class ConditionOperator extends ThingCondition {
     return jsonMap;
   }
 
-  @override
-  static ThingCondition fromJson(Map<String, dynamic> json) =>
+  static ConditionOperator fromJson(Map<String, dynamic> json) =>
       ConditionOperator(
         operation: OPERATOR.values
             .singleWhere((o) => o.toString() == json['operator']),

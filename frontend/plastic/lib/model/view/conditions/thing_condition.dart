@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:plastic/model/view/conditions/condition_operator.dart';
 import 'package:plastic/model/view/conditions/template_condition.dart';
+import 'package:plastic/model/view/conditions/value_condition.dart';
 
 abstract class ThingCondition {
   Map<String, dynamic> toJson();
@@ -14,9 +15,6 @@ abstract class ThingCondition {
     return encoder.convert(this.toJson());
   }
 
-  static ThingCondition fromJson(Map<String, dynamic> json) =>
-      throw UnimplementedError();
-
   static ThingCondition fromJsonAgnostic(Map<String, dynamic> json) {
     switch (json['type']) {
       case 'operation':
@@ -24,6 +22,9 @@ abstract class ThingCondition {
         break;
       case 'template':
         return TemplateCondition.fromJson(json);
+        break;
+      case 'value':
+        return ValueCondition.fromJson(json);
         break;
       default:
         throw UnimplementedError();

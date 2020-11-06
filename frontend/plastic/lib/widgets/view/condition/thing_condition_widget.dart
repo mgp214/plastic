@@ -1,12 +1,17 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/model/template.dart';
 import 'package:plastic/model/view/conditions/condition_operator.dart';
 import 'package:plastic/model/view/conditions/template_condition.dart';
 import 'package:plastic/model/view/conditions/thing_condition.dart';
+import 'package:plastic/model/view/conditions/value_condition.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/input/checkbox_field.dart';
+import 'package:plastic/widgets/components/input/string_field.dart';
 
 class ThingConditionWidget extends StatefulWidget {
   final ThingCondition condition;
@@ -31,6 +36,7 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
     "Group (all / any / none)":
         ConditionOperator(operation: OPERATOR.AND, operands: []),
     "Template": TemplateCondition(templates: List()),
+    "Value": ValueCondition(),
   };
 
   List<DialogTextChoice> _getConditionChoices(ConditionOperator parent) {
@@ -145,41 +151,103 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
           );
         },
       );
-    } else {
-      if (widget.condition is TemplateCondition) {
-        var conditionAsTemplate = widget.condition as TemplateCondition;
-        List<Widget> children = List();
-        children.add(Text(
-          "Template is one of the following:",
-          style: Motif.contentStyle(Sizes.Content, Motif.black),
+    } else if (widget.condition is TemplateCondition) {
+      var conditionAsTemplate = widget.condition as TemplateCondition;
+      List<Widget> children = List();
+      children.add(Text(
+        "Template is one of the following:",
+        style: Motif.contentStyle(Sizes.Content, Motif.black),
+      ));
+
+      for (var template in TemplateManager().getAllTemplates()) {
+        log(template.name);
+        children.add(CheckboxField(
+          label: template.name,
+          value: conditionAsTemplate.templates.contains(template),
+          onChanged: (value) {
+            if (value) {
+              setState(() {
+                conditionAsTemplate.templates.add(template);
+              });
+            } else {
+              setState(() {
+                conditionAsTemplate.templates
+                    .removeWhere((t) => t.id == template.id);
+              });
+            }
+          },
         ));
-
-        for (var template in TemplateManager().getAllTemplates()) {
-          children.add(CheckboxField(
-            label: template.name,
-            value: conditionAsTemplate.templates.contains(template),
-            onChanged: (value) {
-              if (value) {
-                setState(() {
-                  conditionAsTemplate.templates.add(template);
-                });
-              } else {
-                setState(() {
-                  conditionAsTemplate.templates
-                      .removeWhere((t) => t.id == template.id);
-                });
-              }
-            },
-          ));
-        }
-
-        return Card(
-          child: Column(
-            children: children,
-          ),
-        );
       }
+
+      return Card(
+        child: Column(
+          children: children,
+        ),
+      );
+    } else if (widget.condition is ValueCondition) {
+      var conditionAsValue = widget.condition as ValueCondition;
+      List<Widget> children = List();
+      children.add(Text(
+        "Has a ",
+        style: Motif.contentStyle(Sizes.Label, Motif.black),
+      ));
+      children.add(
+        DropdownButton<FieldType>(
+          value: conditionAsValue.fieldType,
+          items: FieldType.values
+              .map(
+                (o) => DropdownMenuItem(
+                  child: Text(
+                    TemplateField.getFriendlyName(o),
+                  ),
+                  value: o,
+                ),
+              )
+              .toList(),
+          onChanged: (newFieldType) => setState(() {
+            conditionAsValue.fieldType = newFieldType;
+          }),
+        ),
+      );
+      children.add(Text(
+        " field that's value ",
+        style: Motif.contentStyle(Sizes.Label, Motif.black),
+      ));
+      children.add(
+        DropdownButton<ValueComparison>(
+          value: conditionAsValue.comparison,
+          items: ValueComparison.values
+              .map(
+                (o) => DropdownMenuItem(
+                  child: Text(
+                    ValueCondition.getFriendlyName(o),
+                  ),
+                  value: o,
+                ),
+              )
+              .toList(),
+          onChanged: (newValueComparison) => setState(() {
+            conditionAsValue.comparison = newValueComparison;
+          }),
+        ),
+      );
+      children.add(
+        StringField(
+          controller: TextEditingController(text: conditionAsValue.value),
+          onChanged: (newValue) {
+            setState(() {
+              conditionAsValue.value = newValue;
+            });
+          },
+        ),
+      );
+      return Card(
+        child: Wrap(
+          children: children,
+        ),
+      );
     }
+
     return Placeholder();
   }
 
