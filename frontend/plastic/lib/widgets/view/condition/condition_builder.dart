@@ -61,6 +61,9 @@ class ConditionBuilderState extends State<ConditionBuilder> {
         onDragEnd: (dd) => setState(() {
           _isDragging = false;
         }),
+        onDraggableCanceled: (velocity, offset) => setState(() {
+          _isDragging = false;
+        }),
         data: null as dynamic,
       );
     return DragTarget(
