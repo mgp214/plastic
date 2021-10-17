@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/view_widgets/count_widget.dart';
 import 'package:plastic/model/view/view_widgets/empty_widget.dart';
+import 'package:plastic/model/view/view_widgets/simple_list_widget.dart';
 import 'package:plastic/model/view/view_widgets/view_widget.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
@@ -9,6 +10,7 @@ import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/view/condition/condition_builder.dart';
 import 'package:plastic/widgets/view/view_frame_card.dart';
 import 'package:plastic/widgets/view/widgets/count_widget_widget.dart';
+import 'package:plastic/widgets/view/widgets/simple_list_widget_widget.dart';
 
 class ViewWidgetProvider {
   static VoidCallback _getAddWidgetFunction(
@@ -32,7 +34,7 @@ class ViewWidgetProvider {
             _getAddWidgetFunction(
               context,
               frameCard,
-              CountWidget(),
+              SimpleListWidget(),
             )),
         DialogTextIconChoice(
             "Thing Count",
@@ -49,6 +51,10 @@ class ViewWidgetProvider {
     if (viewWidget is CountWidget) {
       return CountWidgetWidget(countWidget: viewWidget);
     }
+    if (viewWidget is SimpleListWidget) {
+      return SimpleListWidgetWidget(simpleListWidget: viewWidget);
+    }
+
     return Stack(
       children: [
         Placeholder(
@@ -122,6 +128,26 @@ class ViewWidgetProvider {
                 condition: countWidget.countCondition,
                 conditionUpdate: (condition) {
                   countWidget.getData();
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    if (frameCard.frame.widget is SimpleListWidget) {
+      var simpleListWidget = frameCard.frame.widget as SimpleListWidget;
+      list.add(
+        DialogTextChoice(
+          "Edit list condition",
+          Motif.black,
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConditionBuilder(
+                condition: simpleListWidget.condition,
+                conditionUpdate: (condition) {
+                  simpleListWidget.getData();
                 },
               ),
             ),
