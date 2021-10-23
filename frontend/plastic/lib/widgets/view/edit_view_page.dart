@@ -4,6 +4,8 @@ import 'package:plastic/model/view/view.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
+import 'package:plastic/widgets/components/input/border_button.dart';
+import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/view/view_frame_card.dart';
 
 class EditViewPage extends StatefulWidget {
@@ -17,11 +19,13 @@ class EditViewPage extends StatefulWidget {
 class EditViewPageState extends State<EditViewPage> {
   bool _isDragging;
   bool _isLocked;
+  TextEditingController _nameController;
 
   @override
   initState() {
     _isDragging = false;
     _isLocked = false;
+    _nameController = TextEditingController(text: widget.view.name);
     super.initState();
   }
 
@@ -135,6 +139,61 @@ class EditViewPageState extends State<EditViewPage> {
                               builder: (context) => ChoiceActionsDialog(
                                     message: null,
                                     choices: [
+                                      DialogTextChoice("Edit name", Motif.black,
+                                          () {
+                                        Navigator.pop(context);
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => WillPopScope(
+                                            child: Dialog(
+                                              child: Material(
+                                                child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      StringField(
+                                                          controller:
+                                                              _nameController,
+                                                          onChanged: null),
+                                                      BorderButton(
+                                                          color: Motif.neutral,
+                                                          content: "Save",
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              widget.view.name =
+                                                                  _nameController
+                                                                      .text;
+                                                            });
+                                                            Navigator.pop(
+                                                                context);
+                                                          }),
+                                                      BorderButton(
+                                                          color: Motif.negative,
+                                                          content: "Cancel",
+                                                          onPressed: () {
+                                                            _nameController
+                                                                    .value =
+                                                                TextEditingValue(
+                                                                    text: widget
+                                                                            .view
+                                                                            .name ??
+                                                                        "");
+                                                            Navigator.pop(
+                                                                context);
+                                                          }),
+                                                    ]),
+                                              ),
+                                            ),
+                                            onWillPop: () {
+                                              _nameController.value =
+                                                  TextEditingValue(
+                                                      text: widget.view.name ??
+                                                          "");
+                                              return Future.value(true);
+                                            },
+                                          ),
+                                        );
+                                      }),
                                       DialogTextIconChoice(
                                           _isLocked
                                               ? "Unlock layout"
