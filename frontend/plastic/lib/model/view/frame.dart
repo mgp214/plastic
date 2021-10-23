@@ -186,4 +186,22 @@ class Frame {
   //   var encoder = JsonEncoder.withIndent('  ');
   //   return encoder.convert(tree());
   // }
+  Frame.fromJson(Map<String, dynamic> json) {
+    //TODO: parse json
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['layout'] = layout.toString();
+    data['flex'] = flex;
+    var children = List<Map<String, dynamic>>();
+    for (var f in childFrames) {
+      children.add(f.toJson());
+    }
+    data['childFrames'] = children;
+    data['id'] = id;
+    data['widget'] = widget?.toJson();
+
+    return data;
+  }
 }

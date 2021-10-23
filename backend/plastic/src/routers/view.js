@@ -8,7 +8,7 @@ router.post('/views/save', auth, async (req, res) => {
 	try {
 		const view = new View(req.body);
 		view.userId = req.user._id;
-		console.log('saving view ' + view._id.toString());
+		console.log('saving view ' + view._id);
 		await View.findOneAndUpdate(
 			{ _id: view._id },
 			view,

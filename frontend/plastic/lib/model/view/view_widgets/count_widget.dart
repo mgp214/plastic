@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_exception.dart';
@@ -31,5 +33,18 @@ class CountWidget extends ViewWidget {
       count = e.message;
       triggerRebuild();
     }
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    var data = Map<String, dynamic>();
+    data['type'] = (CountWidget).toString();
+    data['condition'] = countCondition.toJson();
+    return data;
+  }
+
+  CountWidget.fromJson(Map<String, dynamic> json, VoidCallback triggerRebuild)
+      : super(triggerRebuild) {
+    countCondition = ThingCondition.fromJson(json['condition']);
   }
 }

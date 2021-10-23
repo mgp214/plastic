@@ -6,4 +6,8 @@ abstract class ViewWidget {
   ViewWidget(this.triggerRebuild);
 
   Future<void> getData();
+
+  Map<String, dynamic> toJson();
+
+  ViewWidget.fromJson(String jsonString);
 }

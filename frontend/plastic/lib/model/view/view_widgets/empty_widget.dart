@@ -5,4 +5,8 @@ class EmptyWidget extends ViewWidget {
 
   @override
   Future<void> getData() => Future.value(null);
+
+  Map<String, dynamic> toJson() {
+    return Map<String, dynamic>();
+  }
 }

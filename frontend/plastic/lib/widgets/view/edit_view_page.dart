@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:plastic/api/view_api.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/view.dart';
 import 'package:plastic/utility/constants.dart';
@@ -193,6 +194,12 @@ class EditViewPageState extends State<EditViewPage> {
                                             },
                                           ),
                                         );
+                                      }),
+                                      DialogTextIconChoice(
+                                          "Save", Icons.save, Motif.black, () {
+                                        ViewApi()
+                                            .saveView(context, widget.view);
+                                        Navigator.pop(context);
                                       }),
                                       DialogTextIconChoice(
                                           _isLocked

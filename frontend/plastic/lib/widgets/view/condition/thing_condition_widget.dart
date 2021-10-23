@@ -160,7 +160,6 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
       ));
 
       for (var template in TemplateManager().getAllTemplates()) {
-        log(template.name);
         children.add(CheckboxField(
           label: template.name,
           value: conditionAsTemplate.templates.contains(template),

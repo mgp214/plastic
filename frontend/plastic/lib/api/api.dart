@@ -17,6 +17,9 @@ enum Routes {
   deleteThing,
   thingsByUser,
   thingsMatching,
+  viewsByUser,
+  viewById,
+  saveView,
 }
 
 class Api {
@@ -68,6 +71,15 @@ class Api {
         break;
       case Routes.thingsMatching:
         value = root + "things/matching";
+        break;
+      case Routes.viewsByUser:
+        value = root + "views/all";
+        break;
+      case Routes.viewById:
+        value = root + "views/";
+        break;
+      case Routes.saveView:
+        value = root + "views/save";
         break;
     }
     return value;

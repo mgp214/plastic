@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:plastic/api/api.dart';
 import 'package:plastic/model/api/api_exception.dart';
@@ -30,5 +32,19 @@ class SimpleListWidget extends ViewWidget {
       things = e.message;
       triggerRebuild();
     }
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    var data = Map<String, dynamic>();
+    data['type'] = (SimpleListWidget).toString();
+    data['condition'] = condition.toJson();
+    return data;
+  }
+
+  SimpleListWidget.fromJson(
+      Map<String, dynamic> json, VoidCallback triggerRebuild)
+      : super(triggerRebuild) {
+    condition = ThingCondition.fromJson(json['condition']);
   }
 }

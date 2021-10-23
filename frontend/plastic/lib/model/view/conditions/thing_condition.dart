@@ -36,6 +36,10 @@ abstract class ThingCondition {
     return fromJsonAgnostic(json);
   }
 
+  static ThingCondition fromJson(Map<String, dynamic> json) {
+    return fromJsonAgnostic(json);
+  }
+
   ThingCondition get root {
     ThingCondition root = this;
     while (root?.parent != null) {
