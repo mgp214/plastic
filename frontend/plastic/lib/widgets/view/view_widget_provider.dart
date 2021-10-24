@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/view_widgets/count_widget.dart';
 import 'package:plastic/model/view/view_widgets/empty_widget.dart';
+import 'package:plastic/model/view/view_widgets/label_widget.dart';
 import 'package:plastic/model/view/view_widgets/simple_list_widget.dart';
 import 'package:plastic/model/view/view_widgets/view_widget.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
+import 'package:plastic/widgets/components/input/border_button.dart';
+import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/view/condition/condition_builder.dart';
 import 'package:plastic/widgets/view/view_frame_card.dart';
 import 'package:plastic/widgets/view/widgets/count_widget_widget.dart';
+import 'package:plastic/widgets/view/widgets/label_widget_widget.dart';
 import 'package:plastic/widgets/view/widgets/simple_list_widget_widget.dart';
 
 class ViewWidgetProvider {
+  static TextEditingController _controller;
   static VoidCallback _getAddWidgetFunction(
       BuildContext context, ViewFrameCard frameCard, ViewWidget viewWidget) {
     return () {
@@ -45,6 +50,15 @@ class ViewWidgetProvider {
               frameCard,
               CountWidget(),
             )),
+        DialogTextIconChoice(
+            "Label",
+            Icons.text_fields,
+            Motif.title,
+            _getAddWidgetFunction(
+              context,
+              frameCard,
+              LabelWidget(),
+            )),
       ];
 
   static Widget _getEditWidgetInternal(ViewWidget viewWidget) {
@@ -53,6 +67,9 @@ class ViewWidgetProvider {
     }
     if (viewWidget is SimpleListWidget) {
       return SimpleListWidgetWidget(simpleListWidget: viewWidget);
+    }
+    if (viewWidget is LabelWidget) {
+      return LabelWidgetWidget(labelWidget: viewWidget);
     }
 
     return Stack(
@@ -150,6 +167,48 @@ class ViewWidgetProvider {
                   simpleListWidget.getData();
                 },
               ),
+            ),
+          ),
+        ),
+      );
+    }
+    if (frameCard.frame.widget is LabelWidget) {
+      var labelWidget = frameCard.frame.widget as LabelWidget;
+      _controller = TextEditingController(text: labelWidget.text);
+      list.add(
+        DialogTextChoice(
+          "Label text",
+          Motif.black,
+          () => showDialog(
+            context: context,
+            builder: (context) => WillPopScope(
+              child: Dialog(
+                child: Material(
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    StringField(controller: _controller, onChanged: null),
+                    BorderButton(
+                        color: Motif.neutral,
+                        content: "Save",
+                        onPressed: () {
+                          labelWidget.text = _controller.text;
+                          Navigator.pop(context);
+                        }),
+                    BorderButton(
+                        color: Motif.negative,
+                        content: "Cancel",
+                        onPressed: () {
+                          _controller.value =
+                              TextEditingValue(text: labelWidget.text ?? "");
+                          Navigator.pop(context);
+                        }),
+                  ]),
+                ),
+              ),
+              onWillPop: () {
+                _controller.value =
+                    TextEditingValue(text: labelWidget.text ?? "");
+                return Future.value(true);
+              },
             ),
           ),
         ),

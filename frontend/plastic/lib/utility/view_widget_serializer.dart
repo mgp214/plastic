@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:plastic/model/view/view_widgets/count_widget.dart';
 import 'package:plastic/model/view/view_widgets/empty_widget.dart';
+import 'package:plastic/model/view/view_widgets/label_widget.dart';
 import 'package:plastic/model/view/view_widgets/simple_list_widget.dart';
 import 'package:plastic/model/view/view_widgets/view_widget.dart';
 
@@ -10,6 +11,7 @@ class ViewWidgetSerializer {
   static Map<String, Type> widgetTypeMap = {
     'SimpleListWidget': SimpleListWidget,
     'CountWidget': CountWidget,
+    'LabelWidget': LabelWidget,
   };
 
   static ViewWidget fromJson(
@@ -21,6 +23,9 @@ class ViewWidgetSerializer {
         break;
       case CountWidget:
         return CountWidget.fromJson(json, triggerRebuild);
+        break;
+      case LabelWidget:
+        return LabelWidget.fromJson(json, triggerRebuild);
         break;
     }
     return EmptyWidget();
