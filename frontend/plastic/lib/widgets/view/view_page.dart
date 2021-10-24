@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:plastic/api/view_api.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/frame.dart';
 import 'package:plastic/model/view/view.dart';
@@ -105,7 +106,21 @@ class ViewPageState extends State<ViewPage> {
                             view: widget.view,
                           ),
                         ),
-                      ).then((value) => refresh());
+                      ).then((value) {
+                        ViewApi()
+                            .getViewById(context, widget.view.id)
+                            .then((value) {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewPage(
+                                view: value.getResult,
+                              ),
+                            ),
+                          );
+                        });
+                      });
                     },
                   ),
                 ),

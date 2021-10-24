@@ -49,6 +49,34 @@ class ViewApi {
         message: response.reasonPhrase);
   }
 
+  Future<ApiGetResponse<View>> getViewById(
+      BuildContext context, String viewId) async {
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
+
+    final response =
+        await http.get(Api.getRoute(Routes.viewById) + viewId, headers: {
+      HttpHeaders.contentTypeHeader: 'application/json',
+      HttpHeaders.authorizationHeader: AccountApi().authHeader(),
+    }).timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
+    Navigator.pop(context);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
+
+    View view;
+    if (response.statusCode == 200) {
+      view = View.fromJsonMap(jsonDecode(response.body));
+    }
+
+    return ApiGetResponse<View>(
+        getResult: view,
+        successful: response.statusCode == 200,
+        message: response.reasonPhrase);
+  }
+
   Future<ApiResponse> saveView(BuildContext context, View view) async {
     showDialog(
       context: context,

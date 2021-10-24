@@ -37,10 +37,22 @@ router.post('/views/delete', auth, async (req, res) => {
 	}
 });
 
-// Get all of a User's things
+// Get all of a User's views
 router.get('/views/all', auth, async (req, res) => {
-	const things = await View.findAllByUser(req.user._id);
-	res.send(things);
+	const views = await View.findAllByUser(req.user._id);
+	res.send(views);
+});
+
+// Get a particular view
+router.get('/views/:id', auth, async (req, res) => {
+	try {
+		const view = await View.findByIdAndUser(req.params.id, req.user._id);
+		res.send(view);
+	} catch (error) {
+		res.status(400).statusMessage = error.toString();
+		res.send();
+		console.log(error);
+	}
 });
 
 module.exports = router;

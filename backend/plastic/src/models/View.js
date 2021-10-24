@@ -19,9 +19,9 @@ viewSchema.statics.findAllByUser = async (userId) => {
 	return views;
 };
 
-viewSchema.statics.findById = async (viewId) => {
+viewSchema.statics.findByIdAndUser = async (viewId, userId) => {
 
-	const view = await View.findById(viewId);
+	const view = await View.findOne({ '_id': viewId, 'userId': userId });
 	if (view) {
 		return view;
 	}
