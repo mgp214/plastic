@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:plastic/model/view/view_widgets/empty_widget.dart';
 import 'package:plastic/model/view/view_widgets/view_widget.dart';
+import 'package:plastic/utility/view_widget_serializer.dart';
 import 'package:uuid/uuid.dart';
 
 enum FrameLayout { VERTICAL, HORIZONTAL }
@@ -187,7 +188,18 @@ class Frame {
   //   return encoder.convert(tree());
   // }
   Frame.fromJson(Map<String, dynamic> json) {
-    //TODO: parse json
+    flex = json['flex'].toDouble();
+    layout = FrameLayout.values.firstWhere(
+        (e) => e.toString() == json['layout'],
+        orElse: () => FrameLayout.VERTICAL);
+    id = json['id'];
+    widget = ViewWidgetSerializer.fromJson(json['widget'], () {});
+    childFrames = List();
+    if (json['childFrames'] != null) {
+      for (var cf in json['childFrames']) {
+        childFrames.add(Frame.fromJson(cf));
+      }
+    }
   }
 
   Map<String, dynamic> toJson() {

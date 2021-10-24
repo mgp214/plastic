@@ -13,6 +13,7 @@ import 'package:plastic/widgets/account/settings_page.dart';
 import 'package:plastic/widgets/template/template_picker_page.dart';
 import 'package:plastic/widgets/thing/view_all_things_page.dart';
 import 'package:plastic/widgets/view/edit_view_page.dart';
+import 'package:plastic/widgets/view/view_picker_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'action_menu/action_menu.dart';
 import 'action_menu/action_item.dart';
@@ -114,8 +115,7 @@ class HomePageState extends State<HomePage> {
             key: GlobalKey<ActionItemState>(),
             color: Motif.title,
             icon: Icons.view_compact,
-            onPressed: () => _goToThenReload(EditViewPage(
-                view: View(root: Frame(layout: FrameLayout.VERTICAL)))),
+            onPressed: () => _goToThenReload(ViewPickerPage()),
           ),
         ],
       ),

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:plastic/model/view/view_widgets/count_widget.dart';
 import 'package:plastic/model/view/view_widgets/empty_widget.dart';
@@ -16,6 +14,7 @@ class ViewWidgetSerializer {
 
   static ViewWidget fromJson(
       Map<String, dynamic> json, VoidCallback triggerRebuild) {
+    if (json == null) return EmptyWidget();
     switch (widgetTypeMap[json['type']]) {
       case SimpleListWidget:
         return SimpleListWidget.fromJson(json, triggerRebuild);

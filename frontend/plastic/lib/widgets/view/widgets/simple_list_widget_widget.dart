@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/model/thing.dart';
 import 'package:plastic/model/view/view_widgets/simple_list_widget.dart';
 import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
@@ -22,7 +25,7 @@ class SimpleListWidgetWidget extends StatelessWidget {
           ),
         ),
       );
-    } else {
+    } else if (simpleListWidget.things is List<Thing>) {
       for (var thing in simpleListWidget.things) {
         widgets.add(
           Padding(
@@ -54,6 +57,8 @@ class SimpleListWidgetWidget extends StatelessWidget {
           ),
         );
       }
+    } else {
+      log("simpleListWidget things is null");
     }
     return widgets;
   }
