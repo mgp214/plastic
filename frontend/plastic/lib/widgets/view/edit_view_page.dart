@@ -184,6 +184,7 @@ class EditViewPageState extends State<EditViewPage> {
                 widget.view.root = f;
               }),
               isLocked: _isLocked,
+              isEditing: true,
             ),
             Positioned(
               bottom: 10 + MediaQuery.of(context).viewInsets.bottom,

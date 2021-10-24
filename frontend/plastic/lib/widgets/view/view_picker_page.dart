@@ -6,6 +6,7 @@ import 'package:plastic/model/view/view.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
 import 'package:plastic/widgets/view/edit_view_page.dart';
+import 'package:plastic/widgets/view/view_page.dart';
 
 class ViewPickerPage extends StatefulWidget {
   ViewPickerPage() : super();
@@ -62,7 +63,7 @@ class ViewPickerPageState extends State<ViewPickerPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditViewPage(
+                      builder: (context) => ViewPage(
                         view: view,
                       ),
                     ),

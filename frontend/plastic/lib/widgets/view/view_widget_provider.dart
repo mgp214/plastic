@@ -61,7 +61,7 @@ class ViewWidgetProvider {
             )),
       ];
 
-  static Widget _getEditWidgetInternal(ViewWidget viewWidget) {
+  static Widget _getWidgetInternal(ViewWidget viewWidget, bool isEditing) {
     if (viewWidget is CountWidget) {
       return CountWidgetWidget(countWidget: viewWidget);
     }
@@ -72,24 +72,27 @@ class ViewWidgetProvider {
       return LabelWidgetWidget(labelWidget: viewWidget);
     }
 
-    return Stack(
-      children: [
-        Placeholder(
-          color: Motif.title,
-        ),
-        Center(
-          child: Text(
-            'empty',
-            style: Motif.headerStyle(Sizes.Header, Motif.black),
+    if (isEditing)
+      return Stack(
+        children: [
+          Placeholder(
+            color: Motif.title,
           ),
-        ),
-      ],
-    );
+          Center(
+            child: Text(
+              'empty',
+              style: Motif.headerStyle(Sizes.Header, Motif.black),
+            ),
+          ),
+        ],
+      );
+    return Container();
   }
 
-  static Widget getEditWidget(BuildContext context, ViewFrameCard frameCard) {
+  static Widget getEditWidget(
+      BuildContext context, ViewFrameCard frameCard, bool isEditing) {
     var viewWidget = frameCard.frame.widget;
-    if (viewWidget is EmptyWidget)
+    if (viewWidget is EmptyWidget && isEditing)
       return Center(
           child: IconButton(
         icon: Icon(
@@ -105,27 +108,29 @@ class ViewWidgetProvider {
                 )),
       ));
 
-    return Stack(
-      children: [
-        _getEditWidgetInternal(viewWidget),
-        Positioned(
-          top: 5,
-          right: 5,
-          child: IconButton(
-            icon: Icon(
-              Icons.settings,
-              size: Constants.iconSize,
-              color: Motif.title,
-            ),
-            onPressed: () => showDialog(
-                context: context,
-                builder: (context) => ChoiceActionsDialog(
-                      message: null,
-                      choices: getEditParameters(context, frameCard),
-                    )),
+    var children = List<Widget>();
+    children.add(_getWidgetInternal(viewWidget, isEditing));
+    if (isEditing) {
+      children.add(Positioned(
+        top: 5,
+        right: 5,
+        child: IconButton(
+          icon: Icon(
+            Icons.settings,
+            size: Constants.iconSize,
+            color: Motif.title,
           ),
-        )
-      ],
+          onPressed: () => showDialog(
+              context: context,
+              builder: (context) => ChoiceActionsDialog(
+                    message: null,
+                    choices: getEditParameters(context, frameCard),
+                  )),
+        ),
+      ));
+    }
+    return Stack(
+      children: children,
     );
   }
 

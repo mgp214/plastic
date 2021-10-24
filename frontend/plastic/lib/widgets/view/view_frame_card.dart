@@ -16,6 +16,7 @@ FrameLayout edgeDirection(Edge edge) =>
 
 class ViewFrameCard extends StatefulWidget {
   final bool isLocked;
+  final bool isEditing;
   final Frame frame;
   final Function(bool) rebuildLayout;
   final Function(Frame) resetLayout;
@@ -25,7 +26,8 @@ class ViewFrameCard extends StatefulWidget {
       @required this.frame,
       @required this.rebuildLayout,
       @required this.resetLayout,
-      @required this.isLocked})
+      @required this.isLocked,
+      @required this.isEditing})
       : super(key: key);
 
   @override
@@ -259,6 +261,7 @@ class ViewFrameCardState extends State<ViewFrameCard> {
             rebuildLayout: widget.rebuildLayout,
             resetLayout: widget.resetLayout,
             isLocked: widget.isLocked,
+            isEditing: widget.isEditing,
           ),
         ),
       );
@@ -266,7 +269,8 @@ class ViewFrameCardState extends State<ViewFrameCard> {
     if (children.length == 0)
       children.add(
         Expanded(
-          child: ViewWidgetProvider.getEditWidget(context, widget),
+          child: ViewWidgetProvider.getEditWidget(
+              context, widget, widget.isEditing),
         ),
       );
 
