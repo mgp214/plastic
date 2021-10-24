@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:plastic/api/view_api.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/model/view/frame.dart';
 import 'package:plastic/model/view/view.dart';
+import 'package:plastic/model/view/view_widgets/empty_widget.dart';
+import 'package:plastic/model/view/view_widgets/view_widget.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
@@ -27,7 +30,24 @@ class EditViewPageState extends State<EditViewPage> {
     _isDragging = false;
     _isLocked = false;
     _nameController = TextEditingController(text: widget.view.name);
+    var widgets = _getAllWidgets(widget.view.root);
+    for (var w in widgets) {
+      w.triggerRebuild = () => setState(() {
+            _isDragging = false;
+          });
+    }
     super.initState();
+  }
+
+  List<ViewWidget> _getAllWidgets(Frame frame) {
+    var result = List<ViewWidget>();
+    if (frame.widget != null && frame.widget.runtimeType != EmptyWidget) {
+      result.add(frame.widget);
+    }
+    for (var cf in frame.childFrames) {
+      result.addAll(_getAllWidgets(cf));
+    }
+    return result;
   }
 
   Widget _getAddFrame(Color background) => Container(

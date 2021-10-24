@@ -59,6 +59,9 @@ class SimpleListWidgetWidget extends StatelessWidget {
       }
     } else {
       log("simpleListWidget things is null");
+      simpleListWidget
+          .getData()
+          .then((value) => simpleListWidget.triggerRebuild());
     }
     return widgets;
   }
