@@ -109,144 +109,130 @@ class EditViewPageState extends State<EditViewPage> {
   }
 
   @override
-  Widget build(BuildContext context) => WillPopScope(
-        child: Scaffold(
-          backgroundColor: Motif.background,
-          body: Stack(
-            children: [
-              ViewFrameCard(
-                frame: widget.view.root,
-                rebuildLayout: (isDragging) => setState(() {
-                  _isDragging = isDragging;
-                }),
-                resetLayout: (f) => setState(() {
-                  _isDragging = false;
-                  widget.view.root = f;
-                }),
-                isLocked: _isLocked,
+  Widget build(BuildContext context) {
+    var choices = List<DialogChoice>();
+    choices.add(
+      DialogTextChoice("Edit name", Motif.black, () {
+        Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (context) => WillPopScope(
+            child: Dialog(
+              child: Material(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  StringField(controller: _nameController, onChanged: null),
+                  BorderButton(
+                      color: Motif.neutral,
+                      content: "Save",
+                      onPressed: () {
+                        setState(() {
+                          widget.view.name = _nameController.text;
+                        });
+                        Navigator.pop(context);
+                      }),
+                  BorderButton(
+                      color: Motif.negative,
+                      content: "Cancel",
+                      onPressed: () {
+                        _nameController.value =
+                            TextEditingValue(text: widget.view.name ?? "");
+                        Navigator.pop(context);
+                      }),
+                ]),
               ),
-              Positioned(
-                bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
-                right: 10,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
-                      child: _getPositionedAction(),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          top: BorderSide(color: Motif.title, width: 3),
-                          bottom: BorderSide(color: Motif.title, width: 3),
-                          right: BorderSide(color: Motif.title, width: 3),
-                          left: BorderSide(color: Motif.title, width: 3),
-                        ),
-                        shape: BoxShape.circle,
-                        color: Motif.background,
-                      ),
-                      child: InkWell(
-                        child: Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Icon(
-                            Icons.menu,
-                            color: Motif.title,
-                            size: Constants.iconSize,
-                          ),
-                        ),
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) => ChoiceActionsDialog(
-                                    message: null,
-                                    choices: [
-                                      DialogTextChoice("Edit name", Motif.black,
-                                          () {
-                                        Navigator.pop(context);
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => WillPopScope(
-                                            child: Dialog(
-                                              child: Material(
-                                                child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      StringField(
-                                                          controller:
-                                                              _nameController,
-                                                          onChanged: null),
-                                                      BorderButton(
-                                                          color: Motif.neutral,
-                                                          content: "Save",
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              widget.view.name =
-                                                                  _nameController
-                                                                      .text;
-                                                            });
-                                                            Navigator.pop(
-                                                                context);
-                                                          }),
-                                                      BorderButton(
-                                                          color: Motif.negative,
-                                                          content: "Cancel",
-                                                          onPressed: () {
-                                                            _nameController
-                                                                    .value =
-                                                                TextEditingValue(
-                                                                    text: widget
-                                                                            .view
-                                                                            .name ??
-                                                                        "");
-                                                            Navigator.pop(
-                                                                context);
-                                                          }),
-                                                    ]),
-                                              ),
-                                            ),
-                                            onWillPop: () {
-                                              _nameController.value =
-                                                  TextEditingValue(
-                                                      text: widget.view.name ??
-                                                          "");
-                                              return Future.value(true);
-                                            },
-                                          ),
-                                        );
-                                      }),
-                                      DialogTextIconChoice(
-                                          "Save", Icons.save, Motif.black, () {
-                                        ViewApi()
-                                            .saveView(context, widget.view);
-                                        Navigator.pop(context);
-                                      }),
-                                      DialogTextIconChoice(
-                                          _isLocked
-                                              ? "Unlock layout"
-                                              : "Lock layout",
-                                          _isLocked
-                                              ? Icons.lock_open
-                                              : Icons.lock,
-                                          Motif.black, () {
-                                        setState(() {
-                                          _isLocked = !_isLocked;
-                                        });
-                                        Navigator.pop(context);
-                                      })
-                                    ],
-                                  ));
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+            ),
+            onWillPop: () {
+              _nameController.value =
+                  TextEditingValue(text: widget.view.name ?? "");
+              return Future.value(true);
+            },
           ),
+        );
+      }),
+    );
+    choices.add(DialogTextIconChoice("Save", Icons.save, Motif.black, () {
+      ViewApi().saveView(context, widget.view);
+      Navigator.pop(context);
+    }));
+    if (widget.view.id != null)
+      choices.add(DialogTextIconChoice("Delete", Icons.save, Motif.black, () {
+        ViewApi().deleteView(context, widget.view);
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }));
+    choices.add(DialogTextIconChoice(
+        _isLocked ? "Unlock layout" : "Lock layout",
+        _isLocked ? Icons.lock_open : Icons.lock,
+        Motif.black, () {
+      setState(() {
+        _isLocked = !_isLocked;
+      });
+      Navigator.pop(context);
+    }));
+    return WillPopScope(
+      child: Scaffold(
+        backgroundColor: Motif.background,
+        body: Stack(
+          children: [
+            ViewFrameCard(
+              frame: widget.view.root,
+              rebuildLayout: (isDragging) => setState(() {
+                _isDragging = isDragging;
+              }),
+              resetLayout: (f) => setState(() {
+                _isDragging = false;
+                widget.view.root = f;
+              }),
+              isLocked: _isLocked,
+            ),
+            Positioned(
+              bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
+              right: 10,
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: _getPositionedAction(),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(color: Motif.title, width: 3),
+                        bottom: BorderSide(color: Motif.title, width: 3),
+                        right: BorderSide(color: Motif.title, width: 3),
+                        left: BorderSide(color: Motif.title, width: 3),
+                      ),
+                      shape: BoxShape.circle,
+                      color: Motif.background,
+                    ),
+                    child: InkWell(
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Icon(
+                          Icons.menu,
+                          color: Motif.title,
+                          size: Constants.iconSize,
+                        ),
+                      ),
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) => ChoiceActionsDialog(
+                                  message: null,
+                                  choices: choices,
+                                ));
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
-        onWillPop: () {
-          return Future.value(true);
-        },
-      );
+      ),
+      onWillPop: () {
+        return Future.value(true);
+      },
+    );
+  }
 }

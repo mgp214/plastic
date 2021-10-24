@@ -20,6 +20,7 @@ enum Routes {
   viewsByUser,
   viewById,
   saveView,
+  deleteView
 }
 
 class Api {
@@ -80,6 +81,9 @@ class Api {
         break;
       case Routes.saveView:
         value = root + "views/save";
+        break;
+      case Routes.deleteView:
+        value = root + "views/delete";
         break;
     }
     return value;

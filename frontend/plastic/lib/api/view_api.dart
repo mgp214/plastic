@@ -75,4 +75,29 @@ class ViewApi {
     return ApiResponse(
         successful: response.statusCode == 200, message: response.reasonPhrase);
   }
+
+  Future<ApiResponse> deleteView(BuildContext context, View view) async {
+    showDialog(
+      context: context,
+      builder: (context) => LoadingModal(),
+    );
+
+    final response = await http
+        .post(
+          Api.getRoute(Routes.deleteView),
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json',
+            HttpHeaders.authorizationHeader: AccountApi().authHeader(),
+          },
+          body: json.encode({'id': view.id}),
+        )
+        .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
+
+    Navigator.pop(context);
+    var error = ApiException.throwErrorMessage(response.statusCode);
+    if (error != null) return Future.error(error);
+
+    return ApiResponse(
+        successful: response.statusCode == 200, message: response.reasonPhrase);
+  }
 }
