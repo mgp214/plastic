@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/model/view/frame.dart';
 import 'package:plastic/model/view/view.dart';
+import 'package:plastic/model/view/view_widgets/empty_widget.dart';
+import 'package:plastic/model/view/view_widgets/view_widget.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/view/edit_view_page.dart';
 import 'package:plastic/widgets/view/view_frame_card.dart';
@@ -17,11 +23,31 @@ class ViewPage extends StatefulWidget {
 class ViewPageState extends State<ViewPage> {
   @override
   void initState() {
+    refresh();
     super.initState();
   }
 
   void refresh() {
+    var widgets = _getAllWidgets(widget.view.root);
+    for (var w in widgets) {
+      log(jsonEncode(w.toJson()));
+      w.getData();
+      w.triggerRebuild = () {
+        setState(() {});
+      };
+    }
     setState(() {});
+  }
+
+  List<ViewWidget> _getAllWidgets(Frame frame) {
+    var result = List<ViewWidget>();
+    if (frame.widget != null && frame.widget.runtimeType != EmptyWidget) {
+      result.add(frame.widget);
+    }
+    for (var cf in frame.childFrames) {
+      result.addAll(_getAllWidgets(cf));
+    }
+    return result;
   }
 
   @override
@@ -30,15 +56,23 @@ class ViewPageState extends State<ViewPage> {
       backgroundColor: Motif.background,
       body: Stack(
         children: [
-          ViewFrameCard(
-            frame: widget.view.root,
-            rebuildLayout: (isDragging) => setState(() {}),
-            resetLayout: (f) => setState(() {
-              widget.view.root = f;
-            }),
-            isLocked: true,
-            isEditing: false,
-          ),
+          RefreshIndicator(
+              child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: Container(
+                  child: ViewFrameCard(
+                    frame: widget.view.root,
+                    rebuildLayout: (isDragging) => setState(() {}),
+                    resetLayout: (f) => setState(() {
+                      widget.view.root = f;
+                    }),
+                    isLocked: true,
+                    isEditing: false,
+                  ),
+                  height: MediaQuery.of(context).size.height,
+                ),
+              ),
+              onRefresh: () => Future(refresh)),
           Positioned(
             bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
             right: 10,
