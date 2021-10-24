@@ -187,7 +187,7 @@ class Frame {
   //   var encoder = JsonEncoder.withIndent('  ');
   //   return encoder.convert(tree());
   // }
-  Frame.fromJson(Map<String, dynamic> json) {
+  Frame.fromJson(Map<String, dynamic> json, Frame parent) {
     flex = json['flex'].toDouble();
     layout = FrameLayout.values.firstWhere(
         (e) => e.toString() == json['layout'],
@@ -195,9 +195,10 @@ class Frame {
     id = json['id'];
     widget = ViewWidgetSerializer.fromJson(json['widget'], () {});
     childFrames = List();
+    this.parent = parent;
     if (json['childFrames'] != null) {
       for (var cf in json['childFrames']) {
-        childFrames.add(Frame.fromJson(cf));
+        childFrames.add(Frame.fromJson(cf, this));
       }
     }
   }

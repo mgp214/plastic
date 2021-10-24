@@ -19,7 +19,7 @@ class View {
 
   View.fromJsonMap(Map<String, dynamic> jsonMap) {
     if (jsonMap["root"] != null) {
-      root = Frame.fromJson(jsonMap["root"]);
+      root = Frame.fromJson(jsonMap["root"], null);
       name = jsonMap["name"];
       id = jsonMap["_id"];
       userId = jsonMap["userId"];

@@ -130,7 +130,6 @@ class ViewFrameCardState extends State<ViewFrameCard> {
       else
         widget.frame.parent.childFrames.insert(index, insertee);
     } else {
-      // log('newly inserted frame $insertee added to ${widget.frame} requires proxy');
       _insertProxyFrame(widget.frame.parent, index, insertee, after);
     }
   }
@@ -140,8 +139,6 @@ class ViewFrameCardState extends State<ViewFrameCard> {
 
     widget.frame.trimFromTree(value.data);
     _insertFrame(value.data, edge);
-    // log('AFTER DRAG ACCEPT:');
-    // log(widget.frame.root.prettyPrint());
 
     widget.rebuildLayout(false);
   }

@@ -30,7 +30,6 @@ class ViewPageState extends State<ViewPage> {
   void refresh() {
     var widgets = _getAllWidgets(widget.view.root);
     for (var w in widgets) {
-      log(jsonEncode(w.toJson()));
       w.getData();
       w.triggerRebuild = () {
         setState(() {});
