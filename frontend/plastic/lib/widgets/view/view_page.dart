@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:plastic/api/view_api.dart';
 import 'package:plastic/model/motif.dart';

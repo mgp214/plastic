@@ -29,6 +29,7 @@ class ThingConditionWidget extends StatefulWidget {
 
 class ThingConditionWidgetState extends State<ThingConditionWidget> {
   ThingCondition _rootCopy;
+  TextEditingController _valueController = TextEditingController(text: "value");
 
   Map<String, ThingCondition> _availableConditions = {
     "Group (all / any / none)":
@@ -54,198 +55,239 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
   Widget getWidgetPicker(ConditionOperator parent) =>
       ChoiceActionsDialog(message: null, choices: _getConditionChoices(parent));
 
-  Widget _getDraggable() {
-    if (widget.condition is ConditionOperator) {
-      var conditionAsOperator = widget.condition as ConditionOperator;
-      var children = List<Widget>();
-      for (var operand in conditionAsOperator.operands) {
-        children.add(ThingConditionWidget(
-          condition: operand,
-          resetLayout: widget.resetLayout,
-          rebuildLayout: widget.rebuildLayout,
-        ));
-      }
-      if (children.length == 0)
-        children.add(Text("no conditions yet",
-            style: Motif.contentStyle(
-              Sizes.Content,
-              Motif.lightBackground,
-            )));
-      return DragTarget(
-        onWillAccept: (data) => widget.condition is ConditionOperator,
-        onAccept: (data) {
-          if (data == null) {
-            showDialog(
-                    context: context,
-                    builder: (context) => getWidgetPicker(widget.condition))
-                .then((val) => widget.rebuildLayout(false));
-          }
-          if (data is ThingCondition) {
-            (widget.condition as ConditionOperator).operands.add(data);
-            data.parent?.operands?.remove(data);
-            data.parent = widget.condition;
-            widget.rebuildLayout(false);
-          }
-        },
-        builder: (context, candidateList, rejectedData) {
-          var contents = Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: DropdownButton<OPERATOR>(
-                  value: conditionAsOperator.operation,
-                  items: OPERATOR.values
-                      .map(
-                        (o) => DropdownMenuItem(
-                          child: Text(
-                            ConditionOperator.getFriendlyString(o),
-                          ),
-                          value: o,
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (newOperator) => setState(() {
-                    conditionAsOperator.operation = newOperator;
-                  }),
-                ),
-              ),
-              IntrinsicHeight(
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    VerticalDivider(
-                      thickness: 3,
-                      color: ConditionOperator.getColor(
-                          conditionAsOperator.operation),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisSize: MainAxisSize.max,
-                        children: children
-                            .map((c) => Row(
-                                  children: [c],
-                                ))
-                            .toList(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-          BorderSide border;
-          if (candidateList.length > 0)
-            border = BorderSide(color: Colors.green, width: 4);
-          else
-            border = BorderSide(color: Colors.transparent, width: 4);
-          return Container(
-            decoration: BoxDecoration(
-              border: Border(
-                  bottom: border, top: border, left: border, right: border),
+  List<Widget> _getFieldTypeComparisons(FieldType fieldType) {
+    var comparisions = List<ValueComparison>();
+    comparisions.add(ValueComparison.E);
+    switch (fieldType) {
+      case FieldType.STRING:
+        comparisions.add(ValueComparison.STR_CONTAINS);
+        continue numbers;
+      numbers:
+      case FieldType.INT:
+      case FieldType.DOUBLE:
+        comparisions.add(ValueComparison.LT);
+        comparisions.add(ValueComparison.LTE);
+        comparisions.add(ValueComparison.GT);
+        comparisions.add(ValueComparison.GTE);
+        break;
+      case FieldType.ENUM:
+        // TODO: Handle this case.
+        break;
+      case FieldType.BOOL:
+        break;
+    }
+
+    return comparisions
+        .map(
+          (o) => DropdownMenuItem(
+            child: Text(
+              ValueCondition.getFriendlyName(o),
             ),
-            child: contents,
-          );
-        },
-      );
-    } else if (widget.condition is TemplateCondition) {
-      var conditionAsTemplate = widget.condition as TemplateCondition;
-      List<Widget> children = List();
-      children.add(Text(
-        "Template is one of the following:",
-        style: Motif.contentStyle(Sizes.Content, Motif.black),
-      ));
+            value: o,
+          ),
+        )
+        .toList();
+  }
 
-      for (var template in TemplateManager().getAllTemplates()) {
-        children.add(CheckboxField(
-          label: template.name,
-          value: conditionAsTemplate.templates.contains(template),
-          onChanged: (value) {
-            if (value) {
-              setState(() {
-                conditionAsTemplate.templates.add(template);
-              });
-            } else {
-              setState(() {
-                conditionAsTemplate.templates
-                    .removeWhere((t) => t.id == template.id);
-              });
-            }
-          },
-        ));
-      }
+  Widget _getConditionOperatorDraggable() {
+    var conditionAsOperator = widget.condition as ConditionOperator;
+    var children = List<Widget>();
+    for (var operand in conditionAsOperator.operands) {
+      children.add(ThingConditionWidget(
+        condition: operand,
+        resetLayout: widget.resetLayout,
+        rebuildLayout: widget.rebuildLayout,
+      ));
+    }
+    if (children.length == 0)
+      children.add(Text("no conditions yet",
+          style: Motif.contentStyle(
+            Sizes.Content,
+            Motif.lightBackground,
+          )));
+    return DragTarget(
+      onWillAccept: (data) => widget.condition is ConditionOperator,
+      onAccept: (data) {
+        if (data == null) {
+          showDialog(
+                  context: context,
+                  builder: (context) => getWidgetPicker(widget.condition))
+              .then((val) => widget.rebuildLayout(false));
+        }
+        if (data is ThingCondition) {
+          (widget.condition as ConditionOperator).operands.add(data);
+          data.parent?.operands?.remove(data);
+          data.parent = widget.condition;
+          widget.rebuildLayout(false);
+        }
+      },
+      builder: (context, candidateList, rejectedData) {
+        var contents = Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: DropdownButton<OPERATOR>(
+                value: conditionAsOperator.operation,
+                items: OPERATOR.values
+                    .map(
+                      (o) => DropdownMenuItem(
+                        child: Text(
+                          ConditionOperator.getFriendlyString(o),
+                        ),
+                        value: o,
+                      ),
+                    )
+                    .toList(),
+                onChanged: (newOperator) => setState(() {
+                  conditionAsOperator.operation = newOperator;
+                }),
+              ),
+            ),
+            IntrinsicHeight(
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  VerticalDivider(
+                    thickness: 3,
+                    color: ConditionOperator.getColor(
+                        conditionAsOperator.operation),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.max,
+                      children: children
+                          .map((c) => Row(
+                                children: [c],
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+        BorderSide border;
+        if (candidateList.length > 0)
+          border = BorderSide(color: Colors.green, width: 4);
+        else
+          border = BorderSide(color: Colors.transparent, width: 4);
+        return Container(
+          decoration: BoxDecoration(
+            border: Border(
+                bottom: border, top: border, left: border, right: border),
+          ),
+          child: contents,
+        );
+      },
+    );
+  }
 
-      return Card(
-        child: Column(
-          children: children,
-        ),
-      );
-    } else if (widget.condition is ValueCondition) {
-      var conditionAsValue = widget.condition as ValueCondition;
-      List<Widget> children = List();
-      children.add(Text(
-        "Has a ",
-        style: Motif.contentStyle(Sizes.Label, Motif.black),
-      ));
-      children.add(
-        DropdownButton<FieldType>(
-          value: conditionAsValue.fieldType,
-          items: FieldType.values
-              .map(
-                (o) => DropdownMenuItem(
-                  child: Text(
-                    TemplateField.getFriendlyName(o),
-                  ),
-                  value: o,
-                ),
-              )
-              .toList(),
-          onChanged: (newFieldType) => setState(() {
-            conditionAsValue.fieldType = newFieldType;
-          }),
-        ),
-      );
-      children.add(Text(
-        " field that's value ",
-        style: Motif.contentStyle(Sizes.Label, Motif.black),
-      ));
-      children.add(
-        DropdownButton<ValueComparison>(
-          value: conditionAsValue.comparison,
-          items: ValueComparison.values
-              .map(
-                (o) => DropdownMenuItem(
-                  child: Text(
-                    ValueCondition.getFriendlyName(o),
-                  ),
-                  value: o,
-                ),
-              )
-              .toList(),
-          onChanged: (newValueComparison) => setState(() {
-            conditionAsValue.comparison = newValueComparison;
-          }),
-        ),
-      );
-      children.add(
-        StringField(
-          controller: TextEditingController(text: conditionAsValue.value),
-          onChanged: (newValue) {
+  Widget _getTemplateConditionDraggable() {
+    var conditionAsTemplate = widget.condition as TemplateCondition;
+    List<Widget> children = List();
+    children.add(Text(
+      "Template is one of the following:",
+      style: Motif.contentStyle(Sizes.Content, Motif.black),
+    ));
+
+    for (var template in TemplateManager().getAllTemplates()) {
+      children.add(CheckboxField(
+        label: template.name,
+        value: conditionAsTemplate.templates.contains(template),
+        onChanged: (value) {
+          if (value) {
             setState(() {
-              conditionAsValue.value = newValue;
+              conditionAsTemplate.templates.add(template);
             });
-          },
-        ),
-      );
-      return Card(
+          } else {
+            setState(() {
+              conditionAsTemplate.templates
+                  .removeWhere((t) => t.id == template.id);
+            });
+          }
+        },
+      ));
+    }
+
+    return Card(
+      child: Column(
+        children: children,
+      ),
+    );
+  }
+
+  Widget _getValueConditionDraggable() {
+    var conditionAsValue = widget.condition as ValueCondition;
+    List<Widget> children = List();
+    children.add(Text(
+      "Has a ",
+      style: Motif.contentStyle(Sizes.Label, Motif.black),
+    ));
+    children.add(
+      DropdownButton<FieldType>(
+        value: conditionAsValue.fieldType,
+        items: FieldType.values
+            .map(
+              (o) => DropdownMenuItem(
+                child: Text(
+                  TemplateField.getFriendlyName(o),
+                ),
+                value: o,
+              ),
+            )
+            .toList(),
+        onChanged: (newFieldType) => setState(() {
+          conditionAsValue.fieldType = newFieldType;
+        }),
+      ),
+    );
+    children.add(Text(
+      " field that's value ",
+      style: Motif.contentStyle(Sizes.Label, Motif.black),
+    ));
+    children.add(
+      DropdownButton<ValueComparison>(
+        value: conditionAsValue.comparison,
+        items: _getFieldTypeComparisons(conditionAsValue.fieldType),
+        onChanged: (newValueComparison) => setState(() {
+          conditionAsValue.comparison = newValueComparison;
+        }),
+      ),
+    );
+    children.add(
+      StringField(
+        controller: _valueController,
+        onChanged: (newValue) {
+          setState(() {
+            conditionAsValue.value = newValue;
+          });
+        },
+      ),
+    );
+    return IntrinsicHeight(
+      child: Card(
         child: Wrap(
           children: children,
         ),
-      );
+      ),
+    );
+  }
+
+  Widget _getDraggable() {
+    if (widget.condition is ConditionOperator) {
+      return _getConditionOperatorDraggable();
+    } else if (widget.condition is TemplateCondition) {
+      return _getTemplateConditionDraggable();
+    } else if (widget.condition is ValueCondition) {
+      return _getValueConditionDraggable();
     }
 
-    return Placeholder();
+    return Placeholder(
+      color: Color.fromARGB(255, 255, 0, 0),
+    );
   }
 
   @override
