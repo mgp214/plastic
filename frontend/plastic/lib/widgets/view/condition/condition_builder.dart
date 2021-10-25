@@ -92,9 +92,7 @@ class ConditionBuilderState extends State<ConditionBuilder> {
   @override
   Widget build(BuildContext context) => WillPopScope(
         onWillPop: () {
-          log(jsonEncode(condition.toJson()));
           widget.conditionUpdate(condition.clean());
-          log(jsonEncode(condition.clean().toJson()));
           return Future.value(true);
         },
         child: Scaffold(
