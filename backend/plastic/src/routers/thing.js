@@ -102,6 +102,35 @@ function getFindParams(condition) {
 	if (condition['type'] == 'template') {
 		return { templateId: condition['value'] };
 	}
+	if (condition['type'] == 'value') {
+		var value = condition['value'];
+		switch (condition['fieldType']) {
+			case 'FieldType.BOOL':
+				value = value == 'true';
+				break;
+			case 'FieldType.INT':
+				value = parseInt(value);
+				break;
+			case 'FieldType.DOUBLE':
+				value = parseFloat(value);
+				break;
+		}
+		switch (condition['comparison']) {
+			case 'ValueComparison.E':
+				return { 'fields.name': condition['fieldName'], 'fields.value': value };
+			case 'ValueComparison.GT':
+				return { 'fields.name': condition['fieldName'], 'fields.value': { $gt: value } };
+			case 'ValueComparison.GTE':
+				return { 'fields.name': condition['fieldName'], 'fields.value': { $gte: value } };
+			case 'ValueComparison.LT':
+				return { 'fields.name': condition['fieldName'], 'fields.value': { $lt: value } };
+			case 'ValueComparison.LTE':
+				return { 'fields.name': condition['fieldName'], 'fields.value': { $lte: value } };
+			case 'ValueComparison.STR_CONTAINS':
+				return { 'fields.name': condition['fieldName'], 'fields.value': { $regex: value, $options: 'i' } };
+		}
+
+	}
 }
 
 router.post('/things/matching', auth, async (req, res) => {

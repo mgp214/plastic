@@ -9,6 +9,8 @@ import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/input/checkbox_field.dart';
+import 'package:plastic/widgets/components/input/double_field.dart';
+import 'package:plastic/widgets/components/input/int_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
 
 class ThingConditionWidget extends StatefulWidget {
@@ -24,12 +26,21 @@ class ThingConditionWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => ThingConditionWidgetState();
+  State<StatefulWidget> createState() => ThingConditionWidgetState(condition);
 }
 
 class ThingConditionWidgetState extends State<ThingConditionWidget> {
   ThingCondition _rootCopy;
-  TextEditingController _valueController = TextEditingController(text: "value");
+  TextEditingController _valueController;
+  TextEditingController _nameController;
+
+  ThingConditionWidgetState(ThingCondition condition) {
+    if (condition is ValueCondition) {
+      var vc = condition;
+      _valueController = TextEditingController(text: vc.value);
+      _nameController = TextEditingController(text: vc.fieldName);
+    }
+  }
 
   Map<String, ThingCondition> _availableConditions = {
     "Group (all / any / none)":
@@ -219,6 +230,26 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
     );
   }
 
+  String _getFieldTypeDefaultValue(FieldType fieldType) {
+    switch (fieldType) {
+      case FieldType.STRING:
+        return 'value';
+        break;
+      case FieldType.INT:
+        return '0';
+        break;
+      case FieldType.DOUBLE:
+        return '0.0';
+        break;
+      case FieldType.ENUM:
+        // TODO: Handle this case.
+        break;
+      case FieldType.BOOL:
+        return 'false';
+        break;
+    }
+  }
+
   Widget _getValueConditionDraggable() {
     var conditionAsValue = widget.condition as ValueCondition;
     List<Widget> children = List();
@@ -241,11 +272,25 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
             .toList(),
         onChanged: (newFieldType) => setState(() {
           conditionAsValue.fieldType = newFieldType;
+          conditionAsValue.value = _getFieldTypeDefaultValue(newFieldType);
+          _valueController.text = _getFieldTypeDefaultValue(newFieldType);
         }),
       ),
     );
     children.add(Text(
-      " field that's value ",
+      " field with name ",
+      style: Motif.contentStyle(Sizes.Label, Motif.black),
+    ));
+    children.add(StringField(
+      controller: _nameController,
+      onChanged: (newValue) {
+        setState(() {
+          conditionAsValue.fieldName = newValue;
+        });
+      },
+    ));
+    children.add(Text(
+      " with value ",
       style: Motif.contentStyle(Sizes.Label, Motif.black),
     ));
     children.add(
@@ -257,16 +302,57 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         }),
       ),
     );
-    children.add(
-      StringField(
-        controller: _valueController,
-        onChanged: (newValue) {
-          setState(() {
-            conditionAsValue.value = newValue;
-          });
-        },
-      ),
-    );
+    switch (conditionAsValue.fieldType) {
+      case FieldType.STRING:
+        children.add(
+          StringField(
+            controller: _valueController,
+            onChanged: (newValue) {
+              setState(() {
+                conditionAsValue.value = newValue;
+              });
+            },
+          ),
+        );
+        break;
+      case FieldType.INT:
+        children.add(
+          IntField(
+            controller: _valueController,
+            onChanged: (newValue) {
+              setState(() {
+                conditionAsValue.value = newValue;
+              });
+            },
+          ),
+        );
+        break;
+      case FieldType.DOUBLE:
+        children.add(
+          DoubleField(
+            controller: _valueController,
+            onChanged: (newValue) {
+              setState(() {
+                conditionAsValue.value = newValue;
+              });
+            },
+          ),
+        );
+        break;
+      case FieldType.ENUM:
+        // TODO: Handle this case.
+        break;
+      case FieldType.BOOL:
+        children.add(Checkbox(
+            value: conditionAsValue.value == 'true',
+            onChanged: (newValue) {
+              setState(() {
+                conditionAsValue.value = newValue ? 'true' : 'false';
+              });
+            }));
+        break;
+    }
+
     return IntrinsicHeight(
       child: Card(
         child: Wrap(
