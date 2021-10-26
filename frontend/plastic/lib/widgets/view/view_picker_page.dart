@@ -5,6 +5,7 @@ import 'package:plastic/model/view/frame.dart';
 import 'package:plastic/model/view/view.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:plastic/widgets/components/splash_list_tile.dart';
+import 'package:plastic/widgets/view/all_things_view.dart';
 import 'package:plastic/widgets/view/edit_view_page.dart';
 import 'package:plastic/widgets/view/view_page.dart';
 
@@ -79,6 +80,27 @@ class ViewPickerPageState extends State<ViewPickerPage> {
           ),
         )
         .toList();
+    children.add(Padding(
+      padding: EdgeInsets.symmetric(horizontal: 3),
+      child: Card(
+        elevation: 5,
+        color: Motif.lightBackground,
+        child: SplashListTile(
+          color: Motif.title,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AllThingsView()),
+            ).then((value) => _loadViewsAndRefresh());
+          },
+          child: Text("List of everything",
+              style: Motif.contentStyle(
+                Sizes.Action,
+                Motif.black,
+              )),
+        ),
+      ),
+    ));
     children.add(
       BorderButton(
         content: "Create a new view",
