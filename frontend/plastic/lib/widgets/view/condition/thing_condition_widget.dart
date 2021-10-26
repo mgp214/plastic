@@ -254,47 +254,104 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
   Widget _getValueConditionDraggable() {
     var conditionAsValue = widget.condition as ValueCondition;
     List<Widget> children = List();
-    children.add(Text(
-      "Has a ",
-      style: Motif.contentStyle(Sizes.Label, Motif.black),
-    ));
-    children.add(
-      DropdownButton<FieldType>(
-        value: conditionAsValue.fieldType,
-        items: FieldType.values
-            .map(
-              (o) => DropdownMenuItem(
-                child: Text(
-                  TemplateField.getFriendlyName(o),
+    var row = Row(
+      children: [
+        Text(
+          "Has a ",
+          style: Motif.contentStyle(Sizes.Label, Motif.black),
+        ),
+        DropdownButton<FieldType>(
+          value: conditionAsValue.fieldType,
+          items: FieldType.values
+              .map(
+                (o) => DropdownMenuItem(
+                  child: Text(
+                    TemplateField.getFriendlyName(o),
+                  ),
+                  value: o,
                 ),
-                value: o,
-              ),
-            )
-            .toList(),
-        onChanged: (newFieldType) => setState(() {
-          conditionAsValue.fieldType = newFieldType;
-          conditionAsValue.value = _getFieldTypeDefaultValue(newFieldType);
-          _valueController.text = _getFieldTypeDefaultValue(newFieldType);
-        }),
-      ),
+              )
+              .toList(),
+          onChanged: (newFieldType) => setState(() {
+            conditionAsValue.fieldType = newFieldType;
+            conditionAsValue.value = _getFieldTypeDefaultValue(newFieldType);
+            _valueController.text = _getFieldTypeDefaultValue(newFieldType);
+          }),
+        ),
+        Text(
+          " field",
+          style: Motif.contentStyle(Sizes.Label, Motif.black),
+        ),
+      ],
     );
-    children.add(Text(
-      " field with name ",
-      style: Motif.contentStyle(Sizes.Label, Motif.black),
-    ));
-    children.add(StringField(
-      controller: _nameController,
-      onChanged: (newValue) {
-        setState(() {
-          conditionAsValue.fieldName = newValue;
-        });
-      },
-    ));
-    children.add(Text(
-      " with value ",
-      style: Motif.contentStyle(Sizes.Label, Motif.black),
-    ));
-    children.add(
+    children.add(row);
+    row = Row(
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      children: [
+        Text(
+          "with name ",
+          style: Motif.contentStyle(Sizes.Label, Motif.black),
+        ),
+        Expanded(
+          child: StringField(
+            controller: _nameController,
+            onChanged: (newValue) {
+              setState(() {
+                conditionAsValue.fieldName = newValue;
+              });
+            },
+            style: Motif.contentStyle(Sizes.Label, Motif.black),
+          ),
+        ),
+      ],
+    );
+    children.add(row);
+    // children.add
+    // children.add(Text(
+    //   "Has a ",
+    //   style: Motif.contentStyle(Sizes.Label, Motif.black),
+    // ));
+    // children.add(
+    //   DropdownButton<FieldType>(
+    //     value: conditionAsValue.fieldType,
+    //     items: FieldType.values
+    //         .map(
+    //           (o) => DropdownMenuItem(
+    //             child: Text(
+    //               TemplateField.getFriendlyName(o),
+    //             ),
+    //             value: o,
+    //           ),
+    //         )
+    //         .toList(),
+    //     onChanged: (newFieldType) => setState(() {
+    //       conditionAsValue.fieldType = newFieldType;
+    //       conditionAsValue.value = _getFieldTypeDefaultValue(newFieldType);
+    //       _valueController.text = _getFieldTypeDefaultValue(newFieldType);
+    //     }),
+    //   ),
+    // );
+    // children.add(Text(
+    //   " with name ",
+    //   style: Motif.contentStyle(Sizes.Label, Motif.black),
+    // ));
+    // children.add(StringField(
+    //   controller: _nameController,
+    //   onChanged: (newValue) {
+    //     setState(() {
+    //       conditionAsValue.fieldName = newValue;
+    //     });
+    //   },
+    //   style: Motif.contentStyle(Sizes.Content, Motif.black),
+    //   labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
+    //   label: 'with name',
+    // ));
+    row = Row(children: [
+      Text(
+        "whose value  ",
+        textAlign: TextAlign.center,
+        style: Motif.contentStyle(Sizes.Label, Motif.black),
+      ),
       DropdownButton<ValueComparison>(
         value: conditionAsValue.comparison,
         items: _getFieldTypeComparisons(conditionAsValue.fieldType),
@@ -302,7 +359,22 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
           conditionAsValue.comparison = newValueComparison;
         }),
       ),
-    );
+    ]);
+    children.add(row);
+    // children.add(Text(
+    //   " whose value ",
+    //   textAlign: TextAlign.center,
+    //   style: Motif.contentStyle(Sizes.Label, Motif.black),
+    // ));
+    // children.add(
+    //   DropdownButton<ValueComparison>(
+    //     value: conditionAsValue.comparison,
+    //     items: _getFieldTypeComparisons(conditionAsValue.fieldType),
+    //     onChanged: (newValueComparison) => setState(() {
+    //       conditionAsValue.comparison = newValueComparison;
+    //     }),
+    //   ),
+    // );
     switch (conditionAsValue.fieldType) {
       case FieldType.STRING:
         children.add(
@@ -313,6 +385,8 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
                 conditionAsValue.value = newValue;
               });
             },
+            labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
+            label: "value",
           ),
         );
         break;
@@ -325,6 +399,8 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
                 conditionAsValue.value = newValue;
               });
             },
+            labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
+            label: "value",
           ),
         );
         break;
@@ -337,6 +413,8 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
                 conditionAsValue.value = newValue;
               });
             },
+            labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
+            label: "value",
           ),
         );
         break;
@@ -344,19 +422,24 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         // TODO: Handle this case.
         break;
       case FieldType.BOOL:
-        children.add(Checkbox(
+        children.add(
+          Checkbox(
             value: conditionAsValue.value == 'true',
             onChanged: (newValue) {
               setState(() {
                 conditionAsValue.value = newValue ? 'true' : 'false';
               });
-            }));
+            },
+          ),
+        );
         break;
     }
 
     return IntrinsicHeight(
       child: Card(
-        child: Wrap(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: children,
         ),
       ),
