@@ -306,46 +306,6 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
       ],
     );
     children.add(row);
-    // children.add
-    // children.add(Text(
-    //   "Has a ",
-    //   style: Motif.contentStyle(Sizes.Label, Motif.black),
-    // ));
-    // children.add(
-    //   DropdownButton<FieldType>(
-    //     value: conditionAsValue.fieldType,
-    //     items: FieldType.values
-    //         .map(
-    //           (o) => DropdownMenuItem(
-    //             child: Text(
-    //               TemplateField.getFriendlyName(o),
-    //             ),
-    //             value: o,
-    //           ),
-    //         )
-    //         .toList(),
-    //     onChanged: (newFieldType) => setState(() {
-    //       conditionAsValue.fieldType = newFieldType;
-    //       conditionAsValue.value = _getFieldTypeDefaultValue(newFieldType);
-    //       _valueController.text = _getFieldTypeDefaultValue(newFieldType);
-    //     }),
-    //   ),
-    // );
-    // children.add(Text(
-    //   " with name ",
-    //   style: Motif.contentStyle(Sizes.Label, Motif.black),
-    // ));
-    // children.add(StringField(
-    //   controller: _nameController,
-    //   onChanged: (newValue) {
-    //     setState(() {
-    //       conditionAsValue.fieldName = newValue;
-    //     });
-    //   },
-    //   style: Motif.contentStyle(Sizes.Content, Motif.black),
-    //   labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
-    //   label: 'with name',
-    // ));
     row = Row(children: [
       Text(
         "whose value  ",
@@ -361,20 +321,6 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
       ),
     ]);
     children.add(row);
-    // children.add(Text(
-    //   " whose value ",
-    //   textAlign: TextAlign.center,
-    //   style: Motif.contentStyle(Sizes.Label, Motif.black),
-    // ));
-    // children.add(
-    //   DropdownButton<ValueComparison>(
-    //     value: conditionAsValue.comparison,
-    //     items: _getFieldTypeComparisons(conditionAsValue.fieldType),
-    //     onChanged: (newValueComparison) => setState(() {
-    //       conditionAsValue.comparison = newValueComparison;
-    //     }),
-    //   ),
-    // );
     switch (conditionAsValue.fieldType) {
       case FieldType.STRING:
         children.add(
@@ -462,7 +408,7 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: Draggable(
+        child: LongPressDraggable(
           maxSimultaneousDrags: widget.condition.parent == null ? 0 : 1,
           child: _getDraggable(),
           feedback: Placeholder(
