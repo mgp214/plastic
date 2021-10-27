@@ -1,9 +1,11 @@
+import 'dart:developer' as dev;
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/action_menu/action_item.dart';
 import 'package:vector_math/vector_math.dart';
-import 'dart:math';
 
 class ActionMenu extends StatefulWidget {
   final VoidCallback onAdd;
@@ -34,6 +36,9 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
       var typeCastKey = key as GlobalKey<ActionItemState>;
       if (typeCastKey != null) {
         if (_isExpanded) {
+          dev.log(key.toString());
+          dev.log(typeCastKey.toString());
+          dev.log(typeCastKey.currentState.toString());
           // typeCastKey.currentState.display(0, 75);
           typeCastKey.currentState.display(positions[key].x, positions[key].y);
         } else {
