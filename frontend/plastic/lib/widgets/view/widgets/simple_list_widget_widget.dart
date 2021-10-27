@@ -44,7 +44,7 @@ class SimpleListWidgetWidget extends StatelessWidget {
                       thing: thing,
                     ),
                   ),
-                ).then((val) => simpleListWidget.triggerRebuild()),
+                ).then((val) => simpleListWidget.getData()),
                 child: Text(
                   thing.getMainField().value ?? "???",
                   style: Motif.contentStyle(

@@ -133,9 +133,10 @@ class EditThingPageState extends State<EditThingPage> {
             .saveThing(context, widget.thing)
             .then((response) {
           if (response.successful) {
-            Navigator.popUntil(context, ModalRoute.withName('home'));
+            Navigator.pop(context);
             String message;
             if (!isExistingThing) {
+              Navigator.pop(context);
               message = 'your new ${widget.template.name} has been created.';
             } else {
               message = 'your ${widget.template.name} has been updated.';
@@ -166,7 +167,7 @@ class EditThingPageState extends State<EditThingPage> {
             if (response.successful) {
               String message =
                   '${widget.thing.getMainField().value} has been deleted.';
-              Navigator.popUntil(context, ModalRoute.withName('home'));
+              Navigator.pop(context);
               Notifier.notify(
                 context,
                 message: message,
