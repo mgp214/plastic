@@ -54,115 +54,117 @@ class ViewPageState extends State<ViewPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Motif.background,
-      body: Stack(
-        children: [
-          Container(
-            child: ViewFrameCard(
-              frame: widget.view.root,
-              rebuildLayout: (isDragging) => setState(() {}),
-              resetLayout: (f) => setState(() {
-                widget.view.root = f;
-              }),
-              isLocked: true,
-              isEditing: false,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Container(
+              child: ViewFrameCard(
+                frame: widget.view.root,
+                rebuildLayout: (isDragging) => setState(() {}),
+                resetLayout: (f) => setState(() {
+                  widget.view.root = f;
+                }),
+                isLocked: true,
+                isEditing: false,
+              ),
+              height: MediaQuery.of(context).size.height,
             ),
-            height: MediaQuery.of(context).size.height,
-          ),
-          Positioned(
-            bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
-            right: 10,
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: Motif.title, width: 3),
-                      bottom: BorderSide(color: Motif.title, width: 3),
-                      right: BorderSide(color: Motif.title, width: 3),
-                      left: BorderSide(color: Motif.title, width: 3),
-                    ),
-                    shape: BoxShape.circle,
-                    color: Motif.background,
-                  ),
-                  child: InkWell(
-                    child: Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Icon(
-                        Icons.edit,
-                        color: Motif.title,
-                        size: Constants.iconSize,
+            Positioned(
+              bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
+              right: 10,
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(color: Motif.title, width: 3),
+                        bottom: BorderSide(color: Motif.title, width: 3),
+                        right: BorderSide(color: Motif.title, width: 3),
+                        left: BorderSide(color: Motif.title, width: 3),
                       ),
+                      shape: BoxShape.circle,
+                      color: Motif.background,
                     ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditViewPage(
-                            view: widget.view,
-                          ),
-                        ),
-                      ).then((value) {
-                        ViewApi()
-                            .getViewById(context, widget.view.id)
-                            .then((value) {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ViewPage(
-                                view: value.getResult,
-                              ),
-                            ),
-                          );
-                        });
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            top: 10,
-            right: 10,
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: Motif.title, width: 3),
-                      bottom: BorderSide(color: Motif.title, width: 3),
-                      right: BorderSide(color: Motif.title, width: 3),
-                      left: BorderSide(color: Motif.title, width: 3),
-                    ),
-                    shape: BoxShape.circle,
-                    color: Motif.background,
-                  ),
-                  child: InkWell(
-                    child: Padding(
-                      padding: EdgeInsets.all(5),
-                      child: RotationTransition(
-                        turns: Tween(begin: 0.0, end: 1.0)
-                            .animate(_refreshAnimationController),
+                    child: InkWell(
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
                         child: Icon(
-                          Icons.refresh,
+                          Icons.edit,
                           color: Motif.title,
                           size: Constants.iconSize,
                         ),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditViewPage(
+                              view: widget.view,
+                            ),
+                          ),
+                        ).then((value) {
+                          ViewApi()
+                              .getViewById(context, widget.view.id)
+                              .then((value) {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewPage(
+                                  view: value.getResult,
+                                ),
+                              ),
+                            );
+                          });
+                        });
+                      },
                     ),
-                    onTap: () {
-                      _refreshAnimationController.forward().then((value) {
-                        _refreshAnimationController.reset();
-                      });
-                      refresh();
-                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          )
-        ],
+            Positioned(
+              top: 10,
+              right: 10,
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(color: Motif.title, width: 3),
+                        bottom: BorderSide(color: Motif.title, width: 3),
+                        right: BorderSide(color: Motif.title, width: 3),
+                        left: BorderSide(color: Motif.title, width: 3),
+                      ),
+                      shape: BoxShape.circle,
+                      color: Motif.background,
+                    ),
+                    child: InkWell(
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: RotationTransition(
+                          turns: Tween(begin: 0.0, end: 1.0)
+                              .animate(_refreshAnimationController),
+                          child: Icon(
+                            Icons.refresh,
+                            color: Motif.title,
+                            size: Constants.iconSize,
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        _refreshAnimationController.forward().then((value) {
+                          _refreshAnimationController.reset();
+                        });
+                        refresh();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
