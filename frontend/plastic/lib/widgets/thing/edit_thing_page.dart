@@ -106,20 +106,6 @@ class EditThingPageState extends State<EditThingPage> {
           value: field.value,
           choices: templateField.choices,
         );
-        // return DropdownButton<String>(
-        //     value: field.value,
-        //     hint: Text(field.name),
-        //     items: templateField.choices
-        //         .map((e) => DropdownMenuItem(
-        //               child: Text(e),
-        //               value: e,
-        //             ))
-        //         .toList(),
-        //     onChanged: (value) {
-        //       setState(() {
-        //         field.value = value;
-        //       });
-        //     });
         break;
       case FieldType.BOOL:
         return CheckboxField(

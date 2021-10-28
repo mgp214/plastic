@@ -72,18 +72,15 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
     comparisions.add(ValueComparison.E);
     switch (fieldType) {
       case FieldType.STRING:
-        comparisions.add(ValueComparison.STR_CONTAINS);
-        continue numbers;
-      numbers:
       case FieldType.INT:
       case FieldType.DOUBLE:
+      case FieldType.ENUM:
+        comparisions.add(ValueComparison.STR_CONTAINS);
         comparisions.add(ValueComparison.LT);
         comparisions.add(ValueComparison.LTE);
         comparisions.add(ValueComparison.GT);
         comparisions.add(ValueComparison.GTE);
         break;
-      case FieldType.ENUM:
-        // TODO: Handle this case.
         break;
       case FieldType.BOOL:
         break;
@@ -243,7 +240,7 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         return '0.0';
         break;
       case FieldType.ENUM:
-        // TODO: Handle this case.
+        return 'value';
         break;
       case FieldType.BOOL:
         return 'false';
@@ -365,7 +362,18 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         );
         break;
       case FieldType.ENUM:
-        // TODO: Handle this case.
+        children.add(
+          StringField(
+            controller: _valueController,
+            onChanged: (newValue) {
+              setState(() {
+                conditionAsValue.value = newValue;
+              });
+            },
+            labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
+            label: "value",
+          ),
+        );
         break;
       case FieldType.BOOL:
         children.add(
