@@ -16,13 +16,15 @@ async function validateAgainstTemplate(thing) {
 		for (var thingField of thing.toBSON().fields) {
 			matchingCount += thingField._id.toString() == templateField._id.toString() ? 1 : 0;
 		}
-		// thing.fields.toBSON().reduce(
-		// 	(matchingCount, currentField) => matchingCount += (currentField._id == templateField._id ? 1 : 0));
+
 		if (matchingCount != 1) return false;
 		var matchingIndex = thing.fields.toBSON().findIndex(f => f._id.toString() == templateField._id.toString());
 		if (matchingIndex == -1) return false;
 		var matchingField = thing.fields.toBSON()[matchingIndex];
 		if (matchingField.name != templateField.name) return false;
+		if (templateField.fieldType == 'ENUM') {
+			if (matchingField.value != null && templateField.choices.findIndex(c => c == matchingField.value) == -1) return false;
+		}
 	}
 
 	// finally, make sure that there aren't any extra fields in the thing.
