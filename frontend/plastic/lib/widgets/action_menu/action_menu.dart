@@ -36,10 +36,6 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
       var typeCastKey = key as GlobalKey<ActionItemState>;
       if (typeCastKey != null) {
         if (_isExpanded) {
-          dev.log(key.toString());
-          dev.log(typeCastKey.toString());
-          dev.log(typeCastKey.currentState.toString());
-          // typeCastKey.currentState.display(0, 75);
           typeCastKey.currentState.display(positions[key].x, positions[key].y);
         } else {
           typeCastKey.currentState.hide();
@@ -54,7 +50,6 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
       return;
     }
     widget.onAdd();
-    // toggleQuickAdd(context);
   }
 
   void onLongPressed() {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -82,6 +83,8 @@ class TemplateApi {
       context: context,
       builder: (context) => LoadingModal(),
     );
+
+    log(jsonEncode(template));
 
     final response = await http
         .post(

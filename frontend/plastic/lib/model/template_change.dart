@@ -5,7 +5,8 @@ enum TemplateChangeType {
   DefaultValueChanged,
   MainFieldChanged,
   TypeChanged,
-  TemplateNameChanged
+  TemplateNameChanged,
+  ChoicesChanged
 }
 
 class TemplateChange {

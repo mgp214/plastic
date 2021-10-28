@@ -19,6 +19,7 @@ import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/components/template_fields/field_card.dart';
 import 'package:plastic/widgets/components/template_fields/template_bool_field.dart';
 import 'package:plastic/widgets/components/template_fields/template_double_field.dart';
+import 'package:plastic/widgets/components/template_fields/template_enum_field.dart';
 import 'package:plastic/widgets/components/template_fields/template_field.dart';
 import 'package:plastic/widgets/components/template_fields/template_int_field.dart';
 import 'package:plastic/widgets/components/template_fields/template_string_field.dart';
@@ -100,6 +101,8 @@ class EditTemplatePageState extends State<EditTemplatePage> {
         id: ObjectId().hexString);
     if (fieldType == FieldType.STRING && widget.template.getMainField() == null)
       newField.main = true;
+    if (fieldType == FieldType.ENUM && newField.choices == null)
+      newField.choices = List();
     widget.template.fields.add(newField);
     setState(() {});
     Navigator.pop(context);
@@ -133,7 +136,10 @@ class EditTemplatePageState extends State<EditTemplatePage> {
         );
         break;
       case FieldType.ENUM:
-        //TODO: Handle this case
+        fieldWidget = TemplateEnumField(
+          field: field,
+          template: widget.template,
+        );
         break;
       case FieldType.BOOL:
         fieldWidget = TemplateBoolField(

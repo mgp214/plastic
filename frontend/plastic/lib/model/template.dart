@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:plastic/model/template_change.dart';
@@ -35,11 +36,19 @@ class Template {
     id = original.id;
     name = original.name;
     for (var originalField in original.fields) {
+      List<String> choices = null;
+      if (originalField.choices != null) {
+        choices = List<String>();
+        for (var c in originalField.choices) {
+          choices.add(c);
+        }
+      }
       fields.add(TemplateField(
           name: originalField.name,
           type: originalField.type,
           main: originalField.main,
           defaultValue: originalField.defaultValue,
+          choices: choices,
           id: originalField.id));
     }
   }
@@ -95,6 +104,24 @@ class Template {
             oldValue: aField.type,
             newValue: bField.type,
           ));
+        }
+        if (aField.choices != null && bField.choices != null) {
+          if (aField.choices.length != bField.choices.length) {
+            changes.add(TemplateChange(
+              changeType: TemplateChangeType.ChoicesChanged,
+              fieldId: aField.id,
+              fieldName: aField.name,
+            ));
+            for (var i = 0; i < aField.choices.length; i++) {
+              if (aField.choices[i] != bField.choices[i]) {
+                changes.add(TemplateChange(
+                  changeType: TemplateChangeType.ChoicesChanged,
+                  fieldId: aField.id,
+                  fieldName: aField.name,
+                ));
+              }
+            }
+          }
         }
       } else {
         changes.add(TemplateChange(
@@ -156,8 +183,15 @@ class TemplateField {
   String id;
   bool main;
   dynamic defaultValue;
+  List<String> choices;
 
-  TemplateField({this.name, this.type, this.id, this.defaultValue, this.main});
+  TemplateField(
+      {this.name,
+      this.type,
+      this.id,
+      this.defaultValue,
+      this.main,
+      this.choices});
 
   static String getFriendlyName(FieldType fieldType) {
     String friendlyName = "Field type not found!";
@@ -172,7 +206,7 @@ class TemplateField {
         friendlyName = "Real number";
         break;
       case FieldType.ENUM:
-        friendlyName = "Predefined list of options";
+        friendlyName = "Predefined list of choices";
         break;
       case FieldType.BOOL:
         friendlyName = "true / false";
@@ -201,6 +235,12 @@ class TemplateField {
     id = json['_id'];
     main = json.containsKey('main') ? true : false;
     defaultValue = json.containsKey('default') ? json['default'] : null;
+    if (json.containsKey('choices')) {
+      choices = List();
+      for (var value in json['choices']) {
+        if (value is String) choices.add(value);
+      }
+    }
 
     type = FieldType.values.singleWhere(
         (ft) => ft.toString().split('.').last == json['fieldType']);
@@ -213,6 +253,7 @@ class TemplateField {
     data['fieldType'] = type.toString().split('.').last;
     if (main == true) data['main'] = true;
     if (defaultValue != null) data['default'] = defaultValue;
+    if (choices != null) data['choices'] = choices;
 
     return data;
   }

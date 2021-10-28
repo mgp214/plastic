@@ -9,12 +9,14 @@ class StringField extends StatelessWidget {
   final TextStyle labelStyle;
   final Color fillColor;
   final void Function(String) onChanged;
+  final void Function(String) onSubmitted;
   final String label;
 
   const StringField({
     Key key,
     @required this.controller,
     @required this.onChanged,
+    this.onSubmitted,
     this.focusNode,
     this.style,
     this.labelStyle,
@@ -37,6 +39,7 @@ class StringField extends StatelessWidget {
           controller: controller,
           focusNode: focusNode ?? FocusNode(),
           onChanged: onChanged,
+          onSubmitted: onSubmitted,
         ),
       );
 }

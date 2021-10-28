@@ -11,9 +11,11 @@ import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/input/checkbox_field.dart';
 import 'package:plastic/widgets/components/input/double_field.dart';
+import 'package:plastic/widgets/components/input/enum_field.dart';
 import 'package:plastic/widgets/components/input/int_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
+import 'package:plastic/widgets/components/splash_list_tile.dart';
 import 'package:plastic/widgets/template/edit_template_page.dart';
 
 class EditThingPage extends StatefulWidget {
@@ -37,7 +39,7 @@ class EditThingPageState extends State<EditThingPage> {
     fieldFocusNodes = Map();
   }
 
-  Widget _getFieldWidget(ThingField field, FieldType type) {
+  Widget _getFieldWidget(ThingField field, TemplateField templateField) {
     void buildControllers(String name) {
       if (fieldControllers[field.name] != null) return;
       var controller = TextEditingController(
@@ -55,7 +57,7 @@ class EditThingPageState extends State<EditThingPage> {
         });
     }
 
-    switch (type) {
+    switch (templateField.type) {
       case FieldType.STRING:
         buildControllers(field.name);
         return StringField(
@@ -91,7 +93,33 @@ class EditThingPageState extends State<EditThingPage> {
         );
         break;
       case FieldType.ENUM:
-        // TODO: Handle this case.
+        buildControllers(field.name);
+        return EnumField(
+          controller: fieldControllers[field.name],
+          focusNode: fieldFocusNodes[field.name],
+          onChanged: (value) {
+            setState(() {
+              field.value = value;
+            });
+          },
+          label: field.name,
+          value: field.value,
+          choices: templateField.choices,
+        );
+        // return DropdownButton<String>(
+        //     value: field.value,
+        //     hint: Text(field.name),
+        //     items: templateField.choices
+        //         .map((e) => DropdownMenuItem(
+        //               child: Text(e),
+        //               value: e,
+        //             ))
+        //         .toList(),
+        //     onChanged: (value) {
+        //       setState(() {
+        //         field.value = value;
+        //       });
+        //     });
         break;
       case FieldType.BOOL:
         return CheckboxField(
@@ -118,7 +146,7 @@ class EditThingPageState extends State<EditThingPage> {
       );
 
       if (thingField == null) continue;
-      fieldWidgets.add(_getFieldWidget(thingField, templateField.type));
+      fieldWidgets.add(_getFieldWidget(thingField, templateField));
     }
 
     var isExistingThing = widget.thing.id != null;

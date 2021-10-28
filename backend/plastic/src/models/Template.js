@@ -6,6 +6,7 @@ const templateFieldSchema = mongoose.Schema({
 	'value': mongoose.Schema.Types.Mixed,
 	'default': mongoose.Schema.Types.Mixed,
 	'main': Boolean,
+	'choices': mongoose.Schema.Types.Mixed,
 });
 
 const templateSchema = mongoose.Schema({
@@ -56,7 +57,7 @@ function validateFieldValue(field, value) {
 		case 'DOUBLE':
 			return typeof (value) == 'number';
 		case 'ENUM':
-			return field.values.indexOf(value) != -1;
+			return field.choices.indexOf(value) != -1;
 		case 'BOOL':
 			return typeof (value) == 'boolean';
 		case 'DATE':
@@ -68,6 +69,7 @@ function validateFieldValue(field, value) {
 
 templateSchema.statics.validate = async function (template) {
 	// const template = this;
+	console.log(template);
 
 	const existingWithName = await Template.findOne({ 'name': template.name, 'userId': template.userId });
 	var errors = [];
@@ -100,6 +102,8 @@ templateSchema.statics.validate = async function (template) {
 			errors.push('field "' + field.name + '" is the main field, but is not a text field.');
 		if (field.default && !validateFieldValue(field, field.default))
 			errors.push('field "' + field.name + '" has an invalid default value of "' + field.default + '" for its type.');
+		if (field.fieldType == 'ENUM' && (field.choices == null || field.choices.length == 0))
+			errors.push('field "' + field.name + '" has no choices. Add at least one');
 	});
 	if (numMains > 1)
 		errors.push('Template can only have one "main" field.');
