@@ -28,7 +28,7 @@ class ViewPage extends StatefulWidget {
 
 class ViewPageState extends State<ViewPage> with TickerProviderStateMixin {
   AnimationController _refreshAnimationController;
-  GlobalKey<ActionItemState> key1, key2, key3;
+  GlobalKey<ActionItemState> key1, key2, key3, key4;
   @override
   void initState() {
     _refreshAnimationController =
@@ -36,6 +36,7 @@ class ViewPageState extends State<ViewPage> with TickerProviderStateMixin {
     key1 = GlobalKey<ActionItemState>();
     key2 = GlobalKey<ActionItemState>();
     key3 = GlobalKey<ActionItemState>();
+    key4 = GlobalKey<ActionItemState>();
     refresh();
     super.initState();
   }
@@ -86,6 +87,7 @@ class ViewPageState extends State<ViewPage> with TickerProviderStateMixin {
         ),
       ),
       floatingActionButton: ActionMenu(
+        radius: 120,
         onAdd: () => Navigator.push(
             context,
             MaterialPageRoute(
@@ -120,6 +122,16 @@ class ViewPageState extends State<ViewPage> with TickerProviderStateMixin {
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => ViewPickerPage()),
+            ),
+          ),
+          ActionItem(
+            key: key4,
+            color: Motif.title,
+            icon: Icons.edit_outlined,
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => EditViewPage(view: widget.view)),
             ),
           ),
         ],

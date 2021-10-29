@@ -10,8 +10,10 @@ import 'package:vector_math/vector_math.dart';
 class ActionMenu extends StatefulWidget {
   final VoidCallback onAdd;
   final List<ActionItem> children;
+  final double radius;
 
-  ActionMenu({@required this.onAdd, @required this.children});
+  ActionMenu(
+      {@required this.onAdd, @required this.children, this.radius = 75.0});
 
   @override
   State<StatefulWidget> createState() => ActionMenuState();
@@ -58,11 +60,10 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
 
   void calculatePositions() {
     positions = Map();
-    var radius = 75.0;
     for (var i = 0; i < actionKeys.length; i++) {
       var key = actionKeys[i];
       var t = Matrix2.rotation(i * (-pi / 2) / (actionKeys.length - 1));
-      positions[key] = t.transform(Vector2(0, radius));
+      positions[key] = t.transform(Vector2(0, widget.radius));
     }
   }
 
