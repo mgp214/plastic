@@ -18,6 +18,7 @@ import 'package:plastic/widgets/components/splash_list_tile.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/components/template_fields/field_card.dart';
 import 'package:plastic/widgets/components/template_fields/template_bool_field.dart';
+import 'package:plastic/widgets/components/template_fields/template_date_field.dart';
 import 'package:plastic/widgets/components/template_fields/template_double_field.dart';
 import 'package:plastic/widgets/components/template_fields/template_enum_field.dart';
 import 'package:plastic/widgets/components/template_fields/template_field.dart';
@@ -143,6 +144,12 @@ class EditTemplatePageState extends State<EditTemplatePage> {
         break;
       case FieldType.BOOL:
         fieldWidget = TemplateBoolField(
+          field: field,
+          template: widget.template,
+        );
+        break;
+      case FieldType.DATE:
+        fieldWidget = TemplateDateField(
           field: field,
           template: widget.template,
         );

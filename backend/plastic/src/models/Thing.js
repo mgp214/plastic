@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const thingFieldSchema = mongoose.Schema({
 	'name': String,
 	'value': mongoose.Schema.Types.Mixed,
+	'fieldType': String,
 });
 
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:plastic/api/view_api.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/preference_manager.dart';
 import 'package:plastic/model/user.dart';
@@ -7,7 +6,6 @@ import 'package:plastic/model/view/frame.dart';
 import 'package:plastic/model/view/view.dart';
 import 'package:plastic/model/view/view_widgets/empty_widget.dart';
 import 'package:plastic/model/view/view_widgets/view_widget.dart';
-import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/account/settings_page.dart';
 import 'package:plastic/widgets/template/template_picker_page.dart';
 import 'package:plastic/widgets/view/edit_view_page.dart';

@@ -17,6 +17,7 @@ class AllThingsViewState extends State<AllThingsView> {
   void initState() {
     _things = List();
     Future.delayed(Duration(milliseconds: 250), () => getAllThings());
+    super.initState();
   }
 
   Future<void> getAllThings() async {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/template.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';

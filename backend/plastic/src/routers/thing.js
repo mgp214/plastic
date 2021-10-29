@@ -119,17 +119,17 @@ function getFindParams(condition) {
 		}
 		switch (condition['comparison']) {
 			case 'ValueComparison.E':
-				return { 'fields.name': condition['fieldName'], 'fields.value': value };
+				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': value } } };
 			case 'ValueComparison.GT':
-				return { 'fields.name': condition['fieldName'], 'fields.value': { $gt: value } };
+				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $gt: value } } } };
 			case 'ValueComparison.GTE':
-				return { 'fields.name': condition['fieldName'], 'fields.value': { $gte: value } };
+				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $gte: value } } } };
 			case 'ValueComparison.LT':
-				return { 'fields.name': condition['fieldName'], 'fields.value': { $lt: value } };
+				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $lt: value } } } };
 			case 'ValueComparison.LTE':
-				return { 'fields.name': condition['fieldName'], 'fields.value': { $lte: value } };
+				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $lte: value } } } };
 			case 'ValueComparison.STR_CONTAINS':
-				return { 'fields.name': condition['fieldName'], 'fields.value': { $regex: value, $options: 'i' } };
+				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $regex: value, $options: 'i' } } } };
 		}
 
 	}

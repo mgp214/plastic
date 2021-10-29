@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:plastic/model/template.dart';
 import 'package:plastic/utility/template_manager.dart';
 
 class Thing {
@@ -25,6 +27,7 @@ class Thing {
               name: templateField.name,
               value: templateField.defaultValue,
               id: templateField.id,
+              type: templateField.type,
             ),
           );
         },
@@ -54,6 +57,7 @@ class Thing {
         id: originalField.id,
         name: originalField.name,
         value: originalField.value,
+        type: originalField.type,
       ));
     }
   }
@@ -68,7 +72,8 @@ class Thing {
           other.fields.firstWhere((e) => e.id == field.id, orElse: () => null);
       if (otherField == null ||
           field.name != otherField.name ||
-          field.value != otherField.value) return true;
+          field.value != otherField.value ||
+          field.type != otherField.type) return true;
     }
     return false;
   }
@@ -122,14 +127,18 @@ class Thing {
 class ThingField {
   String name;
   String id;
+  FieldType type;
   dynamic value;
 
-  ThingField({this.name, this.value, this.id});
+  ThingField({this.name, this.value, this.id, @required this.type});
 
   ThingField.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     value = json['value'];
     id = json['_id'];
+    if (json.containsKey('fieldType'))
+      type = FieldType.values.singleWhere(
+          (ft) => ft.toString().split('.').last == json['fieldType']);
   }
 
   Map<String, dynamic> toJson() {
@@ -137,7 +146,7 @@ class ThingField {
     data['name'] = name;
     data['value'] = value;
     data['_id'] = id;
-
+    data['fieldType'] = type.toString().split('.').last;
     return data;
   }
 }

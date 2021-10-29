@@ -53,6 +53,7 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
                 id: change.fieldId,
                 name: change.fieldName,
                 value: (change.newValue as TemplateField).defaultValue,
+                type: (change.newValue as TemplateField).type,
               ),
             );
             break;

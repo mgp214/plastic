@@ -15,7 +15,6 @@ import 'package:plastic/widgets/components/input/enum_field.dart';
 import 'package:plastic/widgets/components/input/int_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
-import 'package:plastic/widgets/components/splash_list_tile.dart';
 import 'package:plastic/widgets/template/edit_template_page.dart';
 
 class EditThingPage extends StatefulWidget {

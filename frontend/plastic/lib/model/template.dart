@@ -1,16 +1,9 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:plastic/model/template_change.dart';
 
-enum FieldType {
-  STRING,
-  INT,
-  DOUBLE,
-  ENUM,
-  BOOL,
-}
+enum FieldType { STRING, INT, DOUBLE, ENUM, BOOL, DATE }
 
 class Template {
   List<TemplateField> fields;
@@ -206,10 +199,13 @@ class TemplateField {
         friendlyName = "Real number";
         break;
       case FieldType.ENUM:
-        friendlyName = "Predefined list of choices";
+        friendlyName = "List of choices";
         break;
       case FieldType.BOOL:
         friendlyName = "true / false";
+        break;
+      case FieldType.DATE:
+        friendlyName = "Date";
         break;
     }
     return friendlyName;
@@ -227,6 +223,9 @@ class TemplateField {
         return null;
       case FieldType.BOOL:
         return false;
+      case FieldType.DATE:
+        return null;
+        break;
     }
   }
 

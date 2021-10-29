@@ -69,10 +69,6 @@ class TemplateStringFieldState extends TemplateFieldWidgetState {
             activeColor: Motif.title,
             groupValue: widget.template.getMainField(),
             onChanged: (widget as TemplateStringField).onMainFieldChanged,
-            // (value) => setState(() {
-            //   widget.template.getMainField().main = false;
-            //   widget.field.main = true;
-            // }),
             value: widget.field,
           ),
         ],
