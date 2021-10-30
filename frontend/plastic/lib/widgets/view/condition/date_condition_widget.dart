@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:plastic/model/motif.dart';
+import 'package:plastic/model/view/conditions/value_condition.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:plastic/widgets/components/input/double_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
@@ -22,6 +25,7 @@ class DateConditionWidgetState extends State<DateConditionWidget> {
   String relativeUnit;
   String calendarDirection;
   String calendarUnit;
+  ValueComparison absoluteComparison;
   TextEditingController _controller;
 
   @override
@@ -52,9 +56,37 @@ class DateConditionWidgetState extends State<DateConditionWidget> {
     if (absoluteValue == null) {
       absoluteValue = DateTime.now();
     }
-    children.add(
-      Expanded(
-        child: BorderButton(
+    var comparisons = List<ValueComparison>();
+    comparisons.add(ValueComparison.E);
+    comparisons.add(ValueComparison.LT);
+    comparisons.add(ValueComparison.LTE);
+    comparisons.add(ValueComparison.GT);
+    comparisons.add(ValueComparison.GTE);
+    var row = Row(
+      children: [
+        Text("comparison: "),
+        DropdownButton<ValueComparison>(
+          value: absoluteComparison,
+          items: comparisons
+              .map(
+                (o) => DropdownMenuItem(
+                  child: Text(
+                    ValueCondition.getFriendlyName(o),
+                  ),
+                  value: o,
+                ),
+              )
+              .toList(),
+          onChanged: (newValueComparison) => setState(() {
+            absoluteComparison = newValueComparison;
+          }),
+        ),
+      ],
+    );
+    children.add(row);
+    row = Row(
+      children: [
+        BorderButton(
           color: Motif.lightBackground,
           content: DateFormat('MMMM d, \'\'yy').format(absoluteValue),
           onPressed: () {
@@ -73,8 +105,9 @@ class DateConditionWidgetState extends State<DateConditionWidget> {
             });
           },
         ),
-      ),
+      ],
     );
+    children.add(row);
   }
 
   void _getRelativeWidgets(List<Widget> children) {
@@ -183,18 +216,25 @@ class DateConditionWidgetState extends State<DateConditionWidget> {
   Widget build(BuildContext context) {
     var children = List<Widget>();
 
-    children.add(
-      DropdownButton<String>(
+    var row = Row(
+      children: [
+        Text("Match type: "),
+        DropdownButton<String>(
           value: dateType,
           items: [
             DropdownMenuItem(child: Text("Absolute"), value: "A"),
             DropdownMenuItem(child: Text("Relative"), value: "R"),
             DropdownMenuItem(child: Text("Calendar"), value: "C"),
           ],
-          onChanged: (value) => setState(() {
-                dateType = value;
-              })),
+          onChanged: (value) => setState(
+            () {
+              dateType = value;
+            },
+          ),
+        ),
+      ],
     );
+    children.add(row);
     switch (dateType) {
       case "A":
         _getAbsoluteWidgets(children);
@@ -207,8 +247,10 @@ class DateConditionWidgetState extends State<DateConditionWidget> {
         break;
     }
 
-    return Row(
-      children: children,
+    return LimitedBox(
+      maxWidth: MediaQuery.of(context).size.width,
+      maxHeight: 250,
+      child: Wrap(children: children),
     );
   }
 }

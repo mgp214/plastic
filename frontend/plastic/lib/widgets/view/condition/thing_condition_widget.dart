@@ -15,6 +15,7 @@ import 'package:plastic/widgets/components/input/double_field.dart';
 import 'package:plastic/widgets/components/input/int_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/view/condition/date_condition_widget.dart';
+import 'package:plastic/widgets/view/condition/string_field_condition_widget.dart';
 
 class ThingConditionWidget extends StatefulWidget {
   final ThingCondition condition;
@@ -51,6 +52,7 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         ConditionOperator(operation: OPERATOR.AND, operands: []),
     "Template": TemplateCondition(templates: List()),
     "Value": ValueCondition(),
+    "String field": ValueCondition(fieldType: FieldType.STRING),
   };
 
   List<DialogTextChoice> _getConditionChoices(ConditionOperator parent) {
@@ -192,7 +194,9 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
             border: Border(
                 bottom: border, top: border, left: border, right: border),
           ),
-          child: contents,
+          child: SingleChildScrollView(
+            child: contents,
+          ),
         );
       },
     );
@@ -297,60 +301,60 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
 
   Widget _getValueConditionDraggable() {
     var conditionAsValue = widget.condition as ValueCondition;
-    List<Widget> children = List();
-    var row = Row(
-      children: [
-        Text(
-          "Has a ",
-          style: Motif.contentStyle(Sizes.Label, Motif.black),
-        ),
-        DropdownButton<FieldType>(
-          value: conditionAsValue.fieldType,
-          items: FieldType.values
-              .map(
-                (o) => DropdownMenuItem(
-                  child: Text(
-                    TemplateField.getFriendlyName(o),
-                  ),
-                  value: o,
-                ),
-              )
-              .toList(),
-          onChanged: (newFieldType) => setState(() {
-            conditionAsValue.fieldType = newFieldType;
-            conditionAsValue.value = _getFieldTypeDefaultValue(newFieldType);
-            _valueController.text = _getFieldTypeDefaultValue(newFieldType);
-          }),
-        ),
-        Text(
-          " field",
-          style: Motif.contentStyle(Sizes.Label, Motif.black),
-        ),
-      ],
-    );
-    children.add(row);
-    row = Row(
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      children: [
-        Text(
-          "with name ",
-          style: Motif.contentStyle(Sizes.Label, Motif.black),
-        ),
-        Expanded(
-          child: StringField(
-            controller: _nameController,
-            onChanged: (newValue) {
-              setState(() {
-                conditionAsValue.fieldName = newValue;
-              });
-            },
-            style: Motif.contentStyle(Sizes.Label, Motif.black),
-          ),
-        ),
-      ],
-    );
-    children.add(row);
-    _buildComparisonRow(children, conditionAsValue);
+    // List<Widget> children = List();
+    // var row = Row(
+    //   children: [
+    //     Text(
+    //       "Has a ",
+    //       style: Motif.contentStyle(Sizes.Label, Motif.black),
+    //     ),
+    //     DropdownButton<FieldType>(
+    //       value: conditionAsValue.fieldType,
+    //       items: FieldType.values
+    //           .map(
+    //             (o) => DropdownMenuItem(
+    //               child: Text(
+    //                 TemplateField.getFriendlyName(o),
+    //               ),
+    //               value: o,
+    //             ),
+    //           )
+    //           .toList(),
+    //       onChanged: (newFieldType) => setState(() {
+    //         conditionAsValue.fieldType = newFieldType;
+    //         conditionAsValue.value = _getFieldTypeDefaultValue(newFieldType);
+    //         _valueController.text = _getFieldTypeDefaultValue(newFieldType);
+    //       }),
+    //     ),
+    //     Text(
+    //       " field",
+    //       style: Motif.contentStyle(Sizes.Label, Motif.black),
+    //     ),
+    //   ],
+    // );
+    // children.add(row);
+    // row = Row(
+    //   crossAxisAlignment: CrossAxisAlignment.baseline,
+    //   children: [
+    //     Text(
+    //       "with name ",
+    //       style: Motif.contentStyle(Sizes.Label, Motif.black),
+    //     ),
+    //     Expanded(
+    //       child: StringField(
+    //         controller: _nameController,
+    //         onChanged: (newValue) {
+    //           setState(() {
+    //             conditionAsValue.fieldName = newValue;
+    //           });
+    //         },
+    //         style: Motif.contentStyle(Sizes.Label, Motif.black),
+    //       ),
+    //     ),
+    //   ],
+    // );
+    // children.add(row);
+    // _buildComparisonRow(children, conditionAsValue);
     // children.add(row);
     // row = Row(children: [
     //   Text(
@@ -369,94 +373,100 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
     // children.add(row);
     switch (conditionAsValue.fieldType) {
       case FieldType.STRING:
-        children.add(
-          StringField(
-            controller: _valueController,
-            onChanged: (newValue) {
-              setState(() {
-                conditionAsValue.value = newValue;
-              });
-            },
-            labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
-            label: "value",
-          ),
+        return StringFieldCondition(
+          condition: conditionAsValue,
         );
+        // children.add(
+        //   StringField(
+        //     controller: _valueController,
+        //     onChanged: (newValue) {
+        //       setState(() {
+        //         conditionAsValue.value = newValue;
+        //       });
+        //     },
+        //     labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
+        //     label: "value",
+        //   ),
+        // );
         break;
       case FieldType.INT:
-        children.add(
-          IntField(
-            controller: _valueController,
-            onChanged: (newValue) {
-              setState(() {
-                conditionAsValue.value = newValue;
-              });
-            },
-            labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
-            label: "value",
-          ),
-        );
+        // children.add(
+        //   IntField(
+        //     controller: _valueController,
+        //     onChanged: (newValue) {
+        //       setState(() {
+        //         conditionAsValue.value = newValue;
+        //       });
+        //     },
+        //     labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
+        //     label: "value",
+        //   ),
+        // );
         break;
       case FieldType.DOUBLE:
-        children.add(
-          DoubleField(
-            controller: _valueController,
-            onChanged: (newValue) {
-              setState(() {
-                conditionAsValue.value = newValue;
-              });
-            },
-            labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
-            label: "value",
-          ),
-        );
+        // children.add(
+        //   DoubleField(
+        //     controller: _valueController,
+        //     onChanged: (newValue) {
+        //       setState(() {
+        //         conditionAsValue.value = newValue;
+        //       });
+        //     },
+        //     labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
+        //     label: "value",
+        //   ),
+        // );
         break;
       case FieldType.ENUM:
-        children.add(
-          StringField(
-            controller: _valueController,
-            onChanged: (newValue) {
-              setState(() {
-                conditionAsValue.value = newValue;
-              });
-            },
-            labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
-            label: "value",
-          ),
-        );
+        // children.add(
+        //   StringField(
+        //     controller: _valueController,
+        //     onChanged: (newValue) {
+        //       setState(() {
+        //         conditionAsValue.value = newValue;
+        //       });
+        //     },
+        //     labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
+        //     label: "value",
+        //   ),
+        // );
         break;
       case FieldType.BOOL:
-        children.add(
-          Checkbox(
-            value: conditionAsValue.value == 'true',
-            onChanged: (newValue) {
-              setState(() {
-                conditionAsValue.value = newValue ? 'true' : 'false';
-              });
-            },
-          ),
-        );
+        // children.add(
+        //   Checkbox(
+        //     value: conditionAsValue.value == 'true',
+        //     onChanged: (newValue) {
+        //       setState(() {
+        //         conditionAsValue.value = newValue ? 'true' : 'false';
+        //       });
+        //     },
+        //   ),
+        // );
         break;
       case FieldType.DATE:
-        children.add(
-          DateConditionWidget(
-            onChanged: (value) {
-              conditionAsValue.value = value;
-              log(value);
-            },
-          ),
-        );
+        // children.add(
+        //   DateConditionWidget(
+        //     onChanged: (value) {
+        //       conditionAsValue.value = value;
+        //       log(value);
+        //     },
+        //   ),
+        // );
         break;
     }
-
-    return IntrinsicHeight(
-      child: Card(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: children,
-        ),
-      ),
+    return Placeholder(
+      fallbackHeight: 100,
+      fallbackWidth: 100,
     );
+    // return IntrinsicHeight(
+    //   child: Card(
+    //     child: Column(
+    //       mainAxisAlignment: MainAxisAlignment.start,
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: children,
+    //     ),
+    //   ),
+    // );
   }
 
   Widget _getDraggable() {
