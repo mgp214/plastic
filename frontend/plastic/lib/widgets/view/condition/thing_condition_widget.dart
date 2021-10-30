@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/template.dart';
@@ -12,6 +14,7 @@ import 'package:plastic/widgets/components/input/checkbox_field.dart';
 import 'package:plastic/widgets/components/input/double_field.dart';
 import 'package:plastic/widgets/components/input/int_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
+import 'package:plastic/widgets/view/condition/date_condition_widget.dart';
 
 class ThingConditionWidget extends StatefulWidget {
   final ThingCondition condition;
@@ -75,6 +78,7 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
       case FieldType.INT:
       case FieldType.DOUBLE:
       case FieldType.ENUM:
+      case FieldType.DATE:
         comparisions.add(ValueComparison.STR_CONTAINS);
         comparisions.add(ValueComparison.LT);
         comparisions.add(ValueComparison.LTE);
@@ -252,6 +256,45 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
     return null;
   }
 
+  void _buildComparisonRow(List<Widget> children, ValueCondition condition) {
+    switch (condition.fieldType) {
+      case FieldType.STRING:
+      case FieldType.INT:
+      case FieldType.DOUBLE:
+      case FieldType.ENUM:
+      case FieldType.BOOL:
+        var row = Row(children: [
+          Text(
+            "whose value  ",
+            textAlign: TextAlign.center,
+            style: Motif.contentStyle(Sizes.Label, Motif.black),
+          ),
+          DropdownButton<ValueComparison>(
+            value: condition.comparison,
+            items: _getFieldTypeComparisons(condition.fieldType),
+            onChanged: (newValueComparison) => setState(() {
+              condition.comparison = newValueComparison;
+            }),
+          ),
+        ]);
+        children.add(row);
+        break;
+      case FieldType.DATE:
+        children.add(
+          Row(
+            children: [
+              Text(
+                "whose value matches:",
+                textAlign: TextAlign.center,
+                style: Motif.contentStyle(Sizes.Label, Motif.black),
+              ),
+            ],
+          ),
+        );
+        break;
+    }
+  }
+
   Widget _getValueConditionDraggable() {
     var conditionAsValue = widget.condition as ValueCondition;
     List<Widget> children = List();
@@ -306,22 +349,23 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         ),
       ],
     );
-    children.add(row);
-    row = Row(children: [
-      Text(
-        "whose value  ",
-        textAlign: TextAlign.center,
-        style: Motif.contentStyle(Sizes.Label, Motif.black),
-      ),
-      DropdownButton<ValueComparison>(
-        value: conditionAsValue.comparison,
-        items: _getFieldTypeComparisons(conditionAsValue.fieldType),
-        onChanged: (newValueComparison) => setState(() {
-          conditionAsValue.comparison = newValueComparison;
-        }),
-      ),
-    ]);
-    children.add(row);
+    _buildComparisonRow(children, conditionAsValue);
+    // children.add(row);
+    // row = Row(children: [
+    //   Text(
+    //     "whose value  ",
+    //     textAlign: TextAlign.center,
+    //     style: Motif.contentStyle(Sizes.Label, Motif.black),
+    //   ),
+    //   DropdownButton<ValueComparison>(
+    //     value: conditionAsValue.comparison,
+    //     items: _getFieldTypeComparisons(conditionAsValue.fieldType),
+    //     onChanged: (newValueComparison) => setState(() {
+    //       conditionAsValue.comparison = newValueComparison;
+    //     }),
+    //   ),
+    // ]);
+    // children.add(row);
     switch (conditionAsValue.fieldType) {
       case FieldType.STRING:
         children.add(
@@ -387,6 +431,16 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
               setState(() {
                 conditionAsValue.value = newValue ? 'true' : 'false';
               });
+            },
+          ),
+        );
+        break;
+      case FieldType.DATE:
+        children.add(
+          DateConditionWidget(
+            onChanged: (value) {
+              conditionAsValue.value = value;
+              log(value);
             },
           ),
         );
