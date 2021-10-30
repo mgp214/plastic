@@ -121,7 +121,6 @@ class DateConditionWidgetState extends State<DateConditionWidget> {
       DropdownButton<String>(
         value: relativeUnit,
         items: [
-          DropdownMenuItem(child: Text("hours"), value: "h"),
           DropdownMenuItem(child: Text("days"), value: "d"),
           DropdownMenuItem(child: Text("weeks"), value: "w"),
           DropdownMenuItem(child: Text("months"), value: "m"),
