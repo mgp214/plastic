@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plastic/api/api.dart';
@@ -10,6 +12,7 @@ import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/input/checkbox_field.dart';
+import 'package:plastic/widgets/components/input/date_field.dart';
 import 'package:plastic/widgets/components/input/double_field.dart';
 import 'package:plastic/widgets/components/input/enum_field.dart';
 import 'package:plastic/widgets/components/input/int_field.dart';
@@ -113,6 +116,19 @@ class EditThingPageState extends State<EditThingPage> {
             field.value = value;
           }),
           value: field.value,
+        );
+        break;
+      case FieldType.DATE:
+        log(field.value.toString());
+        return DateFieldWidget(
+          date: field.value == null
+              ? DateTime.now()
+              : field.value is DateTime
+                  ? field.value
+                  : DateTime.parse(field.value),
+          onChanged: (value) => setState(() {
+            field.value = value;
+          }),
         );
         break;
     }

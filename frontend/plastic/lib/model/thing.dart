@@ -139,12 +139,18 @@ class ThingField {
     if (json.containsKey('fieldType'))
       type = FieldType.values.singleWhere(
           (ft) => ft.toString().split('.').last == json['fieldType']);
+    if (type == FieldType.DATE) value = DateTime.parse(value);
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = name;
-    data['value'] = value;
+    if (value is DateTime) {
+      data['value'] = (value as DateTime).toIso8601String().substring(0, 10);
+    } else {
+      data['value'] = value;
+    }
+
     data['_id'] = id;
     data['fieldType'] = type.toString().split('.').last;
     return data;

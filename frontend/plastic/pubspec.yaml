@@ -32,6 +32,7 @@ dependencies:
   objectid: ^1.1.0
   uuid: 2.2.2
   get:
+  intl:
 
 
 dev_dependencies:

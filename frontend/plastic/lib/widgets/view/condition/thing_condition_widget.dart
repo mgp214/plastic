@@ -245,7 +245,11 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
       case FieldType.BOOL:
         return 'false';
         break;
+      case FieldType.DATE:
+        return null;
+        break;
     }
+    return null;
   }
 
   Widget _getValueConditionDraggable() {
