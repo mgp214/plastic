@@ -349,6 +349,7 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         ),
       ],
     );
+    children.add(row);
     _buildComparisonRow(children, conditionAsValue);
     // children.add(row);
     // row = Row(children: [
