@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/template.dart';
@@ -11,11 +9,10 @@ import 'package:plastic/utility/template_manager.dart';
 import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/input/checkbox_field.dart';
-import 'package:plastic/widgets/components/input/double_field.dart';
-import 'package:plastic/widgets/components/input/int_field.dart';
-import 'package:plastic/widgets/components/input/string_field.dart';
-import 'package:plastic/widgets/view/condition/date_condition_widget.dart';
-import 'package:plastic/widgets/view/condition/string_field_condition_widget.dart';
+import 'package:plastic/widgets/view/condition/bool_field_condition.dart';
+import 'package:plastic/widgets/view/condition/double_field_condition.dart';
+import 'package:plastic/widgets/view/condition/int_field_condition.dart';
+import 'package:plastic/widgets/view/condition/string_field_condition.dart';
 
 class ThingConditionWidget extends StatefulWidget {
   final ThingCondition condition;
@@ -53,6 +50,12 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
     "Template": TemplateCondition(templates: List()),
     "Value": ValueCondition(),
     "String field": ValueCondition(fieldType: FieldType.STRING),
+    "Real number field": ValueCondition(fieldType: FieldType.DOUBLE),
+    "Integer number field": ValueCondition(fieldType: FieldType.INT),
+    "True/false field": ValueCondition(
+        fieldType: FieldType.BOOL,
+        comparison: ValueComparison.E,
+        value: 'false'),
   };
 
   List<DialogTextChoice> _getConditionChoices(ConditionOperator parent) {
@@ -301,121 +304,15 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
 
   Widget _getValueConditionDraggable() {
     var conditionAsValue = widget.condition as ValueCondition;
-    // List<Widget> children = List();
-    // var row = Row(
-    //   children: [
-    //     Text(
-    //       "Has a ",
-    //       style: Motif.contentStyle(Sizes.Label, Motif.black),
-    //     ),
-    //     DropdownButton<FieldType>(
-    //       value: conditionAsValue.fieldType,
-    //       items: FieldType.values
-    //           .map(
-    //             (o) => DropdownMenuItem(
-    //               child: Text(
-    //                 TemplateField.getFriendlyName(o),
-    //               ),
-    //               value: o,
-    //             ),
-    //           )
-    //           .toList(),
-    //       onChanged: (newFieldType) => setState(() {
-    //         conditionAsValue.fieldType = newFieldType;
-    //         conditionAsValue.value = _getFieldTypeDefaultValue(newFieldType);
-    //         _valueController.text = _getFieldTypeDefaultValue(newFieldType);
-    //       }),
-    //     ),
-    //     Text(
-    //       " field",
-    //       style: Motif.contentStyle(Sizes.Label, Motif.black),
-    //     ),
-    //   ],
-    // );
-    // children.add(row);
-    // row = Row(
-    //   crossAxisAlignment: CrossAxisAlignment.baseline,
-    //   children: [
-    //     Text(
-    //       "with name ",
-    //       style: Motif.contentStyle(Sizes.Label, Motif.black),
-    //     ),
-    //     Expanded(
-    //       child: StringField(
-    //         controller: _nameController,
-    //         onChanged: (newValue) {
-    //           setState(() {
-    //             conditionAsValue.fieldName = newValue;
-    //           });
-    //         },
-    //         style: Motif.contentStyle(Sizes.Label, Motif.black),
-    //       ),
-    //     ),
-    //   ],
-    // );
-    // children.add(row);
-    // _buildComparisonRow(children, conditionAsValue);
-    // children.add(row);
-    // row = Row(children: [
-    //   Text(
-    //     "whose value  ",
-    //     textAlign: TextAlign.center,
-    //     style: Motif.contentStyle(Sizes.Label, Motif.black),
-    //   ),
-    //   DropdownButton<ValueComparison>(
-    //     value: conditionAsValue.comparison,
-    //     items: _getFieldTypeComparisons(conditionAsValue.fieldType),
-    //     onChanged: (newValueComparison) => setState(() {
-    //       conditionAsValue.comparison = newValueComparison;
-    //     }),
-    //   ),
-    // ]);
-    // children.add(row);
     switch (conditionAsValue.fieldType) {
       case FieldType.STRING:
-        return StringFieldCondition(
-          condition: conditionAsValue,
-        );
-        // children.add(
-        //   StringField(
-        //     controller: _valueController,
-        //     onChanged: (newValue) {
-        //       setState(() {
-        //         conditionAsValue.value = newValue;
-        //       });
-        //     },
-        //     labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
-        //     label: "value",
-        //   ),
-        // );
+        return StringFieldCondition(condition: conditionAsValue);
         break;
       case FieldType.INT:
-        // children.add(
-        //   IntField(
-        //     controller: _valueController,
-        //     onChanged: (newValue) {
-        //       setState(() {
-        //         conditionAsValue.value = newValue;
-        //       });
-        //     },
-        //     labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
-        //     label: "value",
-        //   ),
-        // );
+        return IntFieldCondition(condition: conditionAsValue);
         break;
       case FieldType.DOUBLE:
-        // children.add(
-        //   DoubleField(
-        //     controller: _valueController,
-        //     onChanged: (newValue) {
-        //       setState(() {
-        //         conditionAsValue.value = newValue;
-        //       });
-        //     },
-        //     labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
-        //     label: "value",
-        //   ),
-        // );
+        return DoubleFieldCondition(condition: conditionAsValue);
         break;
       case FieldType.ENUM:
         // children.add(
@@ -432,16 +329,7 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         // );
         break;
       case FieldType.BOOL:
-        // children.add(
-        //   Checkbox(
-        //     value: conditionAsValue.value == 'true',
-        //     onChanged: (newValue) {
-        //       setState(() {
-        //         conditionAsValue.value = newValue ? 'true' : 'false';
-        //       });
-        //     },
-        //   ),
-        // );
+        return BoolFieldCondition(condition: conditionAsValue);
         break;
       case FieldType.DATE:
         // children.add(
