@@ -10,6 +10,7 @@ import 'package:plastic/widgets/components/dialogs/choice_actions_dialog.dart';
 import 'package:plastic/widgets/components/dialogs/dialog_choice.dart';
 import 'package:plastic/widgets/components/input/checkbox_field.dart';
 import 'package:plastic/widgets/view/condition/bool_field_condition.dart';
+import 'package:plastic/widgets/view/condition/date_field_condition.dart';
 import 'package:plastic/widgets/view/condition/double_field_condition.dart';
 import 'package:plastic/widgets/view/condition/int_field_condition.dart';
 import 'package:plastic/widgets/view/condition/string_field_condition.dart';
@@ -56,6 +57,7 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         fieldType: FieldType.BOOL,
         comparison: ValueComparison.E,
         value: 'false'),
+    "Date field": ValueCondition(fieldType: FieldType.DATE),
   };
 
   List<DialogTextChoice> _getConditionChoices(ConditionOperator parent) {
@@ -263,45 +265,6 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
     return null;
   }
 
-  void _buildComparisonRow(List<Widget> children, ValueCondition condition) {
-    switch (condition.fieldType) {
-      case FieldType.STRING:
-      case FieldType.INT:
-      case FieldType.DOUBLE:
-      case FieldType.ENUM:
-      case FieldType.BOOL:
-        var row = Row(children: [
-          Text(
-            "whose value  ",
-            textAlign: TextAlign.center,
-            style: Motif.contentStyle(Sizes.Label, Motif.black),
-          ),
-          DropdownButton<ValueComparison>(
-            value: condition.comparison,
-            items: _getFieldTypeComparisons(condition.fieldType),
-            onChanged: (newValueComparison) => setState(() {
-              condition.comparison = newValueComparison;
-            }),
-          ),
-        ]);
-        children.add(row);
-        break;
-      case FieldType.DATE:
-        children.add(
-          Row(
-            children: [
-              Text(
-                "whose value matches:",
-                textAlign: TextAlign.center,
-                style: Motif.contentStyle(Sizes.Label, Motif.black),
-              ),
-            ],
-          ),
-        );
-        break;
-    }
-  }
-
   Widget _getValueConditionDraggable() {
     var conditionAsValue = widget.condition as ValueCondition;
     switch (conditionAsValue.fieldType) {
@@ -332,29 +295,13 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         return BoolFieldCondition(condition: conditionAsValue);
         break;
       case FieldType.DATE:
-        // children.add(
-        //   DateConditionWidget(
-        //     onChanged: (value) {
-        //       conditionAsValue.value = value;
-        //       log(value);
-        //     },
-        //   ),
-        // );
+        return DateFieldCondition(condition: conditionAsValue);
         break;
     }
     return Placeholder(
       fallbackHeight: 100,
       fallbackWidth: 100,
     );
-    // return IntrinsicHeight(
-    //   child: Card(
-    //     child: Column(
-    //       mainAxisAlignment: MainAxisAlignment.start,
-    //       crossAxisAlignment: CrossAxisAlignment.start,
-    //       children: children,
-    //     ),
-    //   ),
-    // );
   }
 
   Widget _getDraggable() {
