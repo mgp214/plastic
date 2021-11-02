@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -34,7 +35,9 @@ class DateFieldConditionState extends State<DateFieldCondition> {
     super.initState();
     _valueController = TextEditingController(text: '');
     _nameController = TextEditingController(text: '');
-    if (widget.condition.value == null) return;
+    if (widget.condition.value == null) {
+      return;
+    }
     dateType = widget.condition.value.substring(0, 1);
     _nameController.text = widget.condition.fieldName;
 
@@ -74,7 +77,10 @@ class DateFieldConditionState extends State<DateFieldCondition> {
 
   void _getAbsoluteWidgets(List<Widget> children) {
     if (absoluteValue == null) {
-      absoluteValue = DateTime.now();
+      setState(() {
+        absoluteValue = DateTime.now();
+      });
+      widget.condition.value = _buildStringValue();
     }
     var comparisons = List<ValueComparison>();
     comparisons.add(ValueComparison.E);
@@ -82,6 +88,8 @@ class DateFieldConditionState extends State<DateFieldCondition> {
     comparisons.add(ValueComparison.LTE);
     comparisons.add(ValueComparison.GT);
     comparisons.add(ValueComparison.GTE);
+    log("comparison is equal to ");
+    log(widget.condition.comparison.toString());
     var row = Row(
       children: [
         Text("comparison: "),
@@ -202,7 +210,7 @@ class DateFieldConditionState extends State<DateFieldCondition> {
           items: [
             DropdownMenuItem(child: Text("day"), value: "d"),
             DropdownMenuItem(child: Text("week"), value: "w"),
-            DropdownMenuItem(child: Text("month"), value: "m"),
+            DropdownMenuItem(child: Text("month"), value: "M"),
             DropdownMenuItem(child: Text("year"), value: "y"),
           ],
           onChanged: (value) {

@@ -23,7 +23,8 @@ class ValueCondition extends ThingCondition {
       );
 
   @override
-  bool isEmpty() => fieldName.isEmpty || value.isEmpty;
+  bool isEmpty() =>
+      fieldName == null || value == null || fieldName.isEmpty || value.isEmpty;
 
   @override
   Map<String, dynamic> toJson() {

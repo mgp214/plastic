@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/conditions/thing_condition.dart';
 import 'package:plastic/utility/constants.dart';
+import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:plastic/widgets/view/condition/thing_condition_widget.dart';
 
 class ConditionBuilder extends StatefulWidget {
@@ -19,12 +20,12 @@ class ConditionBuilder extends StatefulWidget {
 }
 
 class ConditionBuilderState extends State<ConditionBuilder> {
-  ThingCondition condition;
+  // ThingCondition condition;
   bool _isDragging;
 
   @override
   void initState() {
-    condition = widget.condition;
+    // condition = widget.condition;
     _isDragging = false;
     super.initState();
   }
@@ -89,7 +90,7 @@ class ConditionBuilderState extends State<ConditionBuilder> {
   @override
   Widget build(BuildContext context) => WillPopScope(
         onWillPop: () {
-          widget.conditionUpdate(condition.clean());
+          widget.conditionUpdate(widget.condition.clean());
           return Future.value(true);
         },
         child: Scaffold(
@@ -99,15 +100,21 @@ class ConditionBuilderState extends State<ConditionBuilder> {
               Column(
                 children: [
                   ThingConditionWidget(
-                    condition: condition,
+                    condition: widget.condition,
                     rebuildLayout: (isDragging) => setState(() {
                       _isDragging = isDragging;
                     }),
                     resetLayout: (c) => setState(() {
                       _isDragging = false;
-                      condition = c;
                     }),
                   ),
+                  BorderButton(
+                      color: Motif.neutral,
+                      content: 'done',
+                      onPressed: () {
+                        widget.conditionUpdate(widget.condition.clean());
+                        Navigator.pop(context);
+                      }),
                 ],
               ),
               Positioned(

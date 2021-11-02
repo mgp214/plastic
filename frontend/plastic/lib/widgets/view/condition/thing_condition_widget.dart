@@ -42,7 +42,7 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
       var vc = condition;
       _valueController = TextEditingController(text: vc.value);
       _nameController = TextEditingController(text: vc.fieldName);
-      vc.comparison = ValueComparison.E;
+      vc.comparison = condition.comparison;
     }
   }
 

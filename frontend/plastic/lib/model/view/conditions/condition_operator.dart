@@ -71,7 +71,7 @@ class ConditionOperator extends ThingCondition {
   @override
   ThingCondition clean() {
     for (var i = 0; i < operands.length;) {
-      var cleanedOperand = operands[i].clean();
+      var cleanedOperand = operands[i]?.clean();
       if (cleanedOperand == null) {
         operands.removeAt(i);
         continue;

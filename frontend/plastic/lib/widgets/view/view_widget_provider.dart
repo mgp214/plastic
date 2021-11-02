@@ -149,6 +149,7 @@ class ViewWidgetProvider {
               builder: (context) => ConditionBuilder(
                 condition: countWidget.countCondition,
                 conditionUpdate: (condition) {
+                  countWidget.countCondition = condition;
                   countWidget.getData();
                 },
               ),
@@ -169,6 +170,7 @@ class ViewWidgetProvider {
               builder: (context) => ConditionBuilder(
                 condition: simpleListWidget.condition,
                 conditionUpdate: (condition) {
+                  simpleListWidget.condition = condition;
                   simpleListWidget.getData();
                 },
               ),
