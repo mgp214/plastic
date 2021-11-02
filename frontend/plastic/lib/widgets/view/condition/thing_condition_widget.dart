@@ -34,14 +34,10 @@ class ThingConditionWidget extends StatefulWidget {
 
 class ThingConditionWidgetState extends State<ThingConditionWidget> {
   ThingCondition _rootCopy;
-  TextEditingController _valueController;
-  TextEditingController _nameController;
 
   ThingConditionWidgetState(ThingCondition condition) {
     if (condition is ValueCondition) {
       var vc = condition;
-      _valueController = TextEditingController(text: vc.value);
-      _nameController = TextEditingController(text: vc.fieldName);
       vc.comparison = condition.comparison;
     }
   }

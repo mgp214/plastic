@@ -54,6 +54,8 @@ class DateFieldConditionState extends State<DateFieldCondition> {
             TextEditingController(text: relativeValue.toString());
         break;
       case 'C':
+        calendarUnit = widget.condition.value[2];
+        calendarDirection = widget.condition.value[3];
         break;
     }
   }
@@ -69,7 +71,7 @@ class DateFieldConditionState extends State<DateFieldCondition> {
             "$relativeUnit $relativeDirection${relativeValue.toString()} $tzMinutes";
         break;
       case "C":
-        return "C-" + calendarUnit + calendarDirection;
+        return "C-$calendarUnit$calendarDirection $tzMinutes";
         break;
     }
     return 'error!';
@@ -88,8 +90,6 @@ class DateFieldConditionState extends State<DateFieldCondition> {
     comparisons.add(ValueComparison.LTE);
     comparisons.add(ValueComparison.GT);
     comparisons.add(ValueComparison.GTE);
-    log("comparison is equal to ");
-    log(widget.condition.comparison.toString());
     var row = Row(
       children: [
         Text("comparison: "),

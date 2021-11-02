@@ -92,10 +92,10 @@ function getFindParamsWithFieldDetails(fieldName, fieldType, valueObject) {
 }
 
 function getDateFieldFindParams(condition) {
-	switch (condition['value'].substring(0, 2)) {
-		case 'A-':
+	switch (condition['value'].substring(0, 1)) {
+		case 'A':
 			return condition['value'].substring(2);
-		case 'R-':
+		case 'R':
 			var unit = condition['value'][2];
 			var quantity = parseFloat(condition['value'].split(' ')[1]);
 			var tzMinutes = parseInt(condition['value'].split(' ')[2]);
@@ -116,7 +116,30 @@ function getDateFieldFindParams(condition) {
 				};
 			}
 		case 'C':
-			break;
+			var calendarUnit = condition['value'][2];
+			var direction = condition['value'][3];
+			tzMinutes = parseInt(condition['value'].split(' ')[1]);
+			var calendarDate = moment(Date.now()).add(tzMinutes, 'm').toDate();
+			switch (direction) {
+				case '-':
+					// previous
+					date = moment(calendarDate).subtract(1, calendarUnit).toDate();
+					break;
+				case '=':
+					// current
+					break;
+				case '+':
+					// next
+					date = moment(calendarDate).add(1, calendarUnit).toDate();
+					break;
+			}
+			var startDate = moment(calendarDate).startOf(calendarUnit).toISOString().substring(0, 10);
+			var endDate = moment(calendarDate).endOf(calendarUnit).subtract(1, 'd').toISOString().substring(0, 10);
+			console.log('finding values between ' + startDate + ' and ' + endDate);
+			return {
+				$gte: startDate,
+				$lte: endDate,
+			};
 	}
 }
 
@@ -157,38 +180,26 @@ function getFindParams(condition) {
 		var fieldType = condition['fieldType'].split('.')[1];
 		var valueObject = null;
 		//if it's a DATE field, we've already built the valueObject directly into value.
-		if (fieldType == 'FieldType.DATE') return getFindParamsWithFieldDetails(fieldName, fieldType, value);
+		if (fieldType == 'DATE') return getFindParamsWithFieldDetails(fieldName, fieldType, value);
 		switch (condition['comparison']) {
 			case 'ValueComparison.E':
 				valueObject = value;
 				break;
-			// return getFindParamsWithFieldDetails(fieldName, fieldType, value);
-			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': value } } };
 			case 'ValueComparison.GT':
 				valueObject = { $gt: value };
 				break;
-			// return getFindParamsWithFieldDetails(fieldName, fieldType, { $gt: value });
-			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $gt: value } } } };
 			case 'ValueComparison.GTE':
 				valueObject = { $gte: value };
 				break;
-			// return getFindParamsWithFieldDetails(fieldName, fieldType, { $gte: value });
-			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $gte: value } } } };
 			case 'ValueComparison.LT':
 				valueObject = { $lt: value };
 				break;
-			// return getFindParamsWithFieldDetails(fieldName, fieldType, { $lt: value });
-			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $lt: value } } } };
 			case 'ValueComparison.LTE':
 				valueObject = { $lte: value };
 				break;
-			// return getFindParamsWithFieldDetails(fieldName, fieldType, { $lte: value });
-			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $lte: value } } } };
 			case 'ValueComparison.STR_CONTAINS':
 				valueObject = { $regex: value, $options: 'i' };
 				break;
-			// return getFindParamsWithFieldDetails(fieldName, fieldType, { $regex: value, $options: 'i' });
-			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $regex: value, $options: 'i' } } } };
 		}
 		return getFindParamsWithFieldDetails(fieldName, fieldType, valueObject);
 	}
