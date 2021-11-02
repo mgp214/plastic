@@ -93,6 +93,7 @@ class ConditionBuilderState extends State<ConditionBuilder> {
           return Future.value(true);
         },
         child: Scaffold(
+          backgroundColor: Motif.lightBackground,
           body: SafeArea(
             child: Stack(children: [
               Column(
@@ -110,7 +111,7 @@ class ConditionBuilderState extends State<ConditionBuilder> {
                 ],
               ),
               Positioned(
-                bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
+                bottom: 10,
                 right: 10,
                 child: Row(
                   children: [

@@ -74,6 +74,9 @@ class BulkUpdateThingsState extends State<BulkUpdateThings> {
           case TemplateChangeType.MainFieldChanged:
             // No changes needed.
             break;
+          case TemplateChangeType.ChoicesChanged:
+            // TODO: Handle this case.
+            break;
         }
       }
     }

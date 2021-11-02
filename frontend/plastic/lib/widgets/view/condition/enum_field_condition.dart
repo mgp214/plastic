@@ -2,21 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/view/conditions/value_condition.dart';
 import 'package:plastic/utility/constants.dart';
-import 'package:plastic/widgets/components/input/int_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
 import 'package:plastic/widgets/view/condition/condition_card.dart';
 
-class IntFieldCondition extends StatefulWidget {
+class EnumFieldCondition extends StatefulWidget {
   final ValueCondition condition;
 
-  const IntFieldCondition({Key key, @required this.condition})
+  const EnumFieldCondition({Key key, @required this.condition})
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => IntFieldConditionState();
+  State<StatefulWidget> createState() => EnumFieldConditionState();
 }
 
-class IntFieldConditionState extends State<IntFieldCondition> {
+class EnumFieldConditionState extends State<EnumFieldCondition> {
   TextEditingController _nameController;
   TextEditingController _valueController;
 
@@ -32,6 +31,7 @@ class IntFieldConditionState extends State<IntFieldCondition> {
   List<Widget> _getFieldTypeComparisons() {
     var comparisions = List<ValueComparison>();
     comparisions.add(ValueComparison.E);
+    comparisions.add(ValueComparison.STR_CONTAINS);
     comparisions.add(ValueComparison.LT);
     comparisions.add(ValueComparison.LTE);
     comparisions.add(ValueComparison.GT);
@@ -51,7 +51,7 @@ class IntFieldConditionState extends State<IntFieldCondition> {
 
   @override
   Widget build(BuildContext context) => ConditionCard(
-        label: 'Integer field',
+        label: "List of options field",
         children: [
           StringField(
             controller: _nameController,
@@ -67,7 +67,7 @@ class IntFieldConditionState extends State<IntFieldCondition> {
               widget.condition.comparison = value;
             }),
           ),
-          IntField(
+          StringField(
             controller: _valueController,
             onChanged: (value) => setState(() {
               widget.condition.value = value;

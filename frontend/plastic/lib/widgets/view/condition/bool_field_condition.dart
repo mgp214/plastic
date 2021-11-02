@@ -4,6 +4,7 @@ import 'package:plastic/model/view/conditions/value_condition.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/input/checkbox_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
+import 'package:plastic/widgets/view/condition/condition_card.dart';
 
 class BoolFieldCondition extends StatefulWidget {
   final ValueCondition condition;
@@ -26,37 +27,21 @@ class BoolFieldConditionState extends State<BoolFieldCondition> {
   }
 
   @override
-  Widget build(BuildContext context) => IntrinsicHeight(
-        child: Card(
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    StringField(
-                      controller: _nameController,
-                      onChanged: (value) => setState(() {
-                        widget.condition.fieldName = value;
-                      }),
-                      label: 'Field name',
-                    ),
-                    CheckboxField(
-                        onChanged: (value) => setState(() {
-                              widget.condition.value = value ? 'true' : 'false';
-                            }),
-                        value: widget.condition.value == 'true')
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.menu,
-                size: Constants.iconSize,
-                color: Motif.neutral,
-              ),
-            ],
+  Widget build(BuildContext context) => ConditionCard(
+        label: 'True/false field',
+        children: [
+          StringField(
+            controller: _nameController,
+            onChanged: (value) => setState(() {
+              widget.condition.fieldName = value;
+            }),
+            label: 'Field name',
           ),
-        ),
+          CheckboxField(
+              onChanged: (value) => setState(() {
+                    widget.condition.value = value ? 'true' : 'false';
+                  }),
+              value: widget.condition.value == 'true')
+        ],
       );
 }

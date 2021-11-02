@@ -87,7 +87,7 @@ class ActionItemState extends State<ActionItem>
   @override
   Widget build(BuildContext context) => Positioned(
         right: 10,
-        bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
+        bottom: 10,
         child: SlideTransition(
           position: _animation,
           child: Align(

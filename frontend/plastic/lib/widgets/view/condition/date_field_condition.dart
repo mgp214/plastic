@@ -7,6 +7,7 @@ import 'package:plastic/model/view/conditions/value_condition.dart';
 import 'package:plastic/widgets/components/input/border_button.dart';
 import 'package:plastic/widgets/components/input/double_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
+import 'package:plastic/widgets/view/condition/condition_card.dart';
 
 class DateFieldCondition extends StatefulWidget {
   final ValueCondition condition;
@@ -194,23 +195,6 @@ class DateFieldConditionState extends State<DateFieldCondition> {
       ],
     );
     children.add(row);
-    // children.add(
-    //   DropdownButton<String>(
-    //     value: calendarUnit,
-    //     items: [
-    //       DropdownMenuItem(child: Text("day"), value: "d"),
-    //       DropdownMenuItem(child: Text("week"), value: "w"),
-    //       DropdownMenuItem(child: Text("month"), value: "m"),
-    //       DropdownMenuItem(child: Text("year"), value: "y"),
-    //     ],
-    //     onChanged: (value) {
-    //       setState(() {
-    //         calendarUnit = value;
-    //       });
-    //       widget.condition.value = _buildStringValue();
-    //     },
-    //   ),
-    // );
   }
 
   @override
@@ -256,20 +240,9 @@ class DateFieldConditionState extends State<DateFieldCondition> {
         break;
     }
 
-    return IntrinsicHeight(
-      child: Card(
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: children,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return ConditionCard(
+      label: 'Date field',
+      children: children,
     );
   }
 }

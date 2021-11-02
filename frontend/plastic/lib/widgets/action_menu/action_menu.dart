@@ -84,7 +84,7 @@ class ActionMenuState extends State<ActionMenu> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     Widget main = Positioned(
-      bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
+      bottom: 10,
       right: 10,
       child: Align(
         alignment: Alignment.bottomRight,

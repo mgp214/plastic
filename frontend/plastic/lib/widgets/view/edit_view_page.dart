@@ -187,7 +187,7 @@ class EditViewPageState extends State<EditViewPage> {
               isEditing: true,
             ),
             Positioned(
-              bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
+              bottom: 10,
               right: 10,
               child: Row(
                 children: [

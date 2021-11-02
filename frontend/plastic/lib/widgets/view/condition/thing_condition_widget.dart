@@ -12,6 +12,7 @@ import 'package:plastic/widgets/components/input/checkbox_field.dart';
 import 'package:plastic/widgets/view/condition/bool_field_condition.dart';
 import 'package:plastic/widgets/view/condition/date_field_condition.dart';
 import 'package:plastic/widgets/view/condition/double_field_condition.dart';
+import 'package:plastic/widgets/view/condition/enum_field_condition.dart';
 import 'package:plastic/widgets/view/condition/int_field_condition.dart';
 import 'package:plastic/widgets/view/condition/string_field_condition.dart';
 
@@ -46,18 +47,19 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
   }
 
   Map<String, ThingCondition> _availableConditions = {
+    "Date field": ValueCondition(fieldType: FieldType.DATE),
     "Group (all / any / none)":
         ConditionOperator(operation: OPERATOR.AND, operands: []),
-    "Template": TemplateCondition(templates: List()),
-    "Value": ValueCondition(),
-    "String field": ValueCondition(fieldType: FieldType.STRING),
-    "Real number field": ValueCondition(fieldType: FieldType.DOUBLE),
     "Integer number field": ValueCondition(fieldType: FieldType.INT),
+    "List of choices field": ValueCondition(fieldType: FieldType.ENUM),
+    "Real number field": ValueCondition(fieldType: FieldType.DOUBLE),
+    "String field": ValueCondition(fieldType: FieldType.STRING),
+    "Template": TemplateCondition(templates: List()),
     "True/false field": ValueCondition(
         fieldType: FieldType.BOOL,
         comparison: ValueComparison.E,
         value: 'false'),
-    "Date field": ValueCondition(fieldType: FieldType.DATE),
+    "Value": ValueCondition(),
   };
 
   List<DialogTextChoice> _getConditionChoices(ConditionOperator parent) {
@@ -76,38 +78,6 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
 
   Widget getWidgetPicker(ConditionOperator parent) =>
       ChoiceActionsDialog(message: null, choices: _getConditionChoices(parent));
-
-  List<Widget> _getFieldTypeComparisons(FieldType fieldType) {
-    var comparisions = List<ValueComparison>();
-    comparisions.add(ValueComparison.E);
-    switch (fieldType) {
-      case FieldType.STRING:
-      case FieldType.INT:
-      case FieldType.DOUBLE:
-      case FieldType.ENUM:
-      case FieldType.DATE:
-        comparisions.add(ValueComparison.STR_CONTAINS);
-        comparisions.add(ValueComparison.LT);
-        comparisions.add(ValueComparison.LTE);
-        comparisions.add(ValueComparison.GT);
-        comparisions.add(ValueComparison.GTE);
-        break;
-        break;
-      case FieldType.BOOL:
-        break;
-    }
-
-    return comparisions
-        .map(
-          (o) => DropdownMenuItem(
-            child: Text(
-              ValueCondition.getFriendlyName(o),
-            ),
-            value: o,
-          ),
-        )
-        .toList();
-  }
 
   Widget _getConditionOperatorDraggable() {
     var conditionAsOperator = widget.condition as ConditionOperator;
@@ -145,24 +115,37 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         var contents = Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: DropdownButton<OPERATOR>(
-                value: conditionAsOperator.operation,
-                items: OPERATOR.values
-                    .map(
-                      (o) => DropdownMenuItem(
-                        child: Text(
-                          ConditionOperator.getFriendlyString(o),
-                        ),
-                        value: o,
-                      ),
-                    )
-                    .toList(),
-                onChanged: (newOperator) => setState(() {
-                  conditionAsOperator.operation = newOperator;
-                }),
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: DropdownButton<OPERATOR>(
+                      value: conditionAsOperator.operation,
+                      items: OPERATOR.values
+                          .map(
+                            (o) => DropdownMenuItem(
+                              child: Text(
+                                ConditionOperator.getFriendlyString(o),
+                              ),
+                              value: o,
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (newOperator) => setState(() {
+                        conditionAsOperator.operation = newOperator;
+                      }),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Icon(
+                    Icons.menu,
+                    color: Motif.black,
+                  ),
+                ),
+              ],
             ),
             IntrinsicHeight(
               child: Row(
@@ -278,18 +261,7 @@ class ThingConditionWidgetState extends State<ThingConditionWidget> {
         return DoubleFieldCondition(condition: conditionAsValue);
         break;
       case FieldType.ENUM:
-        // children.add(
-        //   StringField(
-        //     controller: _valueController,
-        //     onChanged: (newValue) {
-        //       setState(() {
-        //         conditionAsValue.value = newValue;
-        //       });
-        //     },
-        //     labelStyle: Motif.contentStyle(Sizes.Label, Motif.black),
-        //     label: "value",
-        //   ),
-        // );
+        return EnumFieldCondition(condition: conditionAsValue);
         break;
       case FieldType.BOOL:
         return BoolFieldCondition(condition: conditionAsValue);

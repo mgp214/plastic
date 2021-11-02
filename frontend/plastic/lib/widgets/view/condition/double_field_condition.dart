@@ -4,6 +4,7 @@ import 'package:plastic/model/view/conditions/value_condition.dart';
 import 'package:plastic/utility/constants.dart';
 import 'package:plastic/widgets/components/input/double_field.dart';
 import 'package:plastic/widgets/components/input/string_field.dart';
+import 'package:plastic/widgets/view/condition/condition_card.dart';
 
 class DoubleFieldCondition extends StatefulWidget {
   final ValueCondition condition;
@@ -49,46 +50,30 @@ class DoubleFieldConditionState extends State<DoubleFieldCondition> {
   }
 
   @override
-  Widget build(BuildContext context) => IntrinsicHeight(
-        child: Card(
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    StringField(
-                      controller: _nameController,
-                      onChanged: (value) => setState(() {
-                        widget.condition.fieldName = value;
-                      }),
-                      label: 'Field name',
-                    ),
-                    DropdownButton(
-                      value: widget.condition.comparison,
-                      items: _getFieldTypeComparisons(),
-                      onChanged: (value) => setState(() {
-                        widget.condition.comparison = value;
-                      }),
-                    ),
-                    DoubleField(
-                      controller: _valueController,
-                      onChanged: (value) => setState(() {
-                        widget.condition.value = value;
-                      }),
-                      label: 'Value',
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.menu,
-                size: Constants.iconSize,
-                color: Motif.neutral,
-              ),
-            ],
+  Widget build(BuildContext context) => ConditionCard(
+        label: 'Real number field',
+        children: [
+          StringField(
+            controller: _nameController,
+            onChanged: (value) => setState(() {
+              widget.condition.fieldName = value;
+            }),
+            label: 'Field name',
           ),
-        ),
+          DropdownButton(
+            value: widget.condition.comparison,
+            items: _getFieldTypeComparisons(),
+            onChanged: (value) => setState(() {
+              widget.condition.comparison = value;
+            }),
+          ),
+          DoubleField(
+            controller: _valueController,
+            onChanged: (value) => setState(() {
+              widget.condition.value = value;
+            }),
+            label: 'Value',
+          ),
+        ],
       );
 }
