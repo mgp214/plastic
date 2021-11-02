@@ -12,7 +12,8 @@ class DateFieldWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => BorderButton(
       color: Motif.lightBackground,
-      content: DateFormat('MMMM d, \'\'yy').format(date),
+      content:
+          date == null ? 'unset' : DateFormat('MMMM d, \'\'yy').format(date),
       onPressed: () {
         showDatePicker(
                 context: context,

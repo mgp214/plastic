@@ -122,7 +122,7 @@ class EditThingPageState extends State<EditThingPage> {
         log(field.value.toString());
         return DateFieldWidget(
           date: field.value == null
-              ? DateTime.now()
+              ? null
               : field.value is DateTime
                   ? field.value
                   : DateTime.parse(field.value),
