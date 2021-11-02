@@ -19,3 +19,14 @@ doc/api/
 *.js_
 *.js.deps
 *.js.map
+backend/plastic/node_modules/
+backend/plastic/node_modules/.yarn-integrity
+backend/plastic/node_modules/bl/bl.js
+backend/plastic/node_modules/bl/package.json
+backend/plastic/node_modules/bl/test/test.js
+backend/plastic/node_modules/glob-parent/index.js
+backend/plastic/node_modules/glob-parent/package.json
+backend/plastic/node_modules/ini/ini.js
+backend/plastic/node_modules/ini/package.json
+backend/plastic/node_modules/normalize-url/index.js
+backend/plastic/node_modules/normalize-url/package.json

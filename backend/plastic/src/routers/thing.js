@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 const Thing = require('../models/Thing');
 const Template = require('../models/Template');
 const auth = require('../middleware/auth');
@@ -86,6 +87,39 @@ router.get('/things/bytemplate', auth, async (req, res) => {
 	res.send(things);
 });
 
+function getFindParamsWithFieldDetails(fieldName, fieldType, valueObject) {
+	return { 'fields': { $elemMatch: { 'name': fieldName, 'fieldType': fieldType, 'value': valueObject } } };
+}
+
+function getDateFieldFindParams(condition) {
+	switch (condition['value'].substring(0, 2)) {
+		case 'A-':
+			return condition['value'].substring(2);
+		case 'R-':
+			var unit = condition['value'][2];
+			var quantity = parseFloat(condition['value'].split(' ')[1]);
+			var tzMinutes = parseInt(condition['value'].split(' ')[2]);
+			var date = moment(Date.now()).add(tzMinutes, 'm').toDate();
+			var isLookingForward = condition['value'].split(' ')[1].substring(0, 1) == '+';
+			var currentDateString = date.toISOString().substring(0, 10);
+			date = moment(date).add(quantity, unit).toDate();
+			var otherDateString = date.toISOString().substring(0, 10);
+			if (isLookingForward) {
+				return {
+					$gte: currentDateString,
+					$lte: otherDateString,
+				};
+			} else {
+				return {
+					$lte: currentDateString,
+					$gte: otherDateString,
+				};
+			}
+		case 'C':
+			break;
+	}
+}
+
 function getFindParams(condition) {
 	if (condition['type'] == 'operation') {
 		var operands = [];
@@ -116,22 +150,47 @@ function getFindParams(condition) {
 			case 'FieldType.DOUBLE':
 				value = parseFloat(value);
 				break;
+			case 'FieldType.DATE':
+				value = getDateFieldFindParams(condition);
 		}
+		var fieldName = condition['fieldName'];
+		var fieldType = condition['fieldType'].split('.')[1];
+		var valueObject = null;
+		//if it's a DATE field, we've already built the valueObject directly into value.
+		if (fieldType == 'FieldType.DATE') return getFindParamsWithFieldDetails(fieldName, fieldType, value);
 		switch (condition['comparison']) {
 			case 'ValueComparison.E':
-				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': value } } };
+				valueObject = value;
+				break;
+			// return getFindParamsWithFieldDetails(fieldName, fieldType, value);
+			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': value } } };
 			case 'ValueComparison.GT':
-				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $gt: value } } } };
+				valueObject = { $gt: value };
+				break;
+			// return getFindParamsWithFieldDetails(fieldName, fieldType, { $gt: value });
+			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $gt: value } } } };
 			case 'ValueComparison.GTE':
-				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $gte: value } } } };
+				valueObject = { $gte: value };
+				break;
+			// return getFindParamsWithFieldDetails(fieldName, fieldType, { $gte: value });
+			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $gte: value } } } };
 			case 'ValueComparison.LT':
-				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $lt: value } } } };
+				valueObject = { $lt: value };
+				break;
+			// return getFindParamsWithFieldDetails(fieldName, fieldType, { $lt: value });
+			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $lt: value } } } };
 			case 'ValueComparison.LTE':
-				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $lte: value } } } };
+				valueObject = { $lte: value };
+				break;
+			// return getFindParamsWithFieldDetails(fieldName, fieldType, { $lte: value });
+			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $lte: value } } } };
 			case 'ValueComparison.STR_CONTAINS':
-				return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $regex: value, $options: 'i' } } } };
+				valueObject = { $regex: value, $options: 'i' };
+				break;
+			// return getFindParamsWithFieldDetails(fieldName, fieldType, { $regex: value, $options: 'i' });
+			// return { 'fields': { $elemMatch: { 'name': condition['fieldName'], 'fieldType': condition['fieldType'].split('.')[1], 'value': { $regex: value, $options: 'i' } } } };
 		}
-
+		return getFindParamsWithFieldDetails(fieldName, fieldType, valueObject);
 	}
 }
 

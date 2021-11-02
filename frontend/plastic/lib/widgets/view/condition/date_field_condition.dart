@@ -26,7 +26,6 @@ class DateFieldConditionState extends State<DateFieldCondition> {
   String relativeUnit;
   String calendarDirection;
   String calendarUnit;
-  ValueComparison absoluteComparison;
   TextEditingController _valueController;
   TextEditingController _nameController;
 
@@ -34,19 +33,37 @@ class DateFieldConditionState extends State<DateFieldCondition> {
   void initState() {
     super.initState();
     _valueController = TextEditingController(text: '');
+    _nameController = TextEditingController(text: '');
+    if (widget.condition.value == null) return;
+    dateType = widget.condition.value.substring(0, 1);
+    _nameController.text = widget.condition.fieldName;
+
+    switch (dateType) {
+      case 'A':
+        absoluteValue = DateTime.parse(widget.condition.value.substring(2));
+        break;
+      case 'R':
+        relativeUnit = widget.condition.value[2];
+        relativeValue =
+            double.parse(widget.condition.value.split(' ')[1]).abs();
+        relativeDirection = widget.condition.value.split(' ')[1][0];
+        _valueController =
+            TextEditingController(text: relativeValue.toString());
+        break;
+      case 'C':
+        break;
+    }
   }
 
   String _buildStringValue() {
+    var tzMinutes = DateTime.now().timeZoneOffset.inMinutes.toString();
     switch (dateType) {
       case "A":
         return "A-" + absoluteValue.toIso8601String().substring(0, 10);
         break;
       case "R":
         return "R-" +
-            relativeUnit +
-            " " +
-            relativeDirection +
-            relativeValue.toString();
+            "$relativeUnit $relativeDirection${relativeValue.toString()} $tzMinutes";
         break;
       case "C":
         return "C-" + calendarUnit + calendarDirection;
@@ -65,25 +82,28 @@ class DateFieldConditionState extends State<DateFieldCondition> {
     comparisons.add(ValueComparison.LTE);
     comparisons.add(ValueComparison.GT);
     comparisons.add(ValueComparison.GTE);
-    children.add(Text("comparison: "));
-    children.add(
-      DropdownButton<ValueComparison>(
-        value: absoluteComparison,
-        items: comparisons
-            .map(
-              (o) => DropdownMenuItem(
-                child: Text(
-                  ValueCondition.getFriendlyName(o),
+    var row = Row(
+      children: [
+        Text("comparison: "),
+        DropdownButton<ValueComparison>(
+          value: widget.condition.comparison,
+          items: comparisons
+              .map(
+                (o) => DropdownMenuItem(
+                  child: Text(
+                    ValueCondition.getFriendlyName(o),
+                  ),
+                  value: o,
                 ),
-                value: o,
-              ),
-            )
-            .toList(),
-        onChanged: (newValueComparison) => setState(() {
-          absoluteComparison = newValueComparison;
-        }),
-      ),
+              )
+              .toList(),
+          onChanged: (newValueComparison) => setState(() {
+            widget.condition.comparison = newValueComparison;
+          }),
+        ),
+      ],
     );
+    children.add(row);
     children.add(
       BorderButton(
         color: Motif.lightBackground,
@@ -144,7 +164,7 @@ class DateFieldConditionState extends State<DateFieldCondition> {
           items: [
             DropdownMenuItem(child: Text("days"), value: "d"),
             DropdownMenuItem(child: Text("weeks"), value: "w"),
-            DropdownMenuItem(child: Text("months"), value: "m"),
+            DropdownMenuItem(child: Text("months"), value: "M"),
             DropdownMenuItem(child: Text("years"), value: "y"),
           ],
           onChanged: (value) {
