@@ -136,6 +136,7 @@ function getDateFieldFindParams(condition) {
 			var startDate = moment(calendarDate).startOf(calendarUnit).toISOString().substring(0, 10);
 			var endDate = moment(calendarDate).endOf(calendarUnit).subtract(1, 'd').toISOString().substring(0, 10);
 			console.log('finding values between ' + startDate + ' and ' + endDate);
+			if (calendarUnit == 'd') return startDate;
 			return {
 				$gte: startDate,
 				$lte: endDate,
