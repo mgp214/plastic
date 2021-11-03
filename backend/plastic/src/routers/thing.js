@@ -141,6 +141,8 @@ function getDateFieldFindParams(condition) {
 				$gte: startDate,
 				$lte: endDate,
 			};
+		case 'U':
+			return null;
 	}
 }
 

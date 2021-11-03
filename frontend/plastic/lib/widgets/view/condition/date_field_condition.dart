@@ -1,6 +1,3 @@
-import 'dart:developer';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:plastic/model/motif.dart';
@@ -73,6 +70,8 @@ class DateFieldConditionState extends State<DateFieldCondition> {
       case "C":
         return "C-$calendarUnit$calendarDirection $tzMinutes";
         break;
+      case "U":
+        return "U";
     }
     return 'error!';
   }
@@ -246,10 +245,12 @@ class DateFieldConditionState extends State<DateFieldCondition> {
             DropdownMenuItem(child: Text("Absolute"), value: "A"),
             DropdownMenuItem(child: Text("Relative"), value: "R"),
             DropdownMenuItem(child: Text("Calendar"), value: "C"),
+            DropdownMenuItem(child: Text("Unset"), value: "U"),
           ],
           onChanged: (value) => setState(
             () {
               dateType = value;
+              if (dateType == 'U') widget.condition.value = _buildStringValue();
             },
           ),
         ),
