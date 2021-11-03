@@ -44,7 +44,9 @@ class SimpleListWidgetWidget extends StatelessWidget {
                       thing: thing,
                     ),
                   ),
-                ).then((val) => simpleListWidget.getData()),
+                ).then((val) => simpleListWidget.getData().then(
+                      (value) => simpleListWidget.triggerRebuild(),
+                    )),
                 child: Text(
                   thing.getMainField().value ?? "???",
                   style: Motif.contentStyle(
@@ -59,9 +61,7 @@ class SimpleListWidgetWidget extends StatelessWidget {
       }
     } else {
       log("simpleListWidget things is null");
-      simpleListWidget
-          .getData()
-          .then((value) => simpleListWidget.triggerRebuild());
+      simpleListWidget.triggerRebuild();
     }
     return widgets;
   }

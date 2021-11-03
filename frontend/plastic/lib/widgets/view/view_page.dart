@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:plastic/model/motif.dart';
 import 'package:plastic/model/preference_manager.dart';
@@ -25,28 +27,47 @@ class ViewPage extends StatefulWidget {
 }
 
 class ViewPageState extends State<ViewPage> with TickerProviderStateMixin {
-  AnimationController _refreshAnimationController;
   GlobalKey<ActionItemState> key1, key2, key3, key4;
+  bool _isReadyForRefresh;
   @override
   void initState() {
-    _refreshAnimationController =
-        AnimationController(duration: Duration(milliseconds: 500), vsync: this);
     key1 = GlobalKey<ActionItemState>();
     key2 = GlobalKey<ActionItemState>();
     key3 = GlobalKey<ActionItemState>();
     key4 = GlobalKey<ActionItemState>();
+    _isReadyForRefresh = true;
+    var widgets = _getAllWidgets(widget.view.root);
+    for (var w in widgets) {
+      w.triggerRebuild = refresh;
+    }
     refresh();
     super.initState();
+    Timer(
+      Duration(milliseconds: 250),
+      () => setState(
+        () {
+          _isReadyForRefresh = true;
+        },
+      ),
+    );
   }
 
   void refresh() {
+    if (!_isReadyForRefresh) return;
+    _isReadyForRefresh = false;
     var widgets = _getAllWidgets(widget.view.root);
     for (var w in widgets) {
       w.getData();
-      w.triggerRebuild = () {
-        setState(() {});
-      };
     }
+
+    Timer(
+      Duration(seconds: 1),
+      () => setState(
+        () {
+          _isReadyForRefresh = true;
+        },
+      ),
+    );
     setState(() {});
   }
 
@@ -90,7 +111,7 @@ class ViewPageState extends State<ViewPage> with TickerProviderStateMixin {
             context,
             MaterialPageRoute(
               builder: (context) => TemplatePickerPage(),
-            )),
+            )).then((value) => refresh()),
         children: [
           ActionItem(
             key: key1,
@@ -108,9 +129,6 @@ class ViewPageState extends State<ViewPage> with TickerProviderStateMixin {
               color: Motif.title,
               icon: Icons.refresh,
               onPressed: () {
-                _refreshAnimationController.forward().then((value) {
-                  _refreshAnimationController.reset();
-                });
                 refresh();
               }),
           ActionItem(

@@ -42,8 +42,9 @@ class ValueCondition extends ThingCondition {
         fieldType: FieldType.values
             .firstWhere((x) => x.toString() == json['fieldType']),
         value: json['value'],
-        comparison: ValueComparison.values
-            .firstWhere((x) => x.toString() == json['comparison']),
+        comparison: ValueComparison.values.firstWhere(
+            (x) => x.toString() == json['comparison'],
+            orElse: () => ValueComparison.E),
       );
 
   static String getFriendlyName(ValueComparison comparison) {
