@@ -109,11 +109,6 @@ class ThingApi {
 
   Future<ApiResponse> getThingsMatching(
       BuildContext context, ThingCondition condition) async {
-    // showDialog(
-    //   context: context,
-    //   builder: (context) => LoadingModal(),
-    // );
-
     if (condition.isEmpty()) {
       return Future.error(ApiException(message: "Unset condition"));
     }
@@ -129,7 +124,6 @@ class ThingApi {
         )
         .timeout(Api.timeout, onTimeout: () => ApiException.timeoutResponse);
 
-    // Navigator.pop(context);
     var error = ApiException.throwErrorMessage(response.statusCode);
     if (error != null) return Future.error(error);
 
