@@ -155,7 +155,7 @@ class EditViewPageState extends State<EditViewPage> {
       Navigator.pop(context);
     }));
     if (widget.view.id != null)
-      choices.add(DialogTextIconChoice("Delete", Icons.save, Motif.black, () {
+      choices.add(DialogTextIconChoice("Delete", Icons.delete, Motif.black, () {
         ViewApi().deleteView(context, widget.view);
         Navigator.pop(context);
         Navigator.pop(context);
