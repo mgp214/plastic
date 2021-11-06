@@ -133,8 +133,8 @@ function getDateFieldFindParams(condition) {
 					date = moment(calendarDate).add(1, calendarUnit).toDate();
 					break;
 			}
-			var startDate = moment(calendarDate).startOf(calendarUnit).toISOString().substring(0, 10);
-			var endDate = moment(calendarDate).endOf(calendarUnit).subtract(1, 'd').toISOString().substring(0, 10);
+			var startDate = moment(date).startOf(calendarUnit).toISOString().substring(0, 10);
+			var endDate = moment(date).subtract(1, 'd').endOf(calendarUnit).toISOString().substring(0, 10);
 			console.log('finding values between ' + startDate + ' and ' + endDate);
 			if (calendarUnit == 'd') return startDate;
 			return {
