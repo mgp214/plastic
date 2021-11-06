@@ -10,7 +10,7 @@
 		"mongodb": "^3.5.7",
 		"mongoose": "^5.9.15",
 		"morgan": "^1.10.0",
-		"validator": "^13.0.0"
+		"validator": "^13.7.0"
 	},
 	"description": "Endlessly flexible organization -- server",
 	"main": "app.js",
