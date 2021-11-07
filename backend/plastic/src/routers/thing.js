@@ -120,6 +120,7 @@ function getDateFieldFindParams(condition) {
 			var direction = condition['value'][3];
 			tzMinutes = parseInt(condition['value'].split(' ')[1]);
 			var calendarDate = moment(Date.now()).add(tzMinutes, 'm').toDate();
+			console.log('local date: ' + calendarDate.toISOString().substring(0, 10));
 			switch (direction) {
 				case '-':
 					// previous
@@ -134,7 +135,7 @@ function getDateFieldFindParams(condition) {
 					break;
 			}
 			var startDate = moment(date).startOf(calendarUnit).toISOString().substring(0, 10);
-			var endDate = moment(date).subtract(1, 'd').endOf(calendarUnit).toISOString().substring(0, 10);
+			var endDate = moment(date).endOf(calendarUnit).subtract(1, 'd').toISOString().substring(0, 10);
 			console.log('finding values between ' + startDate + ' and ' + endDate);
 			if (calendarUnit == 'd') return startDate;
 			return {
