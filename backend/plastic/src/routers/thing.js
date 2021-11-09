@@ -128,6 +128,7 @@ function getDateFieldFindParams(condition) {
 					break;
 				case '=':
 					// current
+					date = calendarDate;
 					break;
 				case '+':
 					// next
